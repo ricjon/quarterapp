@@ -1,0 +1,389 @@
+/*
+ * quarterapp
+ *
+ * Copyright © 2012 Markus Eliasson
+ *
+ * Distributed under the BSD License
+ */
+
+/*
+ * Colour schema
+ *
+ * Text color                   #333
+ * Link color                   #669900
+ * Footer text color            #999
+ * Header background-color      #f1f1f1
+ * Background color             #f7f7f7
+ * Thin border                  #dcdcdc
+ * Thick border                 #b7b7b7
+ */
+
+.clear-fix {
+    clear: both;
+}
+
+html {
+}
+
+body {
+    color: #333;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+a:link, a:visited {
+    color: #669900;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:focus ,a:hover, a:active {
+    outline: 0;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+h1, h2, h3, h4 {
+    font-weight: lighter;
+}
+
+h1 {
+    font-size: 36px;
+    margin: 20px 0px;
+}
+
+h2 {
+    font-size: 28px;
+    margin: 10px 0px;
+}
+
+h3 {
+    font-size: 20px;
+    margin: 8px 0px;
+}
+
+h4 {
+    font-size: 18px;
+    margin: 5px 0px;
+}
+
+strong {
+    font-weight: bold;
+}
+
+/** Header region ************************************************************/
+#header-region {
+    background-color: #f1f1f1;
+    border-bottom: 1px solid #dcdcdc;
+    padding: 10px 30px;
+}
+
+#logo { 
+    background: url("/images/logo-small.png") no-repeat 0 0;
+    min-height: 32px;
+    float: left;
+}
+
+#logo h1 {
+    margin: 0px 0px 0px 40px;
+    line-height: 32px;
+    font-size: 24px;
+}
+
+#header-region nav {
+    list-style: none;
+    float: right;
+    line-height: 32px;
+    margin-right: 40px;
+}
+
+#header-region nav li {
+    float: left;
+    margin-right: 16px;
+}
+
+#header-region nav li a {
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#header-region nav li a:hover {
+    text-decoration: underline;
+}
+
+/** Main region **************************************************************/
+#main-region {
+    background-color: #f7f7f7;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.container {
+    margin: 0 auto;
+}
+
+.container.wide { /* Full width containers */
+    width: 900px;
+}
+.container.medium { /* Small single page forms */
+    width: 500px;
+}
+
+.container.small { /* Right side bar*/
+    width: 200px;
+}
+
+.content {
+    padding: 40px 40px;
+}
+
+.container.box {
+    border-radius: 5px;
+    border: 1px solid #999;
+    margin-bottom: 20px;
+}
+
+.container.box header {
+    border-radius: 4px 4px 0px 0px;
+    padding: 40px 0px 10px 40px;
+    border-bottom: 1px solid #999;
+    color: #fff;
+}
+
+.container.box header.general {
+    background-color: #669900;
+}
+
+.container.box header.settings      { background-color: #ce5c5b; }
+.container.box header.activities    { background-color: #824d7b; }
+.container.box header.sheet         { background-color: #8a99ae; }
+.container.box header.report        { background-color: #47b39b; }
+
+.container.box .content {
+    background-color: #fff;
+    border-radius: 0px 0px 4px 4px;
+}
+
+/** Footer region ************************************************************/
+#footer-region {
+    background-color: #fff;
+    border-top: 1px solid #dcdcdc;
+    padding: 10px 0px;
+    font-size: 11px
+}
+
+#footer-region a,
+#footer-region a:focus,
+#footer-region a:hover,
+#footer-region a:active {
+    color: #999;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+/** Generic styling **********************************************************/
+.note {
+    color: #999;   
+    text-align: center;
+}
+
+/** Form styling *************************************************************/
+form {
+    margin: 0 auto;
+    text-align: center;
+    width: 350px;
+}
+
+fieldset {
+    margin: 10px auto;
+    width: 100%;
+}
+
+label {
+    float: left;
+    padding: 3px 1px;
+    font-weight: bold;
+    color: #666;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    float: left;
+    clear: left;
+    display: block;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 350px;
+    outline: none;
+    text-align: left;
+    width: 336px; /* 350 - border - padding */
+    -webkit-appearance: none;
+}
+
+input[type="radio"] {
+    margin-right: 6px;
+    height: 20px;
+    float: left;
+    clear: left;
+}
+
+input[type="radio"]~label {
+    padding: 0px;
+    font-weight: normal;
+}
+
+button {
+    float: right;
+    outline: 0;
+    padding: 6px 20px;
+    display: block;
+    font-weight: bold;
+    background-color: #efefef;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    color: #666;
+    margin: 0px 10px;
+}
+
+button:hover {
+    background-color: #dedede; 
+    cursor: pointer;
+}
+
+button[disabled=disabled] {
+    color: #999;
+}
+
+button[disabled=disabled]:hover {
+    background-color: #efefef;
+}
+
+.container.wide form {
+    width: 700px;
+}
+
+/** Table ********************************************************************/
+
+
+/** Settings *****************************************************************/
+.setting-group {
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #ccc;
+}
+
+.setting-group:last-of-type {
+    margin-bottom: 0px;
+    border-bottom: none;
+}
+
+.setting-control {
+    float: left;
+}
+
+.setting-description {
+    text-align: left;
+    margin-left: 20px;
+}
+
+.setting-description .note {
+    text-align: left;
+}
+
+div.metric {
+    width: 120px;
+    min-width: 120px;
+    font-size: 28px;
+    line-height: 40px;
+    text-align: right;
+    padding-right: 20px;
+}
+
+form#user-settings input[type="text"],
+form#user-settings input[type="password"],
+form#user-settings input[type="email"] {
+    width: 499px;
+}
+
+form#user-settings button {
+    float: left;
+}
+
+table.users {
+    margin: 0 auto;
+    margin-bottom: 40px;
+}
+
+tbody {
+    border: 1px solid #ccc;
+}
+
+table.users tr {
+    line-height: 24px;
+}
+
+table.users thead {
+    background-color: #fff;
+    text-shadow: none;
+    font-weight: bold;
+}
+
+table.users tbody tr {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+table.users tbody tr:nth-child(2n) {
+    background-color: #efefef;
+}
+
+table.users tfoot tr {
+    border-top: 1px solid #ccc;
+    font-weight: bold;
+}
+
+table.users thead th {
+    text-align: left;
+    padding-bottom: 10px;
+}
+
+table.users thead th.username {
+    width: 400px;
+}
+
+table.users thead th.login {
+    width: 200px;
+}
+
+table.users thead th.disable,
+table.users thead th.delete,
+table.users tbody td.disable,
+table.users tbody td.delete { 
+    width: 100px; 
+    text-align: center;
+}
+
+table.users th,
+table.users td {
+    padding: 3px 15px;
+}
+
+table.users td {
+    border-left: 1px solid #ccc;
+}
+
+.pagination {
+    text-align: center;
+}
+
+.pagination a {
+    margin-left: 15px;
+}
+
+.pagination a:first-of-type {
+    margin-left: 0px;
+}

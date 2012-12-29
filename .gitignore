@@ -1,0 +1,12 @@
+# OSX
+.DS_Store
+
+# Python
+*.py[co]
+
+# Sublime editor
+*.sublime-project
+*.sublime-workspace
+
+# quarterapp configuration files
+quarterapp.conf

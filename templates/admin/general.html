@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <section class="container box wide">
+        <header class="settings">
+            <h1>General settings</h1>
+        </header>
+        <section class="content">
+            <form id="general-settings">
+                <div class="setting-group">
+                    <div class="setting-control">
+                        <input type="checkbox" id="allow-signups" name="allow-signups" checked />
+                    </div>
+                    <div class="setting-description">
+                        <strong>Allow signups</strong>
+                        <p class="note">Allow visitors to signup for an account - this will not create an account until the visitor activates the account.</p>
+                    </div>
+                    <div class="clear-fix"></div>
+                </div>
+
+                <div class="setting-group">
+                    <div class="setting-control">
+                        <input type="checkbox" id="allow-activations" name="allow-activations" checked />
+                    </div>
+                    <div class="setting-description">
+                        <strong>Allow activation</strong>
+                        <p class="note">Allow new users to activate their account after signup - this will create the account.</p>
+                    </div>
+                    <div class="clear-fix"></div>
+                </div>
+            </form>
+            <div class="clear-fix"></div>
+        </section>
+    </section>
+{% end %}

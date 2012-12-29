@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>Quarterapp</title>
+        
+        <meta name="description" content="Time tracker that helps you remember what you have done." />
+        <meta name="author" content="markus.eliasson@gmail.com" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="stylesheet" media="all" href="/styles/reset.css" />
+        <link rel="stylesheet" media="all" href="/styles/quarterapp.css" />
+    </head>
+    <body>
+        <header id="header-region">
+            <div class="container wide">
+                <div id="logo">
+                    <h1>quarterapp</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="/application/sheet/">Sheet</a></li>
+                        <li><a href="/application/reports/index.html" class="current">Report</a></li>
+                        <li><a href="/application/activities/index.html">Activities</a></li>
+                        <li><a href="/logout.html">Logout</a></li>
+                    </ul>
+                </nav>
+                <div class="clear-fix"></div>
+            </div>
+        </header>
+
+        <div id="main-region">
+
+            <section class="container box medium">
+                <header class="general">
+                    <h1>Login</h1>
+                </header>
+                <section class="content">
+                    <form id="login-form" action="" method="POST" class="">
+                        <fieldset>
+                            <label for="username" class="">Username</label>
+                            <input type="text" name="username" id="username" required />
+                        </fieldset>
+                        <fieldset>
+                            <label for="password" class="">Password</label>
+                            <input type="password" name="password" id="password" required />
+                        </fieldset>
+                        <fieldset>
+                            <button type="submit">Login</button>
+                        </fieldset>
+                    </form>
+
+                    <p class="note">Do you want to <a href="/signup">signup</a> for a free account, or did you <a href="/forgot">forget</a> your login details?</a>
+                </section>
+            </section>
+
+            <section class="container box medium">
+                <header class="general">
+                    <h1>Signup</h1>
+                </header>
+                <section class="content">
+                    <p>Quarterapp is a free application, the only thing you need to do is enter your e-mail address and we will setup your account in no time.</p>
+                    <form id="signup-form" action="" method="POST" class="">
+                        <fieldset>
+                            <label for="email" class="">E-mail address</label>
+                            <input type="email" name="email" id="email" required />
+                        </fieldset>
+
+                        <fieldset>
+                            <button type="submit">Signup</button>
+                        </fieldset>
+                    </form>
+
+                    <p class="note">By fulfilling this form you agree on the <a href="/terms">terms of conditions.</a></p>
+                </section>
+            </section>
+
+            <section class="container box medium">
+                <header class="general">
+                    <h1>Activate account</h1>
+                </header>
+                <section class="content">
+                    <p>Enter the activation code you received when signing up to complete the creation of your account.</p>
+                    <form id="signup-form" action="" method="POST" class="">
+                        <fieldset>
+                            <label for="code" class="">Activation code</label>
+                            <input type="text" name="code" id="code" required />
+                        </fieldset>
+
+                        <fieldset>
+                            <button type="submit">Activate</button>
+                        </fieldset>
+                    </form>
+
+                    <p class="note">By fulfilling this form you agree on the <a href="/terms">terms of conditions.</a></p>
+                </section>
+            </section>
+
+            <!-- Administration -->
+            <section class="container box wide">
+                <header class="settings">
+                    <h1>General settings</h1>
+                </header>
+                <section class="content">
+                    <form id="general-settings">
+                        <div class="setting-group">
+                            <div class="setting-control">
+                                <input type="checkbox" id="allow-signups" name="allow-signups" checked />
+                            </div>
+                            <div class="setting-description">
+                                <strong>Allow signups</strong>
+                                <p class="note">Allow visitors to signup for an account - this will not create an account until the visitor activates the account.</p>
+                            </div>
+                            <div class="clear-fix"></div>
+                        </div>
+
+                        <div class="setting-group">
+                            <div class="setting-control">
+                                <input type="checkbox" id="allow-activations" name="allow-activations" checked />
+                            </div>
+                            <div class="setting-description">
+                                <strong>Allow activation</strong>
+                                <p class="note">Allow new users to activate their account after signup - this will create the account.</p>
+                            </div>
+                            <div class="clear-fix"></div>
+                        </div>
+                    </form>
+                    <div class="clear-fix"></div>
+                </section>
+            </section>
+
+            <section class="container box wide">
+                <header class="settings">
+                    <h1>Users</h1>
+                </header>
+                <section class="content">
+                    <form id="user-settings">
+                        <div class="setting-group">
+                           <p>Filter the user table on username, if empty all users will be listed. By default no users will be listed to avoid unnessesary queries. Also, you can <a href="#">create a new user account</a> without the need for activation.</p>
+                        </div>
+                        <div class="setting-group">
+                            <div class="setting-control"><fieldset>
+                                <label for="user-filter">Username</label>
+                                <input type="text" id="user-filter" name="user-filter" required />
+                                <button type="submit">Filter</button>
+                                <button type="submit" disabled="disabled">Clear</button>
+                            </div>
+                            <div class="clear-fix"></div>
+                        </div>
+                    </form>
+                    <div class="clear-fix"></div>
+
+                    <table id="users" class="users">
+                        <thead>
+                            <th class="username">Username</th>
+                            <th class="login">Last login</th>
+                            <th class="disable">Disable</th>
+                            <th class="delete">Delete</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>bob@example.com</td>
+                                <td>2012-12-27 21:23</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                            <tr>
+                                <td>alice@example.com</td>
+                                <td>2012-10-07 11:07</td>
+                                <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                                <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                        <a href="#">Previous</a>
+                        <a href="#">1</a>
+                        <a href="#">2</a>
+                        <a href="#">3</a>
+                        <a href="#">4</a>
+                        <a href="#">5</a>
+                        <a href="#">6</a>
+                        <a href="#">7</a>
+                        <a href="#">8</a>
+                        <a href="#">9</a>
+                        <a href="#">Next</a>
+                    </div>
+                </section>
+            </section>
+
+            <section class="container box medium">
+                <header class="settings">
+                    <h1>New user</h1>
+                </header>
+                <section class="content">
+                    <form id="login-form" action="" method="POST" class="">
+                        <fieldset>
+                            <label for="username" class="">Username</label>
+                            <input type="text" name="username" id="username" required />
+                        </fieldset>
+                        <fieldset>
+                            <label for="password" class="">Password</label>
+                            <input type="password" name="password" id="password" required />
+                        </fieldset>
+                        <fieldset>
+                            <label for="verify-password" class="">Verify password</label>
+                            <input type="password" name="verify-password" id="verify-password" required />
+                        </fieldset>
+                        <fieldset>
+                            <label for="normal">Type of user</label>
+                            <input type="radio" name="user-type" value="normal" checked />
+                            <label for="normal">Normal</label>
+
+                            <input type="radio" name="user-type" value="admin" />
+                            <label for="admin">Type</label>
+                        </fieldset>
+                        <fieldset>
+                            <button type="submit">Create</button>
+                        </fieldset>
+                    </form>
+                </section>
+            </section>
+
+            <section class="container box wide">
+                <header class="settings">
+                    <h1>Statistics</h1>
+                </header>
+                <section class="content">
+                    <div class="setting-group">
+                        <div class="setting-control">
+                            <div class="metric">36</div>
+                        </div>
+                        <div class="setting-description">
+                            <strong>Registered users</strong>
+                            <p class="note">Number of users that has an active user accout.</p>
+                        </div>
+                        <div class="clear-fix"></div>
+                    </div>
+                    <div class="setting-group">
+                        <div class="setting-control">
+                            <div class="metric">5</div>
+                        </div>
+                        <div class="setting-description">
+                            <strong>Signups</strong>
+                            <p class="note">Number of users that have signed up but not activated their account.</p>
+                        </div>
+                        <div class="clear-fix"></div>
+                    </div>
+                    <div class="setting-group">
+                        <div class="setting-control">
+                            <div class="metric">136075</div>
+                        </div>
+                        <div class="setting-description">
+                            <strong>Quarters reported</strong>
+                            <p class="note">Total number of quarters reported in this system.</p>
+                        </div>
+                        <div class="clear-fix"></div>
+                    </div>    
+                </section>
+            </section>
+
+            <section class="container wide">
+                <div class="content">
+                    <h1>Heading 1</h1>
+                    <h2>Heading 2</h2>
+                    <h3>Heading 3</h3>
+                    <h4>Heading 4</h4>
+                    <h5>Heading 5</h5>
+                    <h6>Heading 6</h6>
+
+                    <p>Some text, with a <a href="link">link</a></p>
+                </div>
+            </section>
+
+            <section class="container box wide">
+                <header class="settings">
+                    <h1>General</h1>
+                </header>
+                <section class="content">
+                    <h1>Heading 1</h1>
+                    <h2>Heading 2</h2>
+                    <h3>Heading 3</h3>
+                    <h4>Heading 4</h4>
+                    <h5>Heading 5</h5>
+                    <h6>Heading 6</h6>
+
+                    <p>Some text, with a <a href="link">link</a></p>
+                </section>
+            </section>
+
+
+            <section class="container box medium">
+                <header class="report">
+                    <h1>General</h1>
+                </header>
+                <section class="content">
+                    <h1>Heading 1</h1>
+                    <h2>Heading 2</h2>
+                    <h3>Heading 3</h3>
+                    <h4>Heading 4</h4>
+                    <h5>Heading 5</h5>
+                    <h6>Heading 6</h6>
+
+                    <p>Some text, with a <a href="link">link</a></p>
+                </section>
+            </section>
+
+            <section class="container box small">
+                <header class="general">
+                    <h1>General</h1>
+                </header>
+                <section class="content">
+                    <h1>Heading 1</h1>
+                    <h2>Heading 2</h2>
+                    <h3>Heading 3</h3>
+                    <h4>Heading 4</h4>
+                    <h5>Heading 5</h5>
+                    <h6>Heading 6</h6>
+
+                    <p>Some text, with a <a href="link">link</a></p>
+                </section>
+            </section>
+        </div>
+
+        <footer id="footer-region">
+            <div class="container">
+                <p class="note">Copyright &copy; 2012 <a href="mailto:markus.eliasson@gmail.com">Markus Eliasson</a> - All rights reserved.</p>
+            </div>
+        </footer>
+    </body>
+</html>

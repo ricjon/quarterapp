@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <section class="container box wide">
+        <header class="settings">
+            <h1>Users</h1>
+        </header>
+        <section class="content">
+            <form id="user-settings">
+                <div class="setting-group">
+                   <p>Filter the user table on username, if empty all users will be listed. By default no users will be listed to avoid unnessesary queries. Also, you can <a href="/admin/new-user">create a new user account</a> without the need for activation.</p>
+                </div>
+                <div class="setting-group">
+                    <div class="setting-control"><fieldset>
+                        <label for="user-filter">Username</label>
+                        <input type="text" id="user-filter" name="user-filter" required />
+                        <button type="submit">Filter</button>
+                        <button type="submit" disabled="disabled">Clear</button>
+                    </div>
+                    <div class="clear-fix"></div>
+                </div>
+            </form>
+            <div class="clear-fix"></div>
+
+            <table id="users" class="users">
+                <thead>
+                    <th class="username">Username</th>
+                    <th class="login">Last login</th>
+                    <th class="disable">Disable</th>
+                    <th class="delete">Delete</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>bob@example.com</td>
+                        <td>2012-12-27 21:23</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                    <tr>
+                        <td>alice@example.com</td>
+                        <td>2012-10-07 11:07</td>
+                        <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <a href="#">Previous</a>
+                <a href="#">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#">4</a>
+                <a href="#">5</a>
+                <a href="#">6</a>
+                <a href="#">7</a>
+                <a href="#">8</a>
+                <a href="#">9</a>
+                <a href="#">Next</a>
+            </div>
+        </section>
+    </section>
+{% end %}

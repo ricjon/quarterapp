@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <section class="container box medium">
+        <header class="settings">
+            <h1>New user</h1>
+        </header>
+        <section class="content">
+            <form id="login-form" action="" method="POST" class="">
+                <fieldset>
+                    <label for="username" class="">Username</label>
+                    <input type="text" name="username" id="username" required />
+                </fieldset>
+                <fieldset>
+                    <label for="password" class="">Password</label>
+                    <input type="password" name="password" id="password" required />
+                </fieldset>
+                <fieldset>
+                    <label for="verify-password" class="">Verify password</label>
+                    <input type="password" name="verify-password" id="verify-password" required />
+                </fieldset>
+                <fieldset>
+                    <label for="normal">Type of user</label>
+                    <input type="radio" name="user-type" value="normal" checked />
+                    <label for="normal">Normal</label>
+
+                    <input type="radio" name="user-type" value="admin" />
+                    <label for="admin">Type</label>
+                </fieldset>
+                <fieldset>
+                    <button type="submit">Create</button>
+                </fieldset>
+            </form>
+        </section>
+    </section>
+{% end %}
