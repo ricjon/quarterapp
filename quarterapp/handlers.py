@@ -20,16 +20,19 @@ class AuthenticatedHandler(tornado.web.RequestHandler):
         self.write({
             "error" : SUCCESS,
             "message" :"Ok"})
+        self.finish()
 
     def write_general_error(self):
         self.write({
             "error" : ERROR_GENERAL_ERROR,
             "message" :"General error"})
+        self.finish()
 
     def write_unauthenticated_error(self):
         self.write({
             "error" : ERROR_NOT_AUTHENTICATED,
             "message" :"Not logged in"})
+        self.finish()
 
 class ProtectedStaticHandler(tornado.web.StaticFileHandler):
     """
@@ -38,6 +41,15 @@ class ProtectedStaticHandler(tornado.web.StaticFileHandler):
     @tornado.web.authenticated
     def get(self, path, include_body=True):
         super(tornado.web.StaticFileHandler, self.get(path, include_body))
+
+class SettingsHandler(tornado.web.RequestHandler):
+    """Used as the HTTP API to retrieve and update application settings.
+    User must be authenticated as administrator to be able to use
+    """
+    def get(self, key):
+        value = self.application.quarter_settings.get_value(key)
+        self.write({"key" : key, "value" : value})
+        self.finish()
 
 class AdminDefaultHandler(tornado.web.RequestHandler):
     def get(self):

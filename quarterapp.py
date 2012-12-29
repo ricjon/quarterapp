@@ -30,12 +30,15 @@ import tornado.options
 import tornado.database
 from tornado.options import options, define
 
+from quarterapp.settings import QuarterSettings
 from quarterapp.handlers import *
 
-def system_configuration():
+def read_configuration():
     """
     Setup expected options and parse from commandline and configuration file
     """
+    define("port", type=int, help="Port to listen on")
+    define("app_config_age", type=int, help="Time in minutes between application config update")
     define("cookie_secret", help="Random long hexvalue to secure cookies")
     define("mysql_host", help="MySQL hostname")
     define("mysql_database", help="MySQL database name")
@@ -65,6 +68,10 @@ def main():
             # API handlers
             (r"/api/heartbeat", HeartbeatHandler),
             
+
+            # Administration API
+            (r"/admin/settings/([^\/]+)/", SettingsHandler),
+
             # Static files
             (r"/(.*)", tornado.web.StaticFileHandler, { "path" : "static"})
         ],
@@ -84,12 +91,24 @@ def main():
 
     logging.info("Starting application...")
 
+    main_loop = tornado.ioloop.IOLoop.instance()
+
+    # Setup database connection
     application.db = tornado.database.Connection(options.mysql_host, options.mysql_database,
         options.mysql_user, options.mysql_password)
+
+    # Setup application settings
+    application.quarter_settings = QuarterSettings(application.db)
+
+    # Setup periodic callback to update application settings
+    config_loop = tornado.ioloop.PeriodicCallback(application.quarter_settings.update,
+        options.app_config_age * 60 * 1000, io_loop = main_loop)
+
+    config_loop.start()
     
     try:
-        application.listen(8080)
-        tornado.ioloop.IOLoop.instance().start()
+        application.listen(options.port)
+        main_loop.start()
     except KeyboardInterrupt:
         logging.info("Quitting application")
     except:
@@ -98,5 +117,5 @@ def main():
         exit()
 
 if __name__ == "__main__":
-        system_configuration()
+        read_configuration()
         main()
