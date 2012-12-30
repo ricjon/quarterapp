@@ -22,6 +22,57 @@
 
 import tornado.database
 
+class User:
+    Normal=0
+    Administrator=1
+
+def get_user_count(db):
+    """
+    Get the total number of users (not pending users), regardless of their state of type.
+
+    @return The number of users
+    """
+    count = db.query("SELECT COUNT(*) FROM quarterapp.users;")
+    if len(count) > 0:
+        return count[0]["COUNT(*)"]
+    else:
+        return 0
+
+def get_users(db, start = 0, count = 50):
+    """
+    Get a list of user rows starting at the given position. If the start index is out of bounds
+    an empty list will be returned. If there are as many users as the given 'count' the list will
+    be filled with as many as there is.
+
+    @param db The database connection
+    @param start The start index in the user table (default is 0)
+    @param count The number of users to receive (default is 50)
+    """
+
+    users = db.query("SELECT id, username, type, state, last_login FROM quarterapp.users ORDER BY id LIMIT %s, %s;", start, count)
+    if not users:
+        users = []
+    return users
+
+def add_user(db, username, password, type = User.Normal):
+    """
+    Adds a new user
+
+    The username needs to be unique and the password will be stored as is (i.e. it should be hashed prior
+        to this function).
+
+    The username should be a valid email address.
+    
+    The user will be active by default.
+    The user will be a normal user by default.
+
+    @param db The database connection
+    @param username The username
+    @param password The users password
+    """
+    return db.execute("INSERT INTO quarterapp.users (username, password, type, state) VALUES(\"%s\", \"%s\", \"0\", \"1\");",
+        "username", "password")
+
 def get_activities(db, username):
     """Get all activities for the given user
 
@@ -63,3 +114,4 @@ def delete_activity(db, username, activity_id):
     @oaram activity_id The id of the activity to delete
     """
     return db.execute("DELETE FROM quarterapp.activities WHERE username=%s AND id=%s;", username, activity_id)
+

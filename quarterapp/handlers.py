@@ -22,6 +22,7 @@
 
 import logging
 import tornado.web
+from quarterapp.storage import *
 
 class BaseHandler(tornado.web.RequestHandler):
     def write_success(self):
@@ -115,7 +116,9 @@ class AdminNewUserHandler(tornado.web.RequestHandler):
 
 class AdminStatisticsHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render(u"admin/statistics.html")
+        user_count = get_user_count(self.application.db)
+
+        self.render(u"admin/statistics.html", user_count = user_count)
 
 
 class LogoutHandler(tornado.web.RequestHandler):

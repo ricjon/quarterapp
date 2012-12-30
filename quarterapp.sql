@@ -4,7 +4,7 @@ use quarterapp;
 
 CREATE TABLE `activities` (
     `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(64) NOT NULL DEFAULT '',
+    `username` VARCHAR(256) NOT NULL DEFAULT '',
     `title` VARCHAR(32) NOT NULL DEFAULT '',
     `color` VARCHAR(32) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`)
@@ -12,22 +12,35 @@ CREATE TABLE `activities` (
 
 CREATE TABLE `sheets` (
     `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(64) NOT NULL DEFAULT '',
+    `username` VARCHAR(256) NOT NULL DEFAULT '',
     `date` DATE NOT NULL,
     `quarters` TEXT NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `username` (`username`)
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `settings` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     `key` VARCHAR(64) NOT NULL,
     `value` TEXT NOT NULL,
+    PRIMARY KEY (`id`),
     UNIQUE KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `users` (
+    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(256) NOT NULL DEFAULT '',
+    `password` VARCHAR(64) NOT NULL DEFAULT '',
+    `type` TINYINT NOT NULL DEFAULT '0',
+    `state`  TINYINT NOT NULL DEFAULT '0',
+    `last_login` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+)  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Insert default settings
-INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow_signups", "True");
-INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow_activations", "True");
+INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow_signups", "1");
+INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow_activations", "1");
+
+#
+# Insert default administrator
+INSERT INTO quarterapp.users (`username`, `password`, `type`, `state`) VALUES("admin", "", 1, 1);
