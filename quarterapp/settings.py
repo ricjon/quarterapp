@@ -65,3 +65,18 @@ class QuarterSettings:
             return self.settings[key]
         else:
             return None
+
+    def put_value(self, key, value):
+        """
+        Updates the value for the given key. If this key does not exist to begin with
+        this function will not insert the value. I.e. this function will only update
+        existing values.
+
+        @param key The settings key to update value for
+        @param value The new value
+        """
+        if self.settings.has_key(key):
+            self.db.execute("UPDATE quarterapp.settings SET settings.value=%s WHERE settings.key=%s;", value, key)
+            self.settings[key] = value
+        else:
+            logging.warning("Trying to update a settings key that does not exists! (%s)", key)
