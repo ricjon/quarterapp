@@ -32,7 +32,7 @@ sys.path.append(
 import quarterapp.storage
 
 # Test configuration
-mysql_database = "quarterapp"
+mysql_database = "quarterapp2"
 mysql_host = "127.0.0.1:3306"
 mysql_user = "quarterapp"
 mysql_password = "quarterapp"

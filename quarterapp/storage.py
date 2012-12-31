@@ -54,7 +54,7 @@ def get_users(db, start = 0, count = 50):
         users = []
     return users
 
-def add_user(db, username, password, type = User.Normal):
+def add_user(db, username, password, user_type = User.Normal):
     """
     Adds a new user
 
@@ -70,8 +70,12 @@ def add_user(db, username, password, type = User.Normal):
     @param username The username
     @param password The users password
     """
-    return db.execute("INSERT INTO quarterapp.users (username, password, type, state) VALUES(\"%s\", \"%s\", \"0\", \"1\");",
-        "username", "password")
+    return db.execute("INSERT INTO quarterapp.users (username, password, type, state) VALUES(\"%s\", \"%s\", \"%s\", \"1\");",
+        username, password, user_type)
+
+def username_unique(db, username):
+    users = db.query("SELECT username FROM quarterapp.users WHERE username=\"%s\";", username)
+    return len(users) < 1
 
 def get_activities(db, username):
     """Get all activities for the given user
@@ -79,7 +83,7 @@ def get_activities(db, username):
     @param db The database connection to use
     @param username The authenticated username to retrieve activities for
     """
-    activities = db.query("SELECT * FROM quarterapp.activities WHERE username=%s;", username)
+    activities = db.query("SELECT * FROM quarterapp.activities WHERE username=\"%s\";", username)
     if not activities:
         activities = []
     return activities
@@ -104,7 +108,7 @@ def update_activity(db, username, activity_id, title, color):
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return db.execute("UPDATE quarterapp.activities SET title=%s, color=%s WHERE username=%s AND id=%s;", title, color, username, activity_id)
+    return db.execute("UPDATE quarterapp.activities SET title=%s, color=%s WHERE username=\"%s\" AND id=\"%s\";", title, color, username, activity_id)
 
 def delete_activity(db, username, activity_id):
     """Deletes a given activity
@@ -113,5 +117,5 @@ def delete_activity(db, username, activity_id):
     @param username The authenticated username the activity is associated with
     @oaram activity_id The id of the activity to delete
     """
-    return db.execute("DELETE FROM quarterapp.activities WHERE username=%s AND id=%s;", username, activity_id)
+    return db.execute("DELETE FROM quarterapp.activities WHERE username=\"%s\" AND id=\"%s\";", username, activity_id)
 

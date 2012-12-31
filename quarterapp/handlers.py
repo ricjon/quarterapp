@@ -24,6 +24,7 @@ import logging
 import tornado.web
 from quarterapp.storage import *
 
+
 class BaseHandler(tornado.web.RequestHandler):
     def write_success(self):
         self.write({
@@ -32,6 +33,7 @@ class BaseHandler(tornado.web.RequestHandler):
         self.finish()
 
     def write_error(self, error_code, error_message):
+        logging.warning(error_message)
         self.write({
             "error" : error_code,
             "message" : error_message})
@@ -66,10 +68,6 @@ class SettingsHandler(BaseHandler):
     User must be authenticated as administrator to be able to use
     """
     def get(self, key):
-        def local_error():
-            logging.warning("Could not retrieve setting (%s)", key)
-            self.write_error(1001, "Could not retrieve setting")
-
         try:
             if key:
                 value = self.application.quarter_settings.get_value(key)
@@ -77,17 +75,13 @@ class SettingsHandler(BaseHandler):
                     self.write({"key" : key, "value" : value})
                     self.finish()
                 else:
-                    local_error()
+                    self.write_error(101, "Could not retrieve setting (%s)".format(key))
             else:
-                local_error()
+                self.write_error(102, "No key given")
         except:
-            local_error()
+            self.write_error(100, "Could not retrieve setting (%s)".format(key))
 
     def post(self, key):
-        def local_error():
-            logging.warning("Trying to set setting (%s) without a given value", key)
-            self.write_error(1002, "No value specified")
-
         try:
             if key:
                 value = self.get_argument("value", "")
@@ -95,9 +89,9 @@ class SettingsHandler(BaseHandler):
                 self.write({"key" : key, "value" : value})
                 self.finish()
             else:
-                local_error()
+                self.write_error(103, "No value specified for key (%s)".format(key))
         except:
-            local_error()
+            self.write_error(104, "Could not update key (%s)".format(key))
 
 class AdminDefaultHandler(tornado.web.RequestHandler):
     def get(self):
@@ -109,10 +103,30 @@ class AdminUsersHandler(tornado.web.RequestHandler):
         self.render(u"admin/users.html")
 
 
-class AdminNewUserHandler(tornado.web.RequestHandler):
+class AdminNewUserHandler(BaseHandler):
     def get(self):
         self.render(u"admin/new-user.html")
 
+    def post(self):
+        username = self.get_argument("username", "")
+        password = self.get_argument("password", "")
+        verify_password = self.get_argument("verify-password", "")
+        user_type = self.get_argument("user-type", "")
+        ut = User.Normal
+
+        if len(username) == 0:
+            self.write_error(201, "Missing username")
+        if not password == verify_password:
+            self.write_error(202, "Passwords does not match")
+        if not username_unique(self.application.db, username):
+            self.write_error(203, "Username is not unique")
+        if user_type == "admin":
+            ut = User.Administrator
+            print("ADMIN")
+        try:
+            add_user(self.application.db, username, password, ut)
+        except:
+            self.write_error(200, "Could not create new user")
 
 class AdminStatisticsHandler(tornado.web.RequestHandler):
     def get(self):
