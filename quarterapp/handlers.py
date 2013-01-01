@@ -105,7 +105,7 @@ class AdminUsersHandler(tornado.web.RequestHandler):
 
 class AdminNewUserHandler(BaseHandler):
     def get(self):
-        self.render(u"admin/new-user.html")
+        self.render(u"admin/new-user.html", completed = False)
 
     def post(self):
         username = self.get_argument("username", "")
@@ -125,6 +125,7 @@ class AdminNewUserHandler(BaseHandler):
             print("ADMIN")
         try:
             add_user(self.application.db, username, password, ut)
+            self.render(u"admin/new-user.html", completed = True)
         except:
             self.write_error(200, "Could not create new user")
 

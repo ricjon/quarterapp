@@ -266,6 +266,17 @@ button[disabled=disabled]:hover {
     width: 700px;
 }
 
+input.error {
+    border-color: #ce5c5b;
+    color: #ce5c5b;
+}
+div.error-message {
+    float: left;
+    padding: 2px 6px;
+    color: #ce5c5b;
+    font-style: oblique;
+}
+
 /** Table ********************************************************************/
 
 
@@ -386,4 +397,12 @@ table.users td {
 
 .pagination a:first-of-type {
     margin-left: 0px;
+}
+
+
+.message {
+    background-color: #dfd;
+    border: 1px solid #ada;
+    border-radius: 3px;
+    padding: 6px;
 }
