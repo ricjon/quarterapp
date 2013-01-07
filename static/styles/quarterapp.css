@@ -394,12 +394,16 @@ table.users td {
 
 .pagination a {
     margin-left: 15px;
+    text-decoration: underline;;
+}
+
+.pagination a.current {
+    text-decoration: none;
 }
 
 .pagination a:first-of-type {
     margin-left: 0px;
 }
-
 
 div.message {
     background-color: #dfd;

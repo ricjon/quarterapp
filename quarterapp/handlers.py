@@ -21,9 +21,14 @@
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import logging
+import math
+import sys
 import tornado.web
+
 from quarterapp.storage import *
 
+DEFAULT_PAGINATION_ITEMS_PER_PAGE = 5
+DEFAULT_PAGINATION_PAGES = 10
 
 class BaseHandler(tornado.web.RequestHandler):
     def write_success(self):
@@ -99,9 +104,81 @@ class AdminDefaultHandler(tornado.web.RequestHandler):
 
 
 class AdminUsersHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render(u"admin/users.html")
+    def generate_pagination(self, total, current, max_per_page, max_links):
+        """
+        Generate a list of pagination links based on the following input.
 
+        Try to keep the current page at the center of the returned list
+
+        @param total The total number of items (not per page)
+        @param current The current position / index within that range (0:total)
+        @param max_per_page The maximum number of links per page
+        @param max_pages The maximum number of pagination links to return
+        """
+        pagination = []
+        total_pages = 0
+        current_page = 0
+        
+        try:
+            if total == 0:
+                total_pages = 0
+            elif int(total) < int(max_per_page):
+                total_pages = 1
+            else:
+                total_pages = int(total) / int(max_per_page)
+                if int(total) % int(max_per_page) != 0:
+                    total_pages = total_pages + 1 
+            
+            if int(current) < int(max_per_page):
+                current_page = 0
+            else:
+                current_page = int(current) / int(max_per_page)
+
+            for i in range(total_pages):
+                start = int(i) * int(max_per_page)
+                link = "/admin/users?start={0}&count={1}".format(start, max_per_page)
+                current_page = int(start) <= int(current) < (int(start) + int(max_per_page))
+                
+                p = { 'index' : i, 'link' : link, 'current' : current_page }
+                pagination.append(p)
+
+        except:
+            logging.warn("Could not generate the users pagination: %s", sys.exc_info())
+
+        return pagination
+
+    def get(self):
+        start = self.get_argument("start", "")
+        count = self.get_argument("count", "")
+        users = []
+        pagination_link = []
+        error = False
+
+        if len(start) > 0:
+            if not start.isdigit():
+                error = True
+        else:
+            start = 0 # Default start index
+
+        if len(count) > 0:
+            if not count.isdigit():
+                error = True
+        else:
+            count = DEFAULT_PAGINATION_ITEMS_PER_PAGE
+
+        if not error:
+            try:
+                user_count = get_user_count(self.application.db)
+                pagination_links = self.generate_pagination(user_count, start, count, DEFAULT_PAGINATION_PAGES)
+                users = get_users(self.application.db, start, count)
+
+                self.render(u"admin/users.html", users = users, pagination = pagination_links, error = False)
+            except:
+                logging.error("Could not get users: %s", sys.exc_info())
+                self.render(u"admin/users.html", users = [], pagination = [], error = True)
+        else:
+            print "Error"
+            self.render(u"admin/users.html", users = [], pagination = [], error = False)
 
 class AdminNewUserHandler(BaseHandler):
     def get(self):
@@ -137,6 +214,8 @@ class AdminNewUserHandler(BaseHandler):
 class AdminStatisticsHandler(tornado.web.RequestHandler):
     def get(self):
         user_count = get_user_count(self.application.db)
+        signups_count = 0
+        quarter_count = 0
 
         self.render(u"admin/statistics.html", user_count = user_count)
 

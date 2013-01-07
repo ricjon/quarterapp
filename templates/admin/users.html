@@ -22,6 +22,12 @@
             </form>
             <div class="clear-fix"></div>
 
+            {% if error %}
+            <div class="error-message note">
+                <p>An error occured, could not read users!</p>
+            </div>
+            {% else %}
+
             <table id="users" class="users">
                 <thead>
                     <th class="username">Username</th>
@@ -30,6 +36,17 @@
                     <th class="delete">Delete</th>
                 </thead>
                 <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user['username'] }}</td>
+                        <td>{{ user['last_login'] }}</td>
+                        <td class="disable"><a href="/admin/disable/{{ user['username'] }}">disable</a></td>
+                        <td class="delete"><a href="/admin/delete/{{ user['username'] }}">delete</a></td>
+                    </tr>
+                    {% end %}
+
+
+                    <!--
                     <tr>
                         <td>bob@example.com</td>
                         <td>2012-12-27 21:23</td>
@@ -150,21 +167,22 @@
                         <td class="disable"><a href="/admin/disable/<username>">disable</a></td>
                         <td class="delete"><a href="/admin/delete/<username>">delete</a></td>
                     </tr>
+                -->
                 </tbody>
             </table>
-            <div class="pagination">
-                <a href="#">Previous</a>
-                <a href="#">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">5</a>
-                <a href="#">6</a>
-                <a href="#">7</a>
-                <a href="#">8</a>
-                <a href="#">9</a>
-                <a href="#">Next</a>
-            </div>
+            {% end %}
+
+            {% if len(pagination) > 1 %}
+                <div class="pagination">
+                {% for page in pagination %}
+                    {% if page['current'] == True %}
+                        <a href="{{ page['link'] }}" class="current">{{ page['index'] }}</a>
+                    {% else %}
+                        <a href="{{ page['link'] }}">{{ page['index'] }}</a>
+                    {% end %}
+                {% end %}
+                </div>
+            {% end %}
         </section>
     </section>
 {% end %}

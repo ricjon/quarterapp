@@ -48,8 +48,7 @@ def get_users(db, start = 0, count = 50):
     @param start The start index in the user table (default is 0)
     @param count The number of users to receive (default is 50)
     """
-
-    users = db.query("SELECT id, username, type, state, last_login FROM quarterapp.users ORDER BY id LIMIT %s, %s;", start, count)
+    users = db.query("SELECT id, username, type, state, last_login FROM quarterapp.users ORDER BY id LIMIT %s, %s;", int(start), int(count))
     if not users:
         users = []
     return users
