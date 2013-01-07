@@ -69,7 +69,7 @@ def add_user(db, username, password, user_type = User.Normal):
     @param username The username
     @param password The users password
     """
-    return db.execute("INSERT INTO quarterapp.users (username, password, type, state) VALUES(\"%s\", \"%s\", \"%s\", \"1\");",
+    return db.execute("INSERT INTO quarterapp.users (username, password, type, state) VALUES(%s, %s, %s, \"1\");",
         username, password, user_type)
 
 def username_unique(db, username):
