@@ -105,29 +105,34 @@ class AdminUsersHandler(tornado.web.RequestHandler):
 
 class AdminNewUserHandler(BaseHandler):
     def get(self):
-        self.render(u"admin/new-user.html", completed = False)
+        self.render(u"admin/new-user.html", completed = False, error = False)
 
     def post(self):
         username = self.get_argument("username", "")
         password = self.get_argument("password", "")
         verify_password = self.get_argument("verify-password", "")
         user_type = self.get_argument("user-type", "")
+        
         ut = User.Normal
-
-        if len(username) == 0:
-            self.write_error(201, "Missing username")
-        if not password == verify_password:
-            self.write_error(202, "Passwords does not match")
-        if not username_unique(self.application.db, username):
-            self.write_error(203, "Username is not unique")
         if user_type == "admin":
             ut = User.Administrator
-            print("ADMIN")
-        try:
-            add_user(self.application.db, username, password, ut)
-            self.render(u"admin/new-user.html", completed = True)
-        except:
-            self.write_error(200, "Could not create new user")
+            
+        error = False
+        if len(username) == 0:
+            error = True
+        if not password == verify_password:
+            error = True
+        if not username_unique(self.application.db, username):
+            error = True
+
+        if not error:
+            try:
+                add_user(self.application.db, username, password, ut)
+                self.render(u"admin/new-user.html", completed = True, error = False)
+            except:
+                self.render(u"admin/new-user.html", completed = False, error = True)
+        else:
+            self.render(u"admin/new-user.html", completed = False, error = True)
 
 class AdminStatisticsHandler(tornado.web.RequestHandler):
     def get(self):

@@ -43,6 +43,11 @@
                 <p>New user created successfully!</p>
             </div>
             {% end %}
+            {% if error %}
+            <div class="error-message note">
+                <p>An error occured, could not create user!</p>
+            </div>
+            {% end %}
         </section>
     </section>
 {% end %}

@@ -270,7 +270,8 @@ input.error {
     border-color: #ce5c5b;
     color: #ce5c5b;
 }
-div.error-message {
+
+fieldset div.error-message {
     float: left;
     padding: 2px 6px;
     color: #ce5c5b;
@@ -400,9 +401,17 @@ table.users td {
 }
 
 
-.message {
+div.message {
     background-color: #dfd;
     border: 1px solid #ada;
     border-radius: 3px;
     padding: 6px;
+}
+
+div.error-message.note {
+    background-color: #ef7e7d;
+    border: 1px solid #ce5c5b;
+    border-radius: 3px;
+    padding: 6px;
+    color: white;
 }
