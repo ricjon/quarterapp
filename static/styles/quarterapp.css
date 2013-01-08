@@ -373,9 +373,11 @@ table.users thead th.login {
 
 table.users thead th.disable,
 table.users thead th.delete,
+table.users thead th.type,
 table.users tbody td.disable,
+table.users tbody td.type,
 table.users tbody td.delete { 
-    width: 100px; 
+    width: 70px; 
     text-align: center;
 }
 

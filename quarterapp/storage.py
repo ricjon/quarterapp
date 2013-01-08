@@ -25,6 +25,8 @@ import tornado.database
 class User:
     Normal=0
     Administrator=1
+    Enabled = 1
+    Disabled = 0
 
 def get_user_count(db):
     """
@@ -73,8 +75,45 @@ def add_user(db, username, password, user_type = User.Normal):
         username, password, user_type)
 
 def username_unique(db, username):
-    users = db.query("SELECT username FROM quarterapp.users WHERE username=\"%s\";", username)
+    """
+    Check if the given username is unique or not
+
+    @param db The database connection to use
+    @param username The username to check
+    @return True if the username is not used, else False
+    """
+    users = db.query("SELECT username FROM quarterapp.users WHERE username=%s;", username)
     return len(users) < 1
+
+def enable_user(db, username):
+    """
+    Set the given user as an active user - regardless of previous state
+
+    @param db The database connection to use
+    @param username The user to enable
+    """
+    return db.execute("UPDATE quarterapp.users SET state=%s WHERE username=%s;", User.Enabled, username) == 1
+
+def disable_user(db, username):
+    """
+    Set the given user as an disabled user - regardless of previous state
+
+    @param db The database connection to use
+    @param username The user to disable
+    """
+    return db.execute("UPDATE quarterapp.users SET state=%s WHERE username=%s;", User.Disabled, username) == 1
+    
+
+def delete_user(db, username):
+    """
+    Delete a user from the system. All activities and quarters owned by this user will
+    also be deleted.
+
+    @param db The database connection to use
+    @param username The user to delete
+    """
+    # TODO Make a transaction and also delete all activities and quarters!
+    return db.execute("DELETE FROM quarterapp.users WHERE username=%s;", username)
 
 def get_activities(db, username):
     """Get all activities for the given user
@@ -82,7 +121,7 @@ def get_activities(db, username):
     @param db The database connection to use
     @param username The authenticated username to retrieve activities for
     """
-    activities = db.query("SELECT * FROM quarterapp.activities WHERE username=\"%s\";", username)
+    activities = db.query("SELECT * FROM quarterapp.activities WHERE username=%s;", username)
     if not activities:
         activities = []
     return activities
@@ -114,7 +153,7 @@ def delete_activity(db, username, activity_id):
 
     @param db The database connection to use
     @param username The authenticated username the activity is associated with
-    @oaram activity_id The id of the activity to delete
+    @param activity_id The id of the activity to delete
     """
     return db.execute("DELETE FROM quarterapp.activities WHERE username=\"%s\" AND id=\"%s\";", username, activity_id)
 

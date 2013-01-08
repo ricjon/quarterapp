@@ -59,6 +59,10 @@ def main():
             (r"/admin/users", AdminUsersHandler),
             (r"/admin/new-user", AdminNewUserHandler),
             (r"/admin/statistics", AdminStatisticsHandler),
+            (r"/admin/enable/([^\/]+)", AdminEnableUser),
+            (r"/admin/disable/([^\/]+)", AdminDisableUser),
+            (r"/admin/delete/([^\/]+)", AdminDeleteUser),
+
 
             # Authentication handlers
             (r"/logout", LogoutHandler),

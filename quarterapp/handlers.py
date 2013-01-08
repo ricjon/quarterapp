@@ -29,6 +29,7 @@ from quarterapp.storage import *
 
 DEFAULT_PAGINATION_ITEMS_PER_PAGE = 5
 DEFAULT_PAGINATION_PAGES = 10
+SUCCESS = 0
 
 class BaseHandler(tornado.web.RequestHandler):
     def write_success(self):
@@ -37,7 +38,7 @@ class BaseHandler(tornado.web.RequestHandler):
             "message" :"Ok"})
         self.finish()
 
-    def write_error(self, error_code, error_message):
+    def respond_with_error(self, error_code, error_message):
         logging.warning(error_message)
         self.write({
             "error" : error_code,
@@ -80,11 +81,11 @@ class SettingsHandler(BaseHandler):
                     self.write({"key" : key, "value" : value})
                     self.finish()
                 else:
-                    self.write_error(101, "Could not retrieve setting (%s)".format(key))
+                    self.respond_with_error(101, "Could not retrieve setting (%s)".format(key))
             else:
-                self.write_error(102, "No key given")
+                self.respond_with_error(102, "No key given")
         except:
-            self.write_error(100, "Could not retrieve setting (%s)".format(key))
+            self.respond_with_error(100, "Could not retrieve setting (%s)".format(key))
 
     def post(self, key):
         try:
@@ -94,9 +95,9 @@ class SettingsHandler(BaseHandler):
                 self.write({"key" : key, "value" : value})
                 self.finish()
             else:
-                self.write_error(103, "No value specified for key (%s)".format(key))
+                self.respond_with_error(103, "No value specified for key (%s)".format(key))
         except:
-            self.write_error(104, "Could not update key (%s)".format(key))
+            self.respond_with_error(104, "Could not update key (%s)".format(key))
 
 class AdminDefaultHandler(tornado.web.RequestHandler):
     def get(self):
@@ -177,8 +178,50 @@ class AdminUsersHandler(tornado.web.RequestHandler):
                 logging.error("Could not get users: %s", sys.exc_info())
                 self.render(u"admin/users.html", users = [], pagination = [], error = True)
         else:
-            print "Error"
             self.render(u"admin/users.html", users = [], pagination = [], error = False)
+
+
+class AdminDisableUser(BaseHandler):
+    def post(self, username):
+        if len(username) > 0:
+            try:
+                disable_user(self.application.db, username)
+                self.write_success()
+            except:
+                logging.error("Could not disble user: %s", sys.exc_info())
+                self.respond_with_error(300, "Could not disble the given user")
+        else:
+            logging.error("Could not disble user - no user given: %s", sys.exc_info())
+            self.respond_with_error(301, "Could not disble user - no user given")
+        
+
+class AdminEnableUser(BaseHandler):
+    def post(self, username):
+        if len(username) > 0:
+            try:
+                enable_user(self.application.db, username)
+                self.write_success()
+            except:
+                logging.error("Could not enable user: %s", sys.exc_info())
+                self.respond_with_error(302, "Could not enable the given user")
+        else:
+            logging.error("Could not enable user - no user given: %s", sys.exc_info())
+            self.respond_with_error(303, "Could not enable user - no user given")
+
+
+class AdminDeleteUser(BaseHandler):
+    def post(self, username):
+        if len(username) > 0:
+            try:
+                delete_user(self.application.db, username)
+                self.write_success()
+            except:
+                logging.error("Could not delete user: %s", sys.exc_info())
+                self.respond_with_error(304, "Could not delete the given user")
+        else:
+            logging.error("Could not delete user - no user given: %s", sys.exc_info())
+            self.respond_with_error(305, "Could not delete user - no user given")
+
 
 class AdminNewUserHandler(BaseHandler):
     def get(self):
@@ -214,10 +257,11 @@ class AdminNewUserHandler(BaseHandler):
 class AdminStatisticsHandler(tornado.web.RequestHandler):
     def get(self):
         user_count = get_user_count(self.application.db)
-        signups_count = 0
+        signup_count = 0
         quarter_count = 0
 
-        self.render(u"admin/statistics.html", user_count = user_count)
+        self.render(u"admin/statistics.html",
+            user_count = user_count, signup_count = signup_count, quarter_count = signup_count)
 
 
 class LogoutHandler(tornado.web.RequestHandler):
