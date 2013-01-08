@@ -19,9 +19,6 @@ Functions specific to the administrator mode
             url : $element.attr("href"),
             type : "POST",
             success : function(data, status, jqXHR) {
-                /*element.innerHTML = "enable";
-                element.href = element.href.replace("disable", "enable");
-                element.onclick = element.onclick.replace("disable_user", "enable_user");*/
                 $element.html("enable");
                 $element.attr("href", $element.attr("href").replace("disable", "enable"));
                 $element.attr("onclick", $element.attr("onclick").replace("disable_user", "enable_user"));

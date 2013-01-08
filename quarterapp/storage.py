@@ -102,7 +102,6 @@ def disable_user(db, username):
     @param username The user to disable
     """
     return db.execute("UPDATE quarterapp.users SET state=%s WHERE username=%s;", User.Disabled, username) == 1
-    
 
 def delete_user(db, username):
     """
