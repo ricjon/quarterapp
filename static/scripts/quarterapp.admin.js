@@ -63,7 +63,26 @@ Functions specific to the administrator mode
 
     admin.clear_filter = function() {
         $("#filter").val(""); // Clear the username filter
-    }
+    };
+
+    admin.toggle_setting = function(element) {
+        var $element = $(element);
+        var checked = $(element).attr("checked");
+
+        $.ajax({
+            url : "/admin/settings/" + $element.attr("id"),
+            type : "POST",
+            data : {
+                "value" : checked == undefined ? 0 : 1
+            },
+            success : function(data, status, jqXHR) {
+                $element.prop("checked", checked ? true : false);
+            },
+            error : function(jqXHR, status, errorThrown) {
+                quarterapp.log("Error when toggle settings");
+            }
+        });
+    };
 
     window.quarterapp.admin = admin; // Crash if quarterapp is not defined!
 })(jQuery);

@@ -38,8 +38,8 @@ CREATE TABLE `users` (
 
 #
 # Insert default settings
-INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow_signups", "1");
-INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow_activations", "1");
+INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow-signups", "1");
+INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow-activations", "1");
 
 #
 # Insert default administrator

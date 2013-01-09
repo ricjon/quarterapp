@@ -101,7 +101,11 @@ class SettingsHandler(BaseHandler):
 
 class AdminDefaultHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render(u"admin/general.html")
+        allow_signups = self.application.quarter_settings.get_value("allow-signups")
+        allow_activations = self.application.quarter_settings.get_value("allow-activations")
+
+        self.render(u"admin/general.html",
+            allow_signups = allow_signups, allow_activations = allow_activations)
 
 
 class AdminUsersHandler(tornado.web.RequestHandler):

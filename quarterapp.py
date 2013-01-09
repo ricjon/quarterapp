@@ -54,7 +54,7 @@ def main():
     application = tornado.web.Application(
         # Application routes
         [
-            # Administratoin
+            # Administration
             (r"/admin", AdminDefaultHandler),
             (r"/admin/users", AdminUsersHandler),
             (r"/admin/new-user", AdminNewUserHandler),
@@ -62,6 +62,7 @@ def main():
             (r"/admin/enable/([^\/]+)", AdminEnableUser),
             (r"/admin/disable/([^\/]+)", AdminDisableUser),
             (r"/admin/delete/([^\/]+)", AdminDeleteUser),
+            (r"/admin/settings/([^\/]+)", SettingsHandler),
 
             # Authentication handlers
             (r"/logout", LogoutHandler),
@@ -71,10 +72,6 @@ def main():
             # API handlers
             (r"/api/heartbeat", HeartbeatHandler),
             
-
-            # Administration API
-            (r"/admin/settings/([^\/]+)/", SettingsHandler),
-
             # Static files
             (r"/(.*)", tornado.web.StaticFileHandler, { "path" : "static"})
         ],

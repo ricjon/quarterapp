@@ -9,7 +9,13 @@
             <form id="general-settings">
                 <div class="setting-group">
                     <div class="setting-control">
-                        <input type="checkbox" id="allow-signups" name="allow-signups" checked />
+                        {% if allow_signups == "1" %}
+                            <input type="checkbox" id="allow-signups" name="allow-signups"
+                                onclick="javascript:quarterapp.admin.toggle_setting(this);" checked />
+                        {% else %}
+                            <input type="checkbox" id="allow-signups" name="allow-signups"
+                                onclick="javascript:quarterapp.admin.toggle_setting(this);" />
+                        {% end %}
                     </div>
                     <div class="setting-description">
                         <strong>Allow signups</strong>
@@ -20,7 +26,13 @@
 
                 <div class="setting-group">
                     <div class="setting-control">
-                        <input type="checkbox" id="allow-activations" name="allow-activations" checked />
+                        {% if allow_activations == "1" %}
+                            <input type="checkbox" id="allow-activations" name="allow-activations"
+                                onclick="javascript:quarterapp.admin.toggle_setting(this);" checked />
+                        {% else %}
+                            <input type="checkbox" id="allow-activations" name="allow-activations"
+                                onclick="javascript:quarterapp.admin.toggle_setting(this);" />
+                        {% end %}
                     </div>
                     <div class="setting-description">
                         <strong>Allow activation</strong>
