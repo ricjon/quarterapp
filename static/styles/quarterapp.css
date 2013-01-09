@@ -271,7 +271,7 @@ input.error {
     color: #ce5c5b;
 }
 
-fieldset div.error-message {
+div.error-message {
     float: left;
     padding: 2px 6px;
     color: #ce5c5b;

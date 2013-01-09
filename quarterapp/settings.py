@@ -80,3 +80,4 @@ class QuarterSettings:
             self.settings[key] = value
         else:
             logging.warning("Trying to update a settings key that does not exists! (%s)", key)
+            raise Exception("Trying to update a settings key that does not exists!")

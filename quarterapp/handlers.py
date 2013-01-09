@@ -43,12 +43,14 @@ class BaseHandler(tornado.web.RequestHandler):
         self.write({
             "error" : error_code,
             "message" : error_message})
+        self.set_status(500)
         self.finish()
 
     def write_unauthenticated_error(self):
         self.write({
             "error" : ERROR_NOT_AUTHENTICATED,
             "message" :"Not logged in"})
+        self.set_status(407)
         self.finish()
 
 

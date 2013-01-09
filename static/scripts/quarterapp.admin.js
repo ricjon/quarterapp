@@ -79,7 +79,8 @@ Functions specific to the administrator mode
                 $element.prop("checked", checked ? true : false);
             },
             error : function(jqXHR, status, errorThrown) {
-                quarterapp.log("Error when toggle settings");
+                var $desc = $element.parent(".setting-control").siblings(".setting-description");
+                $desc.append('<div class="error-message">Could not change setting!</div>');
             }
         });
     };
