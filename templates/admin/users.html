@@ -6,16 +6,25 @@
             <h1>Users</h1>
         </header>
         <section class="content">
-            <form id="user-settings">
+            <form id="user-settings" action="/admin/users" method="POST">
                 <div class="setting-group">
-                   <p>Filter the user table on username, if empty all users will be listed. By default no users will be listed to avoid unnessesary queries. Also, you can <a href="/admin/new-user">create a new user account</a> without the need for activation.</p>
+                   <p>Filter the user table on username, if empty all users will be listed. The filter keyword will be treated as a single wildcard. Also, you can <a href="/admin/new-user">create a new user account</a> without the need for activation.</p>
+
                 </div>
                 <div class="setting-group">
                     <div class="setting-control"><fieldset>
-                        <label for="user-filter">Username</label>
-                        <input type="text" id="user-filter" name="user-filter" required />
+                        <label for="filter">Username</label>
+                        {% if query_filter %}
+                            <input type="text" id="filter" name="filter" value="{{ query_filter }}" />
+                        {% else %}
+                            <input type="text" id="filter" name="filter" />
+                        {% end %}
                         <button type="submit">Filter</button>
-                        <button type="submit" disabled="disabled">Clear</button>
+                        {% if query_filter %}
+                            <button type="submit" onclick="javascript:quarterapp.admin.clear_filter();">Clear</button>
+                        {% else %}
+                            <button type="submit" disabled="disabled">Clear</button>
+                        {% end %}
                     </div>
                     <div class="clear-fix"></div>
                 </div>

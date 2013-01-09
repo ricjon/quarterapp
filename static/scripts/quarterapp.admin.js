@@ -61,5 +61,9 @@ Functions specific to the administrator mode
         return admin;
     };
 
+    admin.clear_filter = function() {
+        $("#filter").val(""); // Clear the username filter
+    }
+
     window.quarterapp.admin = admin; // Crash if quarterapp is not defined!
 })(jQuery);

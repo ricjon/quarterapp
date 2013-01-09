@@ -40,6 +40,14 @@ def get_user_count(db):
     else:
         return 0
 
+def get_filtered_user_count(db, query_filter):
+    query_filter = "%{0}%".format(query_filter) # MySQL formatting using % as wildcard
+    count = db.query("SELECT COUNT(*) FROM quarterapp.users WHERE username LIKE %s;", query_filter)
+    if len(count) > 0:
+        return count[0]["COUNT(*)"]
+    else:
+        return 0
+
 def get_users(db, start = 0, count = 50):
     """
     Get a list of user rows starting at the given position. If the start index is out of bounds
@@ -51,6 +59,13 @@ def get_users(db, start = 0, count = 50):
     @param count The number of users to receive (default is 50)
     """
     users = db.query("SELECT id, username, type, state, last_login FROM quarterapp.users ORDER BY id LIMIT %s, %s;", int(start), int(count))
+    if not users:
+        users = []
+    return users
+
+def get_filtered_users(db, query_filter, start = 0, count = 50):
+    query_filter = "%{0}%".format(query_filter) # MySQL formatting using % as wildcard
+    users = db.query("SELECT id, username, type, state, last_login FROM quarterapp.users WHERE username LIKE %s ORDER BY id LIMIT %s, %s;", query_filter, int(start), int(count))
     if not users:
         users = []
     return users

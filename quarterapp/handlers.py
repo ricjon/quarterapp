@@ -105,7 +105,7 @@ class AdminDefaultHandler(tornado.web.RequestHandler):
 
 
 class AdminUsersHandler(tornado.web.RequestHandler):
-    def generate_pagination(self, total, current, max_per_page, max_links):
+    def generate_pagination(self, total, current, max_per_page, max_links, query_filter = None):
         """
         Generate a list of pagination links based on the following input.
 
@@ -137,7 +137,13 @@ class AdminUsersHandler(tornado.web.RequestHandler):
 
             for i in range(total_pages):
                 start = int(i) * int(max_per_page)
-                link = "/admin/users?start={0}&count={1}".format(start, max_per_page)
+
+                link = ""
+                if query_filter:
+                    link = "/admin/users?start={0}&count={1}&filter={2}".format(start, max_per_page, query_filter)
+                else:
+                    link = "/admin/users?start={0}&count={1}".format(start, max_per_page)
+
                 current_page = int(start) <= int(current) < (int(start) + int(max_per_page))
                 
                 p = { 'index' : i, 'link' : link, 'current' : current_page }
@@ -151,6 +157,8 @@ class AdminUsersHandler(tornado.web.RequestHandler):
     def get(self):
         start = self.get_argument("start", "")
         count = self.get_argument("count", "")
+        query_filter = self.get_argument("filter", "")
+        
         users = []
         pagination_link = []
         error = False
@@ -169,17 +177,24 @@ class AdminUsersHandler(tornado.web.RequestHandler):
 
         if not error:
             try:
-                user_count = get_user_count(self.application.db)
-                pagination_links = self.generate_pagination(user_count, start, count, DEFAULT_PAGINATION_PAGES)
-                users = get_users(self.application.db, start, count)
+                if query_filter:
+                    user_count = get_filtered_user_count(self.application.db, query_filter)
+                    pagination_links = self.generate_pagination(user_count, start, count, DEFAULT_PAGINATION_PAGES, query_filter = query_filter)
+                    users = get_filtered_users(self.application.db, query_filter, start, count)
+                else:
+                    user_count = get_user_count(self.application.db)
+                    pagination_links = self.generate_pagination(user_count, start, count, DEFAULT_PAGINATION_PAGES)
+                    users = get_users(self.application.db, start, count)
 
-                self.render(u"admin/users.html", users = users, pagination = pagination_links, error = False)
+                self.render(u"admin/users.html", users = users, pagination = pagination_links, error = False, query_filter = query_filter)
             except:
                 logging.error("Could not get users: %s", sys.exc_info())
-                self.render(u"admin/users.html", users = [], pagination = [], error = True)
+                self.render(u"admin/users.html", users = [], pagination = [], error = True, query_filter = query_filter)
         else:
-            self.render(u"admin/users.html", users = [], pagination = [], error = False)
+            self.render(u"admin/users.html", users = [], pagination = [], error = False, query_filter = query_filter)
 
+    def post(self):
+        self.get()
 
 class AdminDisableUser(BaseHandler):
     def post(self, username):
