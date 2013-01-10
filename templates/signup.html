@@ -1,10 +1,44 @@
-<!doctype>
-<html>
-<head>
-    <title>Quarterapp</title>
-    <link rel="shortcut icon" href="/favicon.ico">
-</head>
-<body>
-    <h1>signup</h1>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block main %}
+
+            <section class="container box medium">
+                <header class="general">
+                    <h1>Signup</h1>
+                </header>
+                <section class="content">
+                    <p>Quarterapp is a free application, the only thing you need to do is enter your e-mail address and we will setup your account in no time.</p>
+                    <form id="signup-form" action="/signup" method="POST" data-validation>
+                        <fieldset>
+                            <label for="email" class="">E-mail address</label>
+                            {% if username != None and len(username) > 0 %}
+                                <input type="text" name="email" id="email"
+                                    data-validator="required email"
+                                    data-validator-on="focus-loss" 
+                                    value="{{ username }}" />
+                            {% else %}
+                                <input type="text" name="email" id="email"
+                                    data-validator="required email"
+                                    data-validator-on="focus-loss" />
+                            {% end %}
+                        </fieldset>
+
+                        <fieldset>
+                            <button type="submit">Signup</button>
+                        </fieldset>
+                    </form>
+
+                    {% if error == "not_unique" %}
+                        <div class="error-message note">
+                            <p>The given e-mail address is already in use - please enter another one!</p>
+                        </div>
+                    {% elif error != None %}
+                        <div class="error-message note">
+                            <p>An error occured - could not sign you up!</p>
+                        </div>
+                    {% end %}
+
+                    <p class="note">By fulfilling this form you agree on the <a href="/terms">terms of conditions.</a></p>
+                </section>
+            </section>
+{% end %}

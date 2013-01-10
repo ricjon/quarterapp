@@ -1,11 +1,27 @@
-<!doctype>
-<html>
-<head>
-    <title>Quarterapp</title>
+{% extends "base.html" %}
 
-    <link rel="shortcut icon" href="/favicon.ico">
-</head>
-<body>
-    <h1>login</h1>
-</body>
-</html>
+{% block main %}
+
+            <section class="container box medium">
+                <header class="general">
+                    <h1>Login</h1>
+                </header>
+                <section class="content">
+                    <form id="login-form" action="" method="POST" class="">
+                        <fieldset>
+                            <label for="username" class="">Username</label>
+                            <input type="text" name="username" id="username" required />
+                        </fieldset>
+                        <fieldset>
+                            <label for="password" class="">Password</label>
+                            <input type="password" name="password" id="password" required />
+                        </fieldset>
+                        <fieldset>
+                            <button type="submit">Login</button>
+                        </fieldset>
+                    </form>
+
+                    <p class="note">Do you want to <a href="/signup">signup</a> for a free account, or did you <a href="/forgot">forget</a> your login details?</a>
+                </section>
+            </section>
+{% end %}

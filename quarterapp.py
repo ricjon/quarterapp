@@ -67,6 +67,9 @@ def main():
             # Authentication handlers
             (r"/logout", LogoutHandler),
             (r"/signup", SignupHandler),
+            (r"/activate", ActivationHandler),
+            (r"/activate/([^\/]+)", ActivationHandler),
+
             (r"/login", LoginHandler),
 
             # API handlers

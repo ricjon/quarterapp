@@ -23,6 +23,7 @@
 import logging
 import math
 import sys
+import os
 import tornado.web
 
 from quarterapp.storage import *
@@ -275,25 +276,78 @@ class AdminNewUserHandler(BaseHandler):
         else:
             self.render(u"admin/new-user.html", completed = False, error = True)
 
-class AdminStatisticsHandler(tornado.web.RequestHandler):
+
+class AdminStatisticsHandler(BaseHandler):
     def get(self):
         user_count = get_user_count(self.application.db)
-        signup_count = 0
+        signup_count = get_signup_count(self.application.db)
         quarter_count = 0
 
         self.render(u"admin/statistics.html",
-            user_count = user_count, signup_count = signup_count, quarter_count = signup_count)
+            user_count = user_count, signup_count = signup_count, quarter_count = quarter_count)
 
 
-class LogoutHandler(tornado.web.RequestHandler):
+class LogoutHandler(BaseHandler):
     def get(self):
         self.clear_cookie("user")
         self.redirect(u"/")
 
 
-class SignupHandler(tornado.web.RequestHandler):
+class SignupHandler(BaseHandler):
     def get(self):
-        self.render(u"signup.html")
+        self.render(u"signup.html", error = None, username = "")
+
+    def post(self):
+        username = self.get_argument("email", "")
+
+        error = False
+        if len(username) == 0:
+            error = "empty"
+        if not username_unique(self.application.db, username):
+            error = "not_unique"
+
+        if not error:
+            try:
+                code = os.urandom(16).encode("base64")[:20]
+                print "Activation code", code
+
+                signup_user(self.application.db, username, code, self.request.remote_ip)
+                self.render(u"signup_instructions.html")
+            except:
+                logging.error("Could not signup user: %s", sys.exc_info())
+                self.render(u"signup.html", error = error, username = username)
+        else:
+            self.render(u"signup.html", error = error, username = username)
+
+
+class ActivationHandler(BaseHandler):
+    def get(self, code_parameter = None):
+        code = None
+        if code_parameter:
+            code = code_parameter
+        self.render(u"activate.html", error = None, code = code)
+
+    def post(self):
+        code = self.get_argument("code", "")
+        password = self.get_argument("password", "")
+        verify_password = self.get_argument("verify-password", "")
+
+        error = None
+        if len(code) == 0:
+            error = "not_valid"
+        if not password == verify_password:
+            error = "not_matching"
+
+        if error:
+            print "validation error", error
+            self.render(u"activate.html", error = "not_valid", code = None)
+        else:
+            if activate_user(self.application.db, code, password):
+                # TODO Do login
+                self.redirect(u"/application/sheet")
+            else:
+                print "db error"
+                self.render(u"activate.html", error = "unknown", code = code)
 
 
 class LoginHandler(tornado.web.RequestHandler):

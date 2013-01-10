@@ -10,9 +10,36 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
 
         <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="stylesheet" media="all" href="/styles/reset.css" />
         <link rel="stylesheet" media="all" href="/styles/quarterapp.css" />
     </head>
     <body>
-        
+        <header id="header-region">
+            <div class="container wide">
+                <div id="logo">
+                    <h1>quarterapp</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="/signup">Signup</a></li>
+                        <li><a href="/login">Login</a></li>
+                    </ul>
+                </nav>
+                <div class="clear-fix"></div>
+            </div>
+        </header>
+
+        <div id="main-region">
+            {% block main %}{% end %}
+        </div>
+
+        <footer id="footer-region">
+            <div class="container">
+                <p class="note">Copyright &copy; 2013 <a href="mailto:markus.eliasson@gmail.com">Markus Eliasson</a> - All rights reserved.</p>
+            </div>
+        </footer>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script src="/libraries/jquery.validator.js"></script>
+        <script src="/scripts/quarterapp.js"></script>
     </body>
 </html>

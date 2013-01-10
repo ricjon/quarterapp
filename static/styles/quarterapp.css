@@ -278,6 +278,10 @@ div.error-message {
     font-style: oblique;
 }
 
+div.error-message.note {
+    float: none;
+}
+
 /** Table ********************************************************************/
 
 
@@ -420,4 +424,5 @@ div.error-message.note {
     border-radius: 3px;
     padding: 6px;
     color: white;
+    margin: 12px 0px;
 }

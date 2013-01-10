@@ -28,6 +28,18 @@ class User:
     Enabled = 1
     Disabled = 0
 
+def get_signup_count(db):
+    """
+    Get the total number of pending users (signed up, not active)
+
+    @return The number of users
+    """
+    count = db.query("SELECT COUNT(*) FROM quarterapp.signups;")
+    if len(count) > 0:
+        return count[0]["COUNT(*)"]
+    else:
+        return 0
+
 def get_user_count(db):
     """
     Get the total number of users (not pending users), regardless of their state of type.
@@ -128,6 +140,31 @@ def delete_user(db, username):
     """
     # TODO Make a transaction and also delete all activities and quarters!
     return db.execute("DELETE FROM quarterapp.users WHERE username=%s;", username)
+
+def signup_user(db, email, code, ip):
+    # TODO Make transaction to see if username is unique
+    return db.execute("INSERT INTO quarterapp.signups (username, activation_code, ip) VALUES(%s, %s, %s);",
+        email, code, ip)
+
+def activate_user(db, code, password):
+    """
+    Creates a new user if the given email is found in the signup table and the code matches the assigned
+    activation code.
+
+    A standard user is created.
+
+    """
+    try:
+        # TODO Make transaction
+        signups = db.query("SELECT username, activation_code FROM quarterapp.signups WHERE activation_code=%s;", code)
+
+        if signups[0]["activation_code"] == code:
+            db.execute("DELETE FROM quarterapp.signups WHERE activation_code=%s;", code)
+            db.execute("INSERT INTO quarterapp.users (username, password, type, state) VALUES(%s, %s, \"0\", \"1\");", signups[0]["username"], password)
+            return True
+    except:
+        return False
+
 
 def get_activities(db, username):
     """Get all activities for the given user

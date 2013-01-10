@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block main %}
+            <section class="container box medium">
+                <header class="general">
+                    <h1>Activate account</h1>
+                </header>
+                <section class="content">
+                    <p>Enter the activation code you received in the signup e-mail and the password you want. Once this form is completed you will be logged in and can enjoy quarterapp.</p>
+                    <form id="signup-form" action="/activate" method="POST" data-validation>
+                        <fieldset>
+                            <label for="code" class="">Activation code</label>
+                            {% if code != None and len(code) > 0 %}
+                                <input type="text" name="code" id="code"
+                                    data-validator="required"
+                                    data-validator-on="focus-loss" 
+                                    value="{{ code }}" />
+                            {% else %}
+                                <input type="text" name="code" id="code"
+                                    data-validator="required"
+                                    data-validator-on="focus-loss" />
+                            {% end %}
+                        </fieldset>
+                        <fieldset>
+                            <label for="password">Password</label>
+                            <input type="password" name="password" id="password"
+                                data-validator="required password"
+                                data-validator-on="focus-loss" />
+                        </fieldset>
+                        <fieldset>
+                            <label for="verify-password">Verify password</label>
+                            <input type="password" name="verify-password" id="verify-password"
+                                data-validator="required password mirror"
+                                data-validator-on="focus-loss"
+                                data-validator-mirror="password" />
+                        </fieldset>
+                        <fieldset>
+                            <button type="submit">Activate</button>
+                        </fieldset>
+                    </form>
+
+                    {% if error == "not_valid" %}
+                        <div class="error-message note">
+                            <p>The given activation code is not valid</p>
+                        </div>
+                    {% elif error == "not_matching" %}
+                        <div class="error-message note">
+                            <p>Passwords does not match</p>
+                        </div>
+                    {% elif error != None %}
+                        <div class="error-message note">
+                            <p>An error occured - could not activate your account!</p>
+                        </div>
+                    {% end %}
+
+                    <p class="note">By fulfilling this form you agree on the <a href="/terms">terms of conditions.</a></p>
+                </section>
+            </section>
+{% end %}

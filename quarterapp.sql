@@ -34,7 +34,16 @@ CREATE TABLE `users` (
     `state`  TINYINT NOT NULL DEFAULT '0',
     `last_login` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
-)  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `signups` (
+    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(256) NOT NULL DEFAULT '',
+    `activation_code` VARCHAR(64) NOT NULL DEFAULT '',
+    `ip` VARCHAR(39) NOT NULL DEFAULT '',
+    `signup_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Insert default settings
