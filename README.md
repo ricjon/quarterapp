@@ -34,7 +34,7 @@ An example configuration file is provided under the name quarterapp.example.conf
 
 ### Cookie
 
-Tornado uses a hased cookue value for your secure cookies. Generate and
+Tornado uses a hased cookie value for your secure cookies. Generate and
 specify your unique hash.
 
     cookie_secret = "123"
