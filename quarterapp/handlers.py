@@ -66,6 +66,12 @@ class BaseHandler(tornado.web.RequestHandler):
         self.set_status(407)
         self.finish()
 
+    def enabled(self, setting):
+        """
+        Check if the given setting is enabled
+        """
+        return self.application.quarter_settings.get_value(setting) == "1"
+
 
 class AuthenticatedHandler(BaseHandler):
     def get_current_user(self):
@@ -312,9 +318,15 @@ class LogoutHandler(BaseHandler):
 
 class SignupHandler(BaseHandler):
     def get(self):
-        self.render(u"signup.html", error = None, username = "")
+        if self.enabled("allow-signups"):
+            self.render(u"signup.html", error = None, username = "")
+        else:
+            raise tornado.web.HTTPError(404)
 
     def post(self):
+        if not self.enabled("allow-signups"):
+            raise tornado.web.HTTPError(500)
+
         username = self.get_argument("email", "")
 
         error = False
@@ -344,9 +356,16 @@ class ActivationHandler(BaseHandler):
         code = None
         if code_parameter:
             code = code_parameter
-        self.render(u"activate.html", error = None, code = code)
+        
+        if self.enabled("allow-activations"):
+            self.render(u"activate.html", error = None, code = code)
+        else:
+            raise tornado.web.HTTPError(404)
 
     def post(self):
+        if not self.enabled("allow-activations"):
+            raise tornado.web.HTTPError(500)
+
         code = self.get_argument("code", "")
         password = self.get_argument("password", "")
         verify_password = self.get_argument("verify-password", "")
