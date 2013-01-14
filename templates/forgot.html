@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+            <section class="container box medium">
+                <header class="general">
+                    <h1>Forgot password</h1>
+                </header>
+                <section class="content">
+                    <p>If you forgot your password, enter your email address and you will receive an email with details on how to reset your password.</p>
+                    <form id="signup-form" action="/forgot" method="POST" data-validation>
+                        <fieldset>
+                            <label for="username" class="">E-mail address</label>
+                            {% if username != None and len(username) > 0 %}
+                                <input type="text" name="username" id="username"
+                                    data-validator="required email"
+                                    data-validator-on="focus-loss" 
+                                    value="{{ username }}"
+                                    autofocus="autofocus" />
+                            {% else %}
+                                <input type="text" name="username" id="username"
+                                    data-validator="required email"
+                                    data-validator-on="focus-loss"
+                                    autofocus="autofocus" />
+                            {% end %}
+                        </fieldset>
+
+                        <fieldset>
+                            <button type="submit">Submit</button>
+                        </fieldset>
+                    </form>
+
+                    {% if error != None %}
+                        <div class="error-message note">
+                            <p>An error occured - could not reset your password!</p>
+                        </div>
+                    {% end %}
+                </section>
+            </section>
+{% end %}

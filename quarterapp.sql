@@ -33,6 +33,7 @@ CREATE TABLE `users` (
     `type` TINYINT NOT NULL DEFAULT '0',
     `state`  TINYINT NOT NULL DEFAULT '0',
     `last_login` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `reset_code` VARCHAR(64),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

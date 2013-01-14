@@ -165,6 +165,38 @@ def activate_user(db, code, password):
     except:
         return False
 
+def set_user_reset_code(db, username, reset_code):
+    """
+    Set the reset code for a given user.
+
+    @param db The database connection to use
+    @param username The user to update
+    @param reset_code The reset code to store
+    """
+    try:
+        db.execute("UPDATE quarterapp.users SET reset_code=%s WHERE username=%s;", reset_code, username)
+        return True
+    except:
+        return False
+
+def reset_password(db, reset_code, new_password):
+    """
+    Resets a user password for the user account with the given reset_code.
+
+    @param db The database connection to use
+    @param reset_code The unique reset code
+    @param new_password The password to set (will not be hashed)
+    """
+    try:
+        users = db.query("SELECT username FROM quarterapp.users WHERE reset_code=%s;", reset_code)
+        if len(users) == 1:
+            db.execute("UPDATE quarterapp.users SET password=%s WHERE reset_code=%s;", new_password, reset_code)
+            db.execute("UPDATE quarterapp.users SET reset_code='' WHERE reset_code=%s;", reset_code)
+            return True
+        else:
+            return False
+    except:
+        return False
 
 def get_activities(db, username):
     """Get all activities for the given user

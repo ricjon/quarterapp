@@ -69,6 +69,9 @@ def main():
             (r"/signup", SignupHandler),
             (r"/activate", ActivationHandler),
             (r"/activate/([^\/]+)", ActivationHandler),
+            (r"/forgot", ForgotPasswordHandler),
+            (r"/reset/([^\/]+)", ResetPasswordHandler),
+            (r"/reset", ResetPasswordHandler),
 
             (r"/login", LoginHandler),
 

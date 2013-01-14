@@ -339,15 +339,57 @@ class ActivationHandler(BaseHandler):
             error = "not_matching"
 
         if error:
-            print "validation error", error
             self.render(u"activate.html", error = "not_valid", code = None)
         else:
             if activate_user(self.application.db, code, password):
                 # TODO Do login
                 self.redirect(u"/application/sheet")
             else:
-                print "db error"
                 self.render(u"activate.html", error = "unknown", code = code)
+
+class ForgotPasswordHandler(BaseHandler):
+    def get(self):
+        self.render(u"forgot.html", error = None, username = None)
+
+    def post(self):
+        username = self.get_argument("username", "")
+        error = False
+        if len(username) == 0:
+            self.render(u"forgot.html", error = "empty", username = username)
+        else:
+            reset_code = os.urandom(16).encode("base64")[:20]
+            if set_user_reset_code(self.application.db, username, reset_code):
+                #self.render(u"reset.html", error = None, code = None)
+                self.redirect(u"/reset")
+            else:
+                self.render(u"forgot.html", error = "unknown", username = username)
+
+class ResetPasswordHandler(BaseHandler):
+    def get(self, code_parameter = None):
+        code = None
+        if code_parameter:
+            code = code_parameter
+        self.render(u"reset.html", error = None, code = code)
+
+    def post(self):
+        code = self.get_argument("code", "")
+        password = self.get_argument("password", "")
+        verify_password = self.get_argument("verify-password", "")
+
+        error = None
+        if len(code) == 0:
+            error = "not_valid"
+        if not password == verify_password:
+            error = "not_matching"
+
+        if error:
+            self.render(u"reset.html", error = "unknown", code = code)
+        else:
+            if reset_password(self.application.db, code, password):
+                # TODO Do login
+                self.redirect(u"/application/sheet")
+            else:
+                self.render(u"reset.html", error = "unknown", code = code)
 
 
 class LoginHandler(tornado.web.RequestHandler):
