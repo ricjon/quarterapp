@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Markus Eliasson, http://www.quarterapp.com/
+#  Copyright (c) 2012-2013 Markus Eliasson, http://www.quarterapp.com/
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the
@@ -37,6 +37,7 @@ def read_configuration():
     """
     Setup expected options and parse from commandline and configuration file
     """
+    define("base_url", help="Application base URL (including port but not schema")
     define("port", type=int, help="Port to listen on")
     define("app_config_age", type=int, help="Time in minutes between application config update")
     define("cookie_secret", help="Random long hexvalue to secure cookies")
@@ -45,6 +46,12 @@ def read_configuration():
     define("mysql_database", help="MySQL database name")
     define("mysql_user", help="MySQL username")
     define("mysql_password", help="MySQL password")
+    define("mail_host", help="SMTP host name")
+    define("mail_port", type=int, help="SMTP port number")
+    define("mail_user", help="SMTP Authentication username")
+    define("mail_password", help="SMTP Authentication password")
+    define("mail_sender", help="Email sender address")
+
     try:
         tornado.options.parse_command_line()
         tornado.options.parse_config_file("quarterapp.conf")

@@ -60,6 +60,17 @@ Quarterapp uses the MySQL database and needs the following settings:
     mysql_password = "quarterapp"
 
 
+### E-mail settings
+
+Quarterapp sends e-mail for signups, password reset, etc. and needs the following SMTP settings:
+
+    mail_host = "smtp.example.com"
+    mail_port = 465
+    mail_from = "no-reply@example.com"
+    mail_user = "quarter@example.com"
+    mail_password = "secret"
+
+
 ## Installation
 
 
@@ -111,6 +122,6 @@ for details.
 
 ## License
 
-Copyright © 2012 Markus Eliasson
+Copyright © 2012-2013 Markus Eliasson
 
 Distributed under the BSD License

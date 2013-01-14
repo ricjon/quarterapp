@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Markus Eliasson, http://www.quarterapp.com/
+#  Copyright (c) 2012-2013 Markus Eliasson, http://www.quarterapp.com/
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the
@@ -30,6 +30,7 @@ import tornado.web
 
 from tornado.options import options
 from quarterapp.storage import *
+from quarterapp.email import *
 
 DEFAULT_PAGINATION_ITEMS_PER_PAGE = 5
 DEFAULT_PAGINATION_PAGES = 10
@@ -325,10 +326,12 @@ class SignupHandler(BaseHandler):
         if not error:
             try:
                 code = os.urandom(16).encode("base64")[:20]
-                print "Activation code", code
-
-                signup_user(self.application.db, username, code, self.request.remote_ip)
-                self.render(u"signup_instructions.html")
+                if send_signup_email(username, code):
+                    signup_user(self.application.db, username, code, self.request.remote_ip)
+                    self.render(u"signup_instructions.html")
+                else:
+                    logging.error("Could not signup user: %s", sys.exc_info())
+                    self.render(u"signup.html", error = error, username = username)    
             except:
                 logging.error("Could not signup user: %s", sys.exc_info())
                 self.render(u"signup.html", error = error, username = username)
@@ -376,6 +379,7 @@ class ForgotPasswordHandler(BaseHandler):
         else:
             reset_code = os.urandom(16).encode("base64")[:20]
             if set_user_reset_code(self.application.db, username, reset_code):
+                send_reset_email(username, reset_code)
                 self.redirect(u"/reset")
             else:
                 self.render(u"forgot.html", error = "unknown", username = username)
