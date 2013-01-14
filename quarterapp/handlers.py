@@ -113,6 +113,7 @@ class SettingsHandler(BaseHandler):
         except:
             self.respond_with_error(104, "Could not update key (%s)".format(key))
 
+
 class AdminDefaultHandler(tornado.web.RequestHandler):
     def get(self):
         allow_signups = self.application.quarter_settings.get_value("allow-signups")
@@ -213,6 +214,7 @@ class AdminUsersHandler(tornado.web.RequestHandler):
 
     def post(self):
         self.get()
+
 
 class AdminDisableUser(BaseHandler):
     def post(self, username):
@@ -410,11 +412,3 @@ class ResetPasswordHandler(BaseHandler):
 class LoginHandler(tornado.web.RequestHandler):
     def get(self):
         self.render(u"login.html")
-
-
-class HeartbeatHandler(tornado.web.RequestHandler):
-    """
-    Heartbeat timer, just echo server health
-    """
-    def get(self):
-        self.write("beat");

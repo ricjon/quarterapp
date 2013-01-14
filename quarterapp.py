@@ -76,9 +76,6 @@ def main():
 
             (r"/login", LoginHandler),
 
-            # API handlers
-            (r"/api/heartbeat", HeartbeatHandler),
-            
             # Static files
             (r"/(.*)", tornado.web.StaticFileHandler, { "path" : "static"})
         ],
