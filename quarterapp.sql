@@ -29,7 +29,7 @@ CREATE TABLE `settings` (
 CREATE TABLE `users` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(256) NOT NULL DEFAULT '',
-    `password` VARCHAR(64) NOT NULL DEFAULT '',
+    `password` VARCHAR(90) NOT NULL DEFAULT '',
     `type` TINYINT NOT NULL DEFAULT '0',
     `state`  TINYINT NOT NULL DEFAULT '0',
     `last_login` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

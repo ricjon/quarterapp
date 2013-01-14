@@ -24,13 +24,24 @@ import logging
 import math
 import sys
 import os
+import hashlib
+import base64
 import tornado.web
 
+from tornado.options import options
 from quarterapp.storage import *
 
 DEFAULT_PAGINATION_ITEMS_PER_PAGE = 5
 DEFAULT_PAGINATION_PAGES = 10
 SUCCESS = 0
+
+sha = hashlib.sha512()
+
+def hash_password(password):
+    sha.update(password + options.salt)
+    hashed_password = base64.urlsafe_b64encode(sha.digest())
+    return hashed_password
+    
 
 class BaseHandler(tornado.web.RequestHandler):
     def write_success(self):
@@ -269,7 +280,10 @@ class AdminNewUserHandler(BaseHandler):
 
         if not error:
             try:
-                add_user(self.application.db, username, password, ut)
+                salted_password = hash_password(password)
+                print "2"
+                add_user(self.application.db, username, salted_password, ut)
+                print "2"
                 self.render(u"admin/new-user.html", completed = True, error = False)
             except:
                 self.render(u"admin/new-user.html", completed = False, error = True)
@@ -341,7 +355,8 @@ class ActivationHandler(BaseHandler):
         if error:
             self.render(u"activate.html", error = "not_valid", code = None)
         else:
-            if activate_user(self.application.db, code, password):
+            salted_password = hash_password(password)
+            if activate_user(self.application.db, code, salted_password):
                 # TODO Do login
                 self.redirect(u"/application/sheet")
             else:
@@ -359,7 +374,6 @@ class ForgotPasswordHandler(BaseHandler):
         else:
             reset_code = os.urandom(16).encode("base64")[:20]
             if set_user_reset_code(self.application.db, username, reset_code):
-                #self.render(u"reset.html", error = None, code = None)
                 self.redirect(u"/reset")
             else:
                 self.render(u"forgot.html", error = "unknown", username = username)
@@ -385,7 +399,8 @@ class ResetPasswordHandler(BaseHandler):
         if error:
             self.render(u"reset.html", error = "unknown", code = code)
         else:
-            if reset_password(self.application.db, code, password):
+            salted_password = hash_password(password)
+            if reset_password(self.application.db, code, salted_password):
                 # TODO Do login
                 self.redirect(u"/application/sheet")
             else:

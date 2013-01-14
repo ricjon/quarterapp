@@ -40,6 +40,16 @@ specify your unique hash.
     cookie_secret = "123"
 
 
+### Password salt
+
+Quarterapp will salt any password prior to hashing and storing in database, generate
+your unique salt and store it at
+
+    salt = "secret"
+
+Note that you cannot change this salt without loosing the ability to login for all existing users
+
+
 ### MySQL settings
 
 Quarterapp uses the MySQL database and needs the following settings:
