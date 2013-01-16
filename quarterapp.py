@@ -80,8 +80,14 @@ def main():
             (r"/forgot", ForgotPasswordHandler),
             (r"/reset/([^\/]+)", ResetPasswordHandler),
             (r"/reset", ResetPasswordHandler),
-
             (r"/login", LoginHandler),
+
+            # Application
+            (r"/activities", ActivityHandler),
+            (r"/sheet", SheetHandler),
+            (r"/sheet/([^\/]+)", SheetHandler),
+
+
 
             # Static files
             (r"/(.*)", tornado.web.StaticFileHandler, { "path" : "static"})

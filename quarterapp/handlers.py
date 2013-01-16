@@ -435,3 +435,13 @@ class ResetPasswordHandler(BaseHandler):
 class LoginHandler(tornado.web.RequestHandler):
     def get(self):
         self.render(u"login.html")
+
+class ActivityHandler(BaseHandler):
+    def get(self):
+        self.render(u"app/activities.html")
+
+class SheetHandler(BaseHandler):
+    def get(self):
+        self.render(u"app/sheet.html")
+
+

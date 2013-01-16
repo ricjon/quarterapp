@@ -131,8 +131,12 @@ strong {
     width: 500px;
 }
 
-.container.small { /* Right side bar*/
-    width: 200px;
+.container.widget { /* Right side bar*/
+    width: 220px;
+}
+
+.container.widgets {
+    width: 230px;
 }
 
 .content {
@@ -426,3 +430,143 @@ div.error-message.note {
     color: white;
     margin: 12px 0px;
 }
+
+/** Sheet view ***************************************************************/
+div.app {
+    width: 750px;
+    margin: 0px auto;
+}
+
+section.container.sheet {
+    float: left;
+    margin: 0px;
+}
+
+section.container.widgets {
+    float:right;
+    margin: 0px;
+}
+
+section.widget {
+    float: right;
+}
+
+section.container.box.widget h1,
+section.container.box.widget h2 {
+    text-align: center;
+}
+
+section.container.box.widget .content {
+    padding: 20px;
+    border-radius: 4px;
+}
+
+table.sheet {
+    user-select: none;
+}
+
+table.sheet tbody {
+    border: none;   
+}
+
+table.sheet th,
+table.sheet td {
+    border: none;
+    user-select: none;
+}
+
+table.sheet tbody tr {
+    height: 33px;
+    min-height: 33px;
+}
+
+table.sheet tbody th {
+    text-align: right;
+    padding-right: 10px;
+}
+
+table.sheet tbody tr td {
+    padding: 5px 0px;
+    min-width: 84px;
+    width: 84px;
+    min-height: 30px;
+    height: 30px;
+}
+
+table.sheet tbody tr td span {
+    border-top: 2px dashed #ccc;
+    border-bottom: 2px dashed #ccc;
+    border-left: 1px dashed #ccc;
+    border-right: 1px dashed #ccc;
+    min-height: 30px;
+    height: 30px;
+    display: block;
+    cursor:pointer;
+}
+
+table.sheet tbody tr td:first-of-type span {
+    border-left: 2px dashed #ccc;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    -webkit-border-top-left-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    -moz-border-radius-topleft: 3px;
+    -moz-border-radius-bottomleft: 3px;
+}
+
+table.sheet tbody tr td:last-of-type span {
+    border-right: 2px dashed #ccc;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    -webkit-border-top-right-radius: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+    -moz-border-radius-topright: 3px;
+    -moz-border-radius-bottomright: 3px;
+}
+
+table.sheet tbody tr td span.used {
+    border-top: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+table.sheet tbody tr td:first-of-type span.used {
+    border-left: 2px solid #ccc;
+}
+
+table.sheet tbody tr td:last-of-type span.used {
+    border-right: 2px solid #ccc;
+}
+
+
+.widget.time-summary #summary-hours {
+    font-size: 48px;
+    line-height: 60px;
+}
+
+.widget.time-summary tbody {
+    border: none;
+}
+
+.widget.time-summary .total-time {
+    font-size: 36px;
+    text-align: center;
+    font-weight: lighter;
+}
+
+.widget.time-summary td {
+    padding: 4px 8px;
+    line-height: 18px;
+    font-size: 14px;
+}
+
+.widget.time-summary table th,
+.widget.time-summary table td {
+    border: none;
+}
+
+.widget.time-summary td.value {
+    text-align: right;
+}
+

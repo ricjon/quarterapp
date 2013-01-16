@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+        <div class="app">
+            <section class="container box medium sheet">
+                <header class="settings">
+                    <h1>Today</h1>
+                </header>
+                <section class="content">
+                    <table class="sheet" id="sheet">
+                        <tbody>
+                            <tr>
+                                <th class="time">06:00</th>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                            </tr>
+                            <tr>
+                                <th class="time">07:00</th>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                            </tr>
+                            <tr>
+                                <th class="time">08:00</th>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                            </tr>
+                            <tr>
+                                <th class="time">09:00</th>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                            </tr>
+                            <tr>
+                                <th class="time">10:00</th>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
+
+            <section class="container widgets">
+                <section class="container box small widget time-summary">
+                    <section class="content">
+                        
+                        <div class="total-time">
+                            <span id="summary-hours">2</span>
+                            <span class="unit">hours</span>
+                        </div>
+                        <table>
+                            <tbody id="sheet-summary">
+                                <tr data-activity-id="">
+                                    <td class="value">1.5</td>
+                                    <td class="activity">One</td>
+                                </tr>
+                                <tr data-activity-id="">
+                                    <td class="value">0.5</td>
+                                    <td class="activity">Another</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </section>
+
+                <section class="container box small widget">
+                    <section class="content">
+                        <h2>Activity</h2>
+                        
+                    </section>
+                </section>
+
+                <section class="container box small widget">
+                    <section class="content">
+                        <h2>Help</h2>
+                        <ul>
+                            <li>Double click to reset a quarter</li>
+                            <li>Right click to select an activity</li>
+                        </ul>
+                    </section>
+                </section>
+            </section>
+        </div>
+        <div class="clear-fix"></div>
+{% end %}
