@@ -319,7 +319,7 @@ class LogoutHandler(BaseHandler):
 class SignupHandler(BaseHandler):
     def get(self):
         if self.enabled("allow-signups"):
-            self.render(u"signup.html", error = None, username = "")
+            self.render(u"public/signup.html", error = None, username = "")
         else:
             raise tornado.web.HTTPError(404)
 
@@ -340,15 +340,15 @@ class SignupHandler(BaseHandler):
                 code = os.urandom(16).encode("base64")[:20]
                 if send_signup_email(username, code):
                     signup_user(self.application.db, username, code, self.request.remote_ip)
-                    self.render(u"signup_instructions.html")
+                    self.render(u"public/signup_instructions.html")
                 else:
                     logging.error("Could not signup user: %s", sys.exc_info())
-                    self.render(u"signup.html", error = error, username = username)    
+                    self.render(u"public/signup.html", error = error, username = username)    
             except:
                 logging.error("Could not signup user: %s", sys.exc_info())
-                self.render(u"signup.html", error = error, username = username)
+                self.render(u"public/signup.html", error = error, username = username)
         else:
-            self.render(u"signup.html", error = error, username = username)
+            self.render(u"public/signup.html", error = error, username = username)
 
 
 class ActivationHandler(BaseHandler):
@@ -358,7 +358,7 @@ class ActivationHandler(BaseHandler):
             code = code_parameter
         
         if self.enabled("allow-activations"):
-            self.render(u"activate.html", error = None, code = code)
+            self.render(u"public/activate.html", error = None, code = code)
         else:
             raise tornado.web.HTTPError(404)
 
@@ -377,38 +377,38 @@ class ActivationHandler(BaseHandler):
             error = "not_matching"
 
         if error:
-            self.render(u"activate.html", error = "not_valid", code = None)
+            self.render(u"public/activate.html", error = "not_valid", code = None)
         else:
             salted_password = hash_password(password)
             if activate_user(self.application.db, code, salted_password):
                 # TODO Do login
-                self.redirect(u"/application/sheet")
+                self.redirect(u"/sheet")
             else:
-                self.render(u"activate.html", error = "unknown", code = code)
+                self.render(u"public/activate.html", error = "unknown", code = code)
 
 class ForgotPasswordHandler(BaseHandler):
     def get(self):
-        self.render(u"forgot.html", error = None, username = None)
+        self.render(u"public/forgot.html", error = None, username = None)
 
     def post(self):
         username = self.get_argument("username", "")
         error = False
         if len(username) == 0:
-            self.render(u"forgot.html", error = "empty", username = username)
+            self.render(u"public/forgot.html", error = "empty", username = username)
         else:
             reset_code = os.urandom(16).encode("base64")[:20]
             if set_user_reset_code(self.application.db, username, reset_code):
                 send_reset_email(username, reset_code)
                 self.redirect(u"/reset")
             else:
-                self.render(u"forgot.html", error = "unknown", username = username)
+                self.render(u"public/forgot.html", error = "unknown", username = username)
 
 class ResetPasswordHandler(BaseHandler):
     def get(self, code_parameter = None):
         code = None
         if code_parameter:
             code = code_parameter
-        self.render(u"reset.html", error = None, code = code)
+        self.render(u"public/reset.html", error = None, code = code)
 
     def post(self):
         code = self.get_argument("code", "")
@@ -422,19 +422,19 @@ class ResetPasswordHandler(BaseHandler):
             error = "not_matching"
 
         if error:
-            self.render(u"reset.html", error = "unknown", code = code)
+            self.render(u"public/reset.html", error = "unknown", code = code)
         else:
             salted_password = hash_password(password)
             if reset_password(self.application.db, code, salted_password):
                 # TODO Do login
-                self.redirect(u"/application/sheet")
+                self.redirect(u"/sheet")
             else:
-                self.render(u"reset.html", error = "unknown", code = code)
+                self.render(u"public/reset.html", error = "unknown", code = code)
 
 
 class LoginHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render(u"login.html")
+        self.render(u"public/login.html")
 
 class ActivityHandler(BaseHandler):
     def get(self):
