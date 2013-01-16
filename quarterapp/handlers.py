@@ -431,11 +431,14 @@ class ResetPasswordHandler(BaseHandler):
             else:
                 self.render(u"public/reset.html", error = "unknown", code = code)
 
-
 class LoginHandler(tornado.web.RequestHandler):
     def get(self):
         self.render(u"public/login.html")
 
+class IndexHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render(u"public/index.html")
+        
 class ActivityHandler(BaseHandler):
     def get(self):
         self.render(u"app/activities.html")

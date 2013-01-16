@@ -87,8 +87,8 @@ def main():
             (r"/sheet", SheetHandler),
             (r"/sheet/([^\/]+)", SheetHandler),
 
-
-
+            (r"/", IndexHandler),
+            
             # Static files
             (r"/(.*)", tornado.web.StaticFileHandler, { "path" : "static"})
         ],
