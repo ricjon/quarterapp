@@ -198,6 +198,24 @@ def reset_password(db, reset_code, new_password):
     except:
         return False
 
+def authenticate_user(db, username, password):
+    """
+    Authenticates the given user
+
+    @param db The database connection to use
+    @param username The username to authenticate
+    @param password The password hash to compare
+    @return The user object (except the password)
+    """
+    try:
+        users = db.query("SELECT id, username, type, state FROM quarterapp.users WHERE username=%s AND password=%s;", username, password)
+        if len(users) == 1:
+            return users[0]
+        else:
+            return None
+    except:
+        return None
+
 def get_activities(db, username):
     """Get all activities for the given user
 

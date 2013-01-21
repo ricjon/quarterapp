@@ -91,6 +91,12 @@ class AuthenticatedHandler(BaseHandler):
             return None
         return tornado.escape.json_decode(user_json)
 
+    def set_current_user(self, user):
+        if user:
+            self.set_secure_cookie("user", tornado.escape.json_encode(user))
+        else:
+            self.clear_cookie("user")
+
 class ProtectedStaticHandler(tornado.web.StaticFileHandler):
     """
     Handle static files that are protected.
@@ -445,19 +451,37 @@ class ResetPasswordHandler(BaseHandler):
             else:
                 self.render(u"public/reset.html", error = "unknown", code = code)
 
-class LoginHandler(tornado.web.RequestHandler):
+class LoginHandler(AuthenticatedHandler):
     def get(self):
         self.render(u"public/login.html")
+
+    def post(self):
+        username = self.get_argument("username", "")
+        password = self.get_argument("password", "")
+        hashed_password = hash_password(password, options.salt)
+
+        user = authenticate_user(self.application.db, username, hashed_password)
+        if user:
+            logging.warn("User authenticated")
+            self.set_current_user(user)
+            self.redirect(u"/sheet")
+        else:
+            logging.warn("User not authenticated")
+            self.set_current_user(None)
+            self.render(u"public/login.html")
+
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         self.render(u"public/index.html")
 
-class ActivityHandler(BaseHandler):
+class ActivityHandler(AuthenticatedHandler):
+    @tornado.web.authenticated
     def get(self):
         self.render(u"app/activities.html")
 
-class SheetHandler(BaseHandler):
+class SheetHandler(AuthenticatedHandler):
+    @tornado.web.authenticated
     def get(self):
         self.render(u"app/sheet.html")
 

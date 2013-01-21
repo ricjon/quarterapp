@@ -109,6 +109,8 @@ def main():
 
         # Application specific cookie hash
         cookie_secret = options.cookie_secret,
+
+        login_url = "/login"
     )
 
     logging.info("Starting application...")
