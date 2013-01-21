@@ -24,54 +24,65 @@ import logging
 import math
 import sys
 import os
-import hashlib
-import base64
-import tornado.web
 
+import tornado.web
 from tornado.options import options
+
 from quarterapp.storage import *
 from quarterapp.email import *
+from quarterapp.errors import *
+from quarterapp.utils import *
 
 DEFAULT_PAGINATION_ITEMS_PER_PAGE = 5
 DEFAULT_PAGINATION_PAGES = 10
-SUCCESS = 0
 
-sha = hashlib.sha512()
-
-def hash_password(password):
-    sha.update(password + options.salt)
-    hashed_password = base64.urlsafe_b64encode(sha.digest())
-    return hashed_password
-    
-
-class BaseHandler(tornado.web.RequestHandler):
+class BaseHandler(tornado.web.RequestHandler):    
     def write_success(self):
+        """
+        Respond with a successful code and HTTP 200
+        """
         self.write({
-            "error" : SUCCESS,
+            "error" : SUCCESS_CODE,
             "message" :"Ok"})
         self.finish()
 
-    def respond_with_error(self, error_code, error_message):
-        logging.warning(error_message)
+    def respond_with_error(self, error):
+        """
+        Respond with a single error and HTTP 500
+        """
         self.write({
-            "error" : error_code,
-            "message" : error_message})
+            "error" : error.code,
+            "message" : error.message })
+        self.set_status(500)
+        self.finish()
+
+    def respond_with_errors(self, errors):
+        """
+        Respond with multiple errors (of type ApiError) and HTTP 500
+        """
+        self.write({
+            "errors" : QuarterJSONEncoder().encode(errors) })
         self.set_status(500)
         self.finish()
 
     def write_unauthenticated_error(self):
+        """
+        Response with a HTTP 407 Unauthenticated
+        """
         self.write({
-            "error" : ERROR_NOT_AUTHENTICATED,
-            "message" :"Not logged in"})
+            "error" : ERROR_NOT_AUTHENTICATED.code,
+            "message" : ERROR_NOT_AUTHENTICATED.message })
         self.set_status(407)
         self.finish()
 
     def enabled(self, setting):
         """
         Check if the given setting is enabled
+
+        @param setting The setting to check
+        @return True if setting is enabled, else False
         """
         return self.application.quarter_settings.get_value(setting) == "1"
-
 
 class AuthenticatedHandler(BaseHandler):
     def get_current_user(self):
@@ -80,7 +91,6 @@ class AuthenticatedHandler(BaseHandler):
             return None
         return tornado.escape.json_decode(user_json)
 
-
 class ProtectedStaticHandler(tornado.web.StaticFileHandler):
     """
     Handle static files that are protected.
@@ -88,6 +98,12 @@ class ProtectedStaticHandler(tornado.web.StaticFileHandler):
     @tornado.web.authenticated
     def get(self, path, include_body=True):
         super(tornado.web.StaticFileHandler, self.get(path, include_body))
+
+
+
+#
+# TODO Move to adminhandlers.py
+#
 
 
 class SettingsHandler(BaseHandler):
@@ -102,11 +118,11 @@ class SettingsHandler(BaseHandler):
                     self.write({"key" : key, "value" : value})
                     self.finish()
                 else:
-                    self.respond_with_error(101, "Could not retrieve setting (%s)".format(key))
+                    self.respond_with_error(ERROR_RETRIEVE_SETTING)
             else:
-                self.respond_with_error(102, "No key given")
+                self.respond_with_error(ERROR_NO_SETTING_KEY)
         except:
-            self.respond_with_error(100, "Could not retrieve setting (%s)".format(key))
+            self.respond_with_error(ERROR_RETRIEVE_SETTING)
 
     def post(self, key):
         try:
@@ -116,9 +132,9 @@ class SettingsHandler(BaseHandler):
                 self.write({"key" : key, "value" : value})
                 self.finish()
             else:
-                self.respond_with_error(103, "No value specified for key (%s)".format(key))
+                self.respond_with_error(ERROR_NO_SETTING_VALUE)
         except:
-            self.respond_with_error(104, "Could not update key (%s)".format(key))
+            self.respond_with_error(ERROR_UPDATE_SETTING)
 
 
 class AdminDefaultHandler(tornado.web.RequestHandler):
@@ -231,10 +247,10 @@ class AdminDisableUser(BaseHandler):
                 self.write_success()
             except:
                 logging.error("Could not disble user: %s", sys.exc_info())
-                self.respond_with_error(300, "Could not disble the given user")
+                self.respond_with_error(ERROR_DISABLE_USER)
         else:
             logging.error("Could not disble user - no user given: %s", sys.exc_info())
-            self.respond_with_error(301, "Could not disble user - no user given")
+            self.respond_with_error(ERROR_DISABLE_NO_USER)
         
 
 class AdminEnableUser(BaseHandler):
@@ -245,10 +261,10 @@ class AdminEnableUser(BaseHandler):
                 self.write_success()
             except:
                 logging.error("Could not enable user: %s", sys.exc_info())
-                self.respond_with_error(302, "Could not enable the given user")
+                self.respond_with_error(ERROR_ENABLE_USER)
         else:
             logging.error("Could not enable user - no user given: %s", sys.exc_info())
-            self.respond_with_error(303, "Could not enable user - no user given")
+            self.respond_with_error(ERROR_ENABLE_NO_USER)
 
 
 class AdminDeleteUser(BaseHandler):
@@ -259,10 +275,10 @@ class AdminDeleteUser(BaseHandler):
                 self.write_success()
             except:
                 logging.error("Could not delete user: %s", sys.exc_info())
-                self.respond_with_error(304, "Could not delete the given user")
+                self.respond_with_error(ERROR_DELETE_USER)
         else:
             logging.error("Could not delete user - no user given: %s", sys.exc_info())
-            self.respond_with_error(305, "Could not delete user - no user given")
+            self.respond_with_error(ERROR_DELETE_NO_USER)
 
 
 class AdminNewUserHandler(BaseHandler):
@@ -289,10 +305,8 @@ class AdminNewUserHandler(BaseHandler):
 
         if not error:
             try:
-                salted_password = hash_password(password)
-                print "2"
+                salted_password = hash_password(password, options.salt)
                 add_user(self.application.db, username, salted_password, ut)
-                print "2"
                 self.render(u"admin/new-user.html", completed = True, error = False)
             except:
                 self.render(u"admin/new-user.html", completed = False, error = True)
@@ -379,7 +393,7 @@ class ActivationHandler(BaseHandler):
         if error:
             self.render(u"public/activate.html", error = "not_valid", code = None)
         else:
-            salted_password = hash_password(password)
+            salted_password = hash_password(password, options.salt)
             if activate_user(self.application.db, code, salted_password):
                 # TODO Do login
                 self.redirect(u"/sheet")
@@ -424,7 +438,7 @@ class ResetPasswordHandler(BaseHandler):
         if error:
             self.render(u"public/reset.html", error = "unknown", code = code)
         else:
-            salted_password = hash_password(password)
+            salted_password = hash_password(password, options.salt)
             if reset_password(self.application.db, code, salted_password):
                 # TODO Do login
                 self.redirect(u"/sheet")
@@ -438,7 +452,7 @@ class LoginHandler(tornado.web.RequestHandler):
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         self.render(u"public/index.html")
-        
+
 class ActivityHandler(BaseHandler):
     def get(self):
         self.render(u"app/activities.html")
@@ -448,3 +462,56 @@ class SheetHandler(BaseHandler):
         self.render(u"app/sheet.html")
 
 
+#
+# TODO Move to apihandlers.py
+#
+
+
+
+class ActivityApiHandler(BaseHandler):
+    """
+    The activity API handler implements all supported operations on activities.
+    """
+
+    def get(self):
+        """
+        Get the complete list of activities
+        """
+        activities = []
+
+        self.write( { "activities" : activities } )
+        self.finish()
+
+    def post(self):
+        """
+        Create a new activity
+        """
+        name = self.get_argument("name", "")
+        color = self.get_argument("color", "")
+
+        errors = []
+
+        if not name or len(name) == 0:
+            errors.append( ERROR_NO_ACTIVITY_NAME )
+        if not color or len(color) == 0:
+            errors.append( ERROR_NO_ACTIVITY_COLOR )
+        if not valid_color_hex(color):
+            errors.append( ERROR_NOT_VALID_COLOR_HEX )
+        
+        if len(errors) > 0:
+            self.respond_with_error(errors[0]) # Figure out how to JSON a list in tornado, too tired
+        else:
+            self.write_success()
+
+
+    def put(self, activity_id):
+        """
+        Update a given activity
+        """
+        pass
+
+    def delete(self, activity_id):
+        """
+        Delete a given activity
+        """
+        pass

@@ -213,6 +213,23 @@
                 }
                 return undefined; // Should really be an error
             }
+        },
+
+        /* Verify this field's value is a hex color code, three or six digits, possibly starting with a hash (#) */
+        "color-hex" : {
+            check : function(self, $element) {
+                var type = $element.attr("type"),
+                    valid = false;
+                if(type === "text") {
+                    var text = $element.val();
+
+                    valid = /^(#)?([0-9a-fA-F]{3})([0-9a-fA-F]{3})?$/.test(text);
+                    if(!valid) {
+                        return "Must be a hex color code (e.g. #ffbbcc)";
+                    }
+                }
+                return undefined;
+            }
         }
     };
 

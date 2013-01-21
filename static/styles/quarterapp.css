@@ -286,6 +286,17 @@ div.error-message.note {
     float: none;
 }
 
+section.widget form {
+    width: 190px;
+}
+
+section.widget input[type="text"],
+section.widget input[type="password"],
+section.widget input[type="email"] {
+    width: 165px;
+}
+
+
 /** Table ********************************************************************/
 
 
@@ -570,3 +581,104 @@ table.sheet tbody tr td:last-of-type span.used {
     text-align: right;
 }
 
+/** activities */
+.activity-module {
+    border: 1px solid #ccc;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 0px;
+    line-height: 25px;
+    min-width: 400px;
+    background-color: #f3f3f3;
+    margin-bottom: 10px;
+}
+
+.activity-color {
+    float: left;
+    min-width: 6px;
+    max-width: 6px;
+    border-radius: 4px 0px 0px 4px;
+    padding: 4px;
+}
+
+.activity-module.edit .activity-color {
+    min-width: 16px;
+    max-width: 16px;
+    cursor: pointer;
+}
+
+.activity-title {
+    float: left;
+    padding: 4px;
+    font-size: 15px;
+    padding-left: 8px;
+}
+
+.activity-module.edit .activity-title {
+    display: none;
+}
+
+.activity-module .activity-edit-title {
+    display: none;
+}
+
+.activity-module.edit .activity-edit-title {
+    display: block;
+}
+
+.activity-module.edit .activity-edit-title input[type="text"] {
+    clear: none;
+    width: 290px;
+    margin: 2px 3px;
+    border-radius: 0px
+}
+
+.activity-quarter-count {
+    float: right;
+    margin: 4px 10px;
+    font-weight: bold;
+    color: #999;
+}
+
+.activity-module.edit .activity-quarter-count {
+    display: none;
+}
+
+.activity-control {
+    float: right;
+    padding: 4px;
+    min-width: 20px;
+    max-width: 20px;
+    cursor: pointer;
+}
+
+.activity-control a span {
+    min-width: 15px;
+    display: block;
+}
+
+.activity-edit-control {
+    background: url("/images/edit-small.png") no-repeat 4px 8px;
+}
+
+.activity-module.edit .activity-edit-control {
+    display: none;
+}
+
+.activity-delete-control {
+    display: none;
+}
+
+.activity-save-control {
+    display: none;
+}
+
+.activity-module.edit .activity-delete-control {
+    display: block;
+    background: url("/images/trash-small.png") no-repeat 4px 8px;
+}
+
+.activity-module.edit .activity-save-control {
+    display: block;
+    background: url("/images/edit-small.png") no-repeat 4px 8px;
+}

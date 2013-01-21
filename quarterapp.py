@@ -82,11 +82,16 @@ def main():
             (r"/reset", ResetPasswordHandler),
             (r"/login", LoginHandler),
 
-            # Application
+            # Application views
             (r"/activities", ActivityHandler),
             (r"/sheet", SheetHandler),
             (r"/sheet/([^\/]+)", SheetHandler),
 
+            # Application API
+            (r"/api/activities", ActivityApiHandler),
+            (r"/api/activity", ActivityApiHandler),
+            (r"/api/activity/([^\/]+)", ActivityApiHandler),
+            
             (r"/", IndexHandler),
             
             # Static files

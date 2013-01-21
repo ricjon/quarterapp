@@ -1,12 +1,98 @@
 {% extends "base.html" %}
 
 {% block main %}
-
-            <section class="container box wide">
+        <div class="app">
+            <section class="container box medium sheet">
                 <header class="general">
                     <h1>Activities</h1>
                 </header>
                 <section class="content">
+
+                    <div class="activity-module">
+                        <div class="activity-color" style="background-color: red;">
+                            <span>&nbsp;</span>
+                        </div>
+                        <div class="activity-title">
+                            Activity name
+                        </div>
+                        <div class="activity-edit-title">
+                            <input type="text" />
+                        </div>
+                        <div class="activity-control activity-edit-control">
+                            <a  href="quarterapp.edit_activity();" title="Edit"><span>&nbsp;</span></a>
+                        </div>
+                        <div class="activity-control activity-save-control">
+                            <a  href="quarterapp.save_activity();" title="Save"><span>&nbsp;</span></a>
+                        </div>
+                        <div class="activity-control activity-delete-control">
+                            <a href="quarterapp.delete_activity();" title="Delete"><span>&nbsp;</span></a>
+                        </div>
+                        <div class="activity-quarter-count">
+                            412
+                        </div>
+                    </div>
+
+
+                    <div class="activity-module edit">
+                        <div class="activity-color" style="background-color: red;">
+                            <span>&nbsp;</span>
+                        </div>
+                        <div class="activity-title">
+                            Activity name
+                        </div>
+                        <div class="activity-edit-title">
+                            <input type="text" value="Activity name" />
+                        </div>
+                        <div class="activity-control activity-edit-control">
+                            <a  href="quarterapp.edit_activity();" title="Edit"><span>&nbsp;</span></a>
+                        </div>
+                        <div class="activity-control activity-save-control">
+                            <a  href="quarterapp.save_activity();" title="Save"><span>&nbsp;</span></a>
+                        </div>
+                        <div class="activity-control activity-delete-control">
+                            <a href="quarterapp.delete_activity();" title="Delete"><span>&nbsp;</span></a>
+                        </div>
+                        <div class="activity-quarter-count">
+                            331
+                        </div>
+                    </div>
                 </section>
             </section>
+
+            <section class="container widgets">
+                <section class="container box small widget">
+                    <section class="content">
+                        <h2>New activity</h2>
+                        <form action="/api/activity" method="POST" data-validation>
+                            <fieldset>
+                                <label for="name">Name</label>
+                                <input type="text" name="name" id="name" 
+                                    data-validator="required"
+                                    data-validator-on="focus-loss" />
+                            </fieldset>
+                            <fieldset>
+                                <label for="color">Color</label>
+                                <input type="text" name="color" id="color" 
+                                    data-validator="required "
+                                    data-validator-on="focus-loss" />
+                            </fieldset>
+                            <fieldset>
+                                <button type="submit">Create</button>
+                            </fieldset>
+                        </form>
+                    </section>
+                </section>
+
+                <section class="container box small widget">
+                    <section class="content">
+                        <h2>Help</h2>
+                        <ul>
+                            <li>Click </li>
+                            <li>Right click to select an activity</li>
+                        </ul>
+                    </section>
+                </section>
+            </section>
+        </div>
+        <div class="clear-fix"></div>    
 {% end %}
