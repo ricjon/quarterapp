@@ -24,8 +24,10 @@ import logging
 import math
 import sys
 import os
+import json
 
 import tornado.web
+import tornado.escape
 from tornado.options import options
 
 from quarterapp.storage import *
@@ -35,6 +37,11 @@ from quarterapp.utils import *
 
 DEFAULT_PAGINATION_ITEMS_PER_PAGE = 5
 DEFAULT_PAGINATION_PAGES = 10
+
+class QuarterEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, ApiError):
+            return { "code" : obj.code, "message" : obj.message }
 
 class BaseHandler(tornado.web.RequestHandler):    
     def write_success(self):
@@ -61,7 +68,7 @@ class BaseHandler(tornado.web.RequestHandler):
         Respond with multiple errors (of type ApiError) and HTTP 500
         """
         self.write({
-            "errors" : QuarterJSONEncoder().encode(errors) })
+            "errors" : QuarterEncoder().encode(errors).replace("\"", "'") })
         self.set_status(500)
         self.finish()
 
@@ -501,8 +508,10 @@ class ActivityApiHandler(AuthenticatedHandler):
         """
         Get the complete list of activities
         """
-        activities = []
-
+        user = self.get_current_user()
+        activities = get_activities(self.application.db, user["id"])
+        if not activities:
+            activities = []
         self.write( { "activities" : activities } )
         self.finish()
 
@@ -510,8 +519,8 @@ class ActivityApiHandler(AuthenticatedHandler):
         """
         Create a new activity
         """
-        title = self.get_argument("title", "")
-        color = self.get_argument("color", "")
+        title = self.get_argument("title2", "")
+        color = self.get_argument("color2", "")
 
         errors = []
 
@@ -523,7 +532,7 @@ class ActivityApiHandler(AuthenticatedHandler):
             errors.append( ERROR_NOT_VALID_COLOR_HEX )
         
         if len(errors) > 0:
-            self.respond_with_error(errors[0]) # Figure out how to JSON a list in tornado, too tired
+            self.respond_with_errors(errors)
         else:
             user = self.get_current_user()
             add_activity(self.application.db, user["id"], title, color)
