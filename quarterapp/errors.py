@@ -44,7 +44,7 @@ ERROR_DELETE_NO_USER        = ApiError(305, "Could not delete user - no user giv
 
 ERROR_NOT_AUTHENTICATED     = ApiError(400, "Not logged in")
 
-ERROR_NO_ACTIVITY_NAME      = ApiError(500, "Missing value for name")
+ERROR_NO_ACTIVITY_TITLE     = ApiError(500, "Missing value for title")
 ERROR_NO_ACTIVITY_COLOR     = ApiError(501, "Missing value for color")
 ERROR_NOT_VALID_COLOR_HEX   = ApiError(502, "Invalid color hex format")
 

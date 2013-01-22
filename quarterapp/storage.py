@@ -216,45 +216,45 @@ def authenticate_user(db, username, password):
     except:
         return None
 
-def get_activities(db, username):
+def get_activities(db, user_id):
     """Get all activities for the given user
 
     @param db The database connection to use
-    @param username The authenticated username to retrieve activities for
+    @param user_id The id of the authenticated username to retrieve activities for
     """
-    activities = db.query("SELECT * FROM quarterapp.activities WHERE username=%s;", username)
+    activities = db.query("SELECT * FROM quarterapp.activities WHERE user=%s;", user_id)
     if not activities:
         activities = []
     return activities
     
 
-def add_activity(db, username, title, color):
+def add_activity(db, user_id, title, color):
     """Adds a new activity
 
     @param db The database connection to use
-    @param username The authenticated username to associate the activity with
+    @param user_id The id of the authenticated user to associate the activity with
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return db.execute("INSERT INTO quarterapp.activities (username, title, color) VALUES(%s, %s, %s);", username, title, color)
+    return db.execute("INSERT INTO quarterapp.activities (user, title, color) VALUES(%s, %s, %s);", user_id, title, color)
 
-def update_activity(db, username, activity_id, title, color):
+def update_activity(db, user_id, activity_id, title, color):
     """Update an existing activity with new values
 
     @param db The database connection to use
-    @param username The authenticated username the activity is associated with
+    @param user_id The id of the authenticated user to associate the activity with
     @oaram activity_id The id of the activity to update
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return db.execute("UPDATE quarterapp.activities SET title=%s, color=%s WHERE username=\"%s\" AND id=\"%s\";", title, color, username, activity_id)
+    return db.execute("UPDATE quarterapp.activities SET title=%s, color=%s WHERE user=%s AND id=%s;", title, color, user_id, activity_id)
 
-def delete_activity(db, username, activity_id):
+def delete_activity(db, user_id, activity_id):
     """Deletes a given activity
 
     @param db The database connection to use
-    @param username The authenticated username the activity is associated with
+    @param user_id The id of the authenticated user the activity is associated with
     @param activity_id The id of the activity to delete
     """
-    return db.execute("DELETE FROM quarterapp.activities WHERE username=\"%s\" AND id=\"%s\";", username, activity_id)
+    return db.execute("DELETE FROM quarterapp.activities WHERE user=%s AND id=%s;", user_id, activity_id)
 

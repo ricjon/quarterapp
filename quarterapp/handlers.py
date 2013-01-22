@@ -492,7 +492,7 @@ class SheetHandler(AuthenticatedHandler):
 
 
 
-class ActivityApiHandler(BaseHandler):
+class ActivityApiHandler(AuthenticatedHandler):
     """
     The activity API handler implements all supported operations on activities.
     """
@@ -510,13 +510,13 @@ class ActivityApiHandler(BaseHandler):
         """
         Create a new activity
         """
-        name = self.get_argument("name", "")
+        title = self.get_argument("title", "")
         color = self.get_argument("color", "")
 
         errors = []
 
-        if not name or len(name) == 0:
-            errors.append( ERROR_NO_ACTIVITY_NAME )
+        if not title or len(title) == 0:
+            errors.append( ERROR_NO_ACTIVITY_TITLE )
         if not color or len(color) == 0:
             errors.append( ERROR_NO_ACTIVITY_COLOR )
         if not valid_color_hex(color):
@@ -525,6 +525,8 @@ class ActivityApiHandler(BaseHandler):
         if len(errors) > 0:
             self.respond_with_error(errors[0]) # Figure out how to JSON a list in tornado, too tired
         else:
+            user = self.get_current_user()
+            add_activity(self.application.db, user["id"], title, color)
             self.write_success()
 
 
