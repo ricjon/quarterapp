@@ -43,8 +43,12 @@ class ActivityApiHandler(AuthenticatedHandler):
         """
         Get the complete list of activities
         """
-        user = self.get_current_user()
-        activities = get_activities(self.application.db, user["id"])
+        user_id  = self.get_current_user_id()
+        if not user_id:
+            logging.error("Could not retrieve usr id")
+            raise HTTPError(500)
+
+        activities = get_activities(self.application.db, user_id)
         if not activities:
             activities = []
         self.write( { "activities" : activities } )
@@ -55,8 +59,13 @@ class ActivityApiHandler(AuthenticatedHandler):
         """
         Create a new activity
         """
-        title = self.get_argument("title2", "")
-        color = self.get_argument("color2", "")
+        user_id  = self.get_current_user_id()
+        if not user_id:
+            logging.error("Could not retrieve usr id")
+            raise HTTPError(500)
+
+        title = self.get_argument("title", "")
+        color = self.get_argument("color", "")
 
         errors = []
 
@@ -70,9 +79,10 @@ class ActivityApiHandler(AuthenticatedHandler):
         if len(errors) > 0:
             self.respond_with_errors(errors)
         else:
-            user = self.get_current_user()
-            add_activity(self.application.db, user["id"], title, color)
-            self.write_success()
+            activity_id = add_activity(self.application.db, user_id, title, color)
+            activity = get_activity(self.application.db, user_id, activity_id)
+            self.write( { "activity" : activity } )
+            self.finish()
 
     @authenticated_user
     def put(self, activity_id):
@@ -86,4 +96,22 @@ class ActivityApiHandler(AuthenticatedHandler):
         """
         Delete a given activity
         """
-        pass
+        user_id  = self.get_current_user_id()
+        if not user_id:
+            logging.error("Could not retrieve usr id")
+            raise HTTPError(500)
+
+        errors = []
+
+        if not activity_id or len(activity_id) == 0:
+            errors.append( ERROR_NO_ACTIVITY_ID )
+
+        try:
+            if len(errors) > 0:
+                self.respond_with_errors(errors)
+            else:
+                delete_activity(self.application.db, user_id, activity_id)
+                self.write_success()
+        except:
+            logging.warn("Could not delete activity: %s", sys.exc_info())
+            self.respond_with_error(ERROR_DELETE_ACTIVITY)

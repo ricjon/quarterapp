@@ -22,7 +22,11 @@
 
 import tornado.web
 
+from tornado.options import options
+
 from quarterapp.basehandlers import *
+from quarterapp.storage import *
+from quarterapp.errors import *
 
 class IndexHandler(BaseHandler):
     def get(self):
@@ -31,7 +35,14 @@ class IndexHandler(BaseHandler):
 class ActivityHandler(AuthenticatedHandler):
     @authenticated_user
     def get(self):
-        self.render(u"app/activities.html")
+        user_id  = self.get_current_user_id()
+        if not user_id:
+            logging.error("Could not retrieve usr id")
+            raise HTTPError(500)
+
+        activities = None
+        activities = get_activities(self.application.db, user_id)
+        self.render(u"app/activities.html", activities = activities)
 
 class SheetHandler(AuthenticatedHandler):
     @authenticated_user

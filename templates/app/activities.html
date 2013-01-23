@@ -6,8 +6,35 @@
                 <header class="general">
                     <h1>Activities</h1>
                 </header>
-                <section class="content">
+                <section class="content" data-activity-list>
+                    {% if activities %}
+                    {% for activity in activities %}
+                    <div class="activity-module" data-activity-id="{{ activity['id'] }}">
+                        <div class="activity-color" style="background-color: #{{ activity['color'] }};">
+                            <span>&nbsp;</span>
+                        </div>
+                        <div class="activity-title">
+                            {{ activity['title'] }}
+                        </div>
+                        <div class="activity-edit-title">
+                            <input type="text" value="{{ activity['title'] }}" />
+                        </div>
+                        <div class="activity-control activity-edit-control">
+                            <a href="#" title="Edit"><span>&nbsp;</span></a>
+                        </div>
+                        <div class="activity-control activity-save-control">
+                            <a href="#" title="Save"><span>&nbsp;</span></a>
+                        </div>
+                        <div class="activity-control activity-delete-control">
+                            <a href="#" title="Delete"><span>&nbsp;</span></a>
+                        </div>
+                    </div>
+                    {% end %}
+                    {% else %}
+                    <p class="note">You have no activities, create one using the form to the right.</p>
+                    {% end %}
 
+<!--
                     <div class="activity-module">
                         <div class="activity-color" style="background-color: red;">
                             <span>&nbsp;</span>
@@ -55,7 +82,7 @@
                         <div class="activity-quarter-count">
                             331
                         </div>
-                    </div>
+                    </div>-->
                 </section>
             </section>
 
@@ -63,7 +90,7 @@
                 <section class="container box small widget">
                     <section class="content">
                         <h2>New activity</h2>
-                        <form action="/api/activity" method="POST" data-validation>
+                        <form id="create-activity" action="/api/activity" method="POST" data-validation>
                             <fieldset>
                                 <label for="title">Title</label>
                                 <input type="text" name="title" id="title" 

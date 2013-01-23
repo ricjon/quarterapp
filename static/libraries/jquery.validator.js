@@ -80,7 +80,6 @@
         },
 
         on_submit : function(event) {
-            console.log("Validate");
             var self = this;
 
             $.each(this.$elements, function(index, element) {

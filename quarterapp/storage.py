@@ -217,19 +217,20 @@ def authenticate_user(db, username, password):
         return None
 
 def get_activities(db, user_id):
-    """Get all activities for the given user
+    """
+    Get all activities for the given user
 
     @param db The database connection to use
     @param user_id The id of the authenticated username to retrieve activities for
     """
-    activities = db.query("SELECT * FROM quarterapp.activities WHERE user=%s;", user_id)
+    activities = db.query("SELECT id, title, color FROM quarterapp.activities WHERE user=%s;", user_id)
     if not activities:
         activities = []
-    return activities
-    
+    return activities    
 
 def add_activity(db, user_id, title, color):
-    """Adds a new activity
+    """
+    Adds a new activity
 
     @param db The database connection to use
     @param user_id The id of the authenticated user to associate the activity with
@@ -237,6 +238,19 @@ def add_activity(db, user_id, title, color):
     @param color The activity's color value (hex)
     """
     return db.execute("INSERT INTO quarterapp.activities (user, title, color) VALUES(%s, %s, %s);", user_id, title, color)
+
+def get_activity(db, user_id, activity_id):
+    """
+    Get the given activity_id
+    @param db The database connection to use
+    @param user_id The id of the authenticated user to associate the activity with
+    @param activity_id The id of the activity to retrieve
+    """
+    activities = db.query("SELECT id, title, color FROM quarterapp.activities WHERE user=%s AND id=%s;", user_id, activity_id)
+    if activities and len(activities) == 1:
+        return activities[0]
+    else:
+        return None
 
 def update_activity(db, user_id, activity_id, title, color):
     """Update an existing activity with new values

@@ -125,3 +125,10 @@ class AuthenticatedHandler(BaseHandler):
             self.set_secure_cookie("user", tornado.escape.json_encode(user))
         else:
             self.clear_cookie("user")
+
+    def get_current_user_id(self):
+        user = self.get_current_user()
+        if user:
+            return user["id"]
+        return None
+
