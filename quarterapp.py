@@ -31,7 +31,10 @@ import tornado.database
 from tornado.options import options, define
 
 from quarterapp.settings import QuarterSettings
-from quarterapp.handlers import *
+from quarterapp.account import *
+from quarterapp.admin import *
+from quarterapp.api import *
+from quarterapp.app import *
 
 def read_configuration():
     """
