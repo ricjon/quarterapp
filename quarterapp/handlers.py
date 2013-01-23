@@ -25,6 +25,7 @@ import math
 import sys
 import os
 import json
+import functools
 
 import tornado.web
 import tornado.escape
@@ -42,6 +43,30 @@ class QuarterEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, ApiError):
             return { "code" : obj.code, "message" : obj.message }
+
+def authenticated_user(method):
+    """Decorate methods with this to require that the user be logged in."""
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.current_user:
+            if self.request.method in ("GET", "HEAD"):
+                url = self.get_login_url()
+                self.redirect(url)
+                return
+            raise tornado.web.HTTPError(403)
+        return method(self, *args, **kwargs)
+    return wrapper
+
+def authenticated_admin(method):
+    """Check if user is admin, if not, render 404 (to avoid exposing admin part) """
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.current_user:
+            raise tornado.web.HTTPError(404)
+        elif self.current_user["type"] != User.Administrator:
+            raise tornado.web.HTTPError(404)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 class BaseHandler(tornado.web.RequestHandler):    
     def write_success(self):
@@ -119,10 +144,11 @@ class ProtectedStaticHandler(tornado.web.StaticFileHandler):
 #
 
 
-class SettingsHandler(BaseHandler):
+class SettingsHandler(AuthenticatedHandler):
     """Used as the HTTP API to retrieve and update application settings.
     User must be authenticated as administrator to be able to use
     """
+    @authenticated_user
     def get(self, key):
         try:
             if key:
@@ -137,6 +163,7 @@ class SettingsHandler(BaseHandler):
         except:
             self.respond_with_error(ERROR_RETRIEVE_SETTING)
 
+    @authenticated_admin
     def post(self, key):
         try:
             if key:
@@ -150,7 +177,8 @@ class SettingsHandler(BaseHandler):
             self.respond_with_error(ERROR_UPDATE_SETTING)
 
 
-class AdminDefaultHandler(tornado.web.RequestHandler):
+class AdminDefaultHandler(AuthenticatedHandler):
+    @authenticated_admin
     def get(self):
         allow_signups = self.application.quarter_settings.get_value("allow-signups")
         allow_activations = self.application.quarter_settings.get_value("allow-activations")
@@ -483,12 +511,12 @@ class IndexHandler(tornado.web.RequestHandler):
         self.render(u"public/index.html")
 
 class ActivityHandler(AuthenticatedHandler):
-    @tornado.web.authenticated
+    @authenticated_user
     def get(self):
         self.render(u"app/activities.html")
 
 class SheetHandler(AuthenticatedHandler):
-    @tornado.web.authenticated
+    @authenticated_user
     def get(self):
         self.render(u"app/sheet.html")
 
@@ -503,7 +531,7 @@ class ActivityApiHandler(AuthenticatedHandler):
     """
     The activity API handler implements all supported operations on activities.
     """
-
+    @authenticated_user
     def get(self):
         """
         Get the complete list of activities
@@ -515,6 +543,7 @@ class ActivityApiHandler(AuthenticatedHandler):
         self.write( { "activities" : activities } )
         self.finish()
 
+    @authenticated_user
     def post(self):
         """
         Create a new activity
@@ -538,13 +567,14 @@ class ActivityApiHandler(AuthenticatedHandler):
             add_activity(self.application.db, user["id"], title, color)
             self.write_success()
 
-
+    @authenticated_user
     def put(self, activity_id):
         """
         Update a given activity
         """
         pass
 
+    @authenticated_user
     def delete(self, activity_id):
         """
         Delete a given activity
