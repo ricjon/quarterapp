@@ -587,61 +587,59 @@ table.sheet tbody tr td:last-of-type span.used {
     display: inline-block;
     border-radius: 4px;
     padding: 0px;
-    line-height: 25px;
+    line-height: 25px;  
     min-width: 400px;
     background-color: #f3f3f3;
     margin-bottom: 10px;
 }
 
-.activity-color {
-    float: left;
-    min-width: 6px;
-    max-width: 6px;
-    border-radius: 4px 0px 0px 4px;
-    padding: 4px;
+div.activity-module.edit div.activity-color {
+    max-width: 100px;
+    cursor: pointer;
+    padding: 0px;
 }
 
-.activity-module.edit .activity-color {
-    min-width: 16px;
-    max-width: 16px;
+div.activity-module input.palette {
+    padding: 6px;
+    min-width: 15px;
+    max-width: 15px;
+    width: 15px;
+    border: none;
+    clear: none;
+    display: block;
+    border: 1px solid #ccc;
+    margin: 2px 3px;
+    color: transparent;
+}
+
+div.activity-module.edit input.palette {
     cursor: pointer;
 }
 
-.activity-title {
+div.activity-title {
     float: left;
     padding: 4px;
-    font-size: 15px;
     padding-left: 8px;
+    margin-left:2px;
 }
 
-.activity-module.edit .activity-title {
+.activity-module.edit div.activity-title {
     display: none;
 }
 
-.activity-module .activity-edit-title {
+.activity-module div.activity-edit-title {
     display: none;
 }
 
-.activity-module.edit .activity-edit-title {
+.activity-module.edit div.activity-edit-title {
     display: block;
 }
 
-.activity-module.edit .activity-edit-title input[type="text"] {
+.activity-module.edit div.activity-edit-title input[type="text"] {
     clear: none;
-    width: 290px;
+    width: 240px;
     margin: 2px 3px;
     border-radius: 0px
-}
-
-.activity-quarter-count {
-    float: right;
-    margin: 4px 10px;
-    font-weight: bold;
-    color: #999;
-}
-
-.activity-module.edit .activity-quarter-count {
-    display: none;
 }
 
 .activity-control {
@@ -657,28 +655,41 @@ table.sheet tbody tr td:last-of-type span.used {
     display: block;
 }
 
-.activity-edit-control {
+div.activity-edit-control {
     background: url("/images/edit-small.png") no-repeat 4px 8px;
 }
 
-.activity-module.edit .activity-edit-control {
+.activity-module.edit div.activity-edit-control {
     display: none;
 }
 
-.activity-delete-control {
+div.activity-delete-control {
     display: none;
 }
 
-.activity-save-control {
+div.activity-save-control {
     display: none;
 }
 
-.activity-module.edit .activity-delete-control {
+div.activity-cancel-control {
+    display: none;
+}
+
+.activity-module.edit div.activity-delete-control {
     display: block;
     background: url("/images/trash-small.png") no-repeat 4px 8px;
 }
 
-.activity-module.edit .activity-save-control {
+.activity-module.edit div.activity-save-control {
     display: block;
     background: url("/images/edit-small.png") no-repeat 4px 8px;
+}
+
+.activity-module.edit div.activity-cancel-control {
+    display: block;
+    background: url("/images/edit-small.png") no-repeat 4px 8px;
+}
+
+#create-activity input.palette {
+    color: transparent;
 }

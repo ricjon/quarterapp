@@ -89,7 +89,30 @@ class ActivityApiHandler(AuthenticatedHandler):
         """
         Update a given activity
         """
-        pass
+        user_id  = self.get_current_user_id()
+        if not user_id:
+            logging.error("Could not retrieve usr id")
+            raise HTTPError(500)
+
+        title = self.get_argument("title", "")
+        color = self.get_argument("color", "")
+
+        errors = []
+
+        if not title or len(title) == 0:
+            errors.append( ERROR_NO_ACTIVITY_TITLE )
+        if not color or len(color) == 0:
+            errors.append( ERROR_NO_ACTIVITY_COLOR )
+        if not valid_color_hex(color):
+            errors.append( ERROR_NOT_VALID_COLOR_HEX )
+        
+        if len(errors) > 0:
+            self.respond_with_errors(errors)
+        else:
+            update_activity(self.application.db, user_id, activity_id, title, color)
+            activity = get_activity(self.application.db, user_id, activity_id)
+            self.write( { "activity" : activity } )
+            self.finish()
 
     @authenticated_user
     def delete(self, activity_id):

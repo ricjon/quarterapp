@@ -87,6 +87,7 @@
             });
 
             if(this.$form.find("input." + self.options.error_class).length > 0) {
+                this.$form.attr("data-validation-result", "not-valid");
                 event.preventDefault();    
             }
         },

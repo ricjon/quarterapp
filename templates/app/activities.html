@@ -10,8 +10,8 @@
                     {% if activities %}
                     {% for activity in activities %}
                     <div class="activity-module" data-activity-id="{{ activity['id'] }}">
-                        <div class="activity-color" style="background-color: #{{ activity['color'] }};">
-                            <span>&nbsp;</span>
+                        <div class="activity-color" data-palette-value="{{ activity['color'] }}">
+                            <input class="palette" type="text" value="" style="background-color: {{ activity['color'] }};" disabled />
                         </div>
                         <div class="activity-title">
                             {{ activity['title'] }}
@@ -25,6 +25,9 @@
                         <div class="activity-control activity-save-control">
                             <a href="#" title="Save"><span>&nbsp;</span></a>
                         </div>
+                        <div class="activity-control activity-cancel-control">
+                            <a  href="#" title="Cancel"><span>&nbsp;</span></a>
+                        </div>
                         <div class="activity-control activity-delete-control">
                             <a href="#" title="Delete"><span>&nbsp;</span></a>
                         </div>
@@ -33,56 +36,6 @@
                     {% else %}
                     <p class="note">You have no activities, create one using the form to the right.</p>
                     {% end %}
-
-<!--
-                    <div class="activity-module">
-                        <div class="activity-color" style="background-color: red;">
-                            <span>&nbsp;</span>
-                        </div>
-                        <div class="activity-title">
-                            Activity name
-                        </div>
-                        <div class="activity-edit-title">
-                            <input type="text" />
-                        </div>
-                        <div class="activity-control activity-edit-control">
-                            <a  href="quarterapp.edit_activity();" title="Edit"><span>&nbsp;</span></a>
-                        </div>
-                        <div class="activity-control activity-save-control">
-                            <a  href="quarterapp.save_activity();" title="Save"><span>&nbsp;</span></a>
-                        </div>
-                        <div class="activity-control activity-delete-control">
-                            <a href="quarterapp.delete_activity();" title="Delete"><span>&nbsp;</span></a>
-                        </div>
-                        <div class="activity-quarter-count">
-                            412
-                        </div>
-                    </div>
-
-
-                    <div class="activity-module edit">
-                        <div class="activity-color" style="background-color: red;">
-                            <span>&nbsp;</span>
-                        </div>
-                        <div class="activity-title">
-                            Activity name
-                        </div>
-                        <div class="activity-edit-title">
-                            <input type="text" value="Activity name" />
-                        </div>
-                        <div class="activity-control activity-edit-control">
-                            <a  href="quarterapp.edit_activity();" title="Edit"><span>&nbsp;</span></a>
-                        </div>
-                        <div class="activity-control activity-save-control">
-                            <a  href="quarterapp.save_activity();" title="Save"><span>&nbsp;</span></a>
-                        </div>
-                        <div class="activity-control activity-delete-control">
-                            <a href="quarterapp.delete_activity();" title="Delete"><span>&nbsp;</span></a>
-                        </div>
-                        <div class="activity-quarter-count">
-                            331
-                        </div>
-                    </div>-->
                 </section>
             </section>
 
@@ -99,24 +52,15 @@
                             </fieldset>
                             <fieldset>
                                 <label for="color">Color</label>
-                                <input type="text" name="color" id="color" 
-                                    data-validator="required "
-                                    data-validator-on="focus-loss" />
+                                <input type="text" name="color" id="color" class="palette"
+                                    data-palette-mode="show-code"
+                                    data-validator="required"
+                                    style="background-color: #fff" value="#fff" />
                             </fieldset>
                             <fieldset>
                                 <button type="submit">Create</button>
                             </fieldset>
                         </form>
-                    </section>
-                </section>
-
-                <section class="container box small widget">
-                    <section class="content">
-                        <h2>Help</h2>
-                        <ul>
-                            <li>Click </li>
-                            <li>Right click to select an activity</li>
-                        </ul>
                     </section>
                 </section>
             </section>

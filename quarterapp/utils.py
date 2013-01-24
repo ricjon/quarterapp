@@ -25,7 +25,7 @@ import base64
 import re
 
 sha = hashlib.sha512()
-color_hex_re = re.compile(r"^(#)?([0-9a-fA-F]{3})([0-9a-fA-F]{3})?$")
+color_hex_re = re.compile(r"^(#)([0-9a-fA-F]{3})([0-9a-fA-F]{3})?$")
 
 def hash_password(password, salt):
     """
