@@ -28,6 +28,7 @@ import json
 import tornado.web
 import tornado.escape
 from tornado.options import options
+from tornado.web import HTTPError
 
 from quarterapp.basehandlers import *
 from quarterapp.storage import *

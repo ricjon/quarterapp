@@ -5,11 +5,12 @@
         <div class="app">
             <section class="container box medium sheet">
                 <header class="settings">
-                    <h1>Today</h1>
+                    <h1 class="sheet">{{ weekday }}</h1>
                 </header>
                 <section class="content">
-                    <table class="sheet" id="sheet">
+                    <table class="sheet" id="sheet" data-sheet-date="{{ date }}">
                         <tbody>
+                            <!-- render all hours, hide some -->
                             <tr>
                                 <th class="time">06:00</th>
                                 <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
@@ -50,7 +51,15 @@
                 </section>
             </section>
 
-            <section class="container widgets">
+            <section class="container widgets date-picker">
+                <section class="container box small widget">
+                    <section class="content">
+                        <a href="/sheet/{{ yesterday }}" id="previous-date" class="date">&lt;</a>
+                        <span id="datepicker" class="picker">{{ date }}</span>
+                        <a href="/sheet/{{ tomorrow }}" id="next-date" class="date">&gt;</a>
+                    </section>
+                </section>
+
                 <section class="container box small widget time-summary">
                     <section class="content">
                         

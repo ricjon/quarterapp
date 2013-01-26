@@ -20,9 +20,12 @@
 #  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import datetime
+import logging
 import tornado.web
 
 from tornado.options import options
+from tornado.web import HTTPError
 
 from quarterapp.basehandlers import *
 from quarterapp.storage import *
@@ -46,5 +49,26 @@ class ActivityHandler(AuthenticatedHandler):
 
 class SheetHandler(AuthenticatedHandler):
     @authenticated_user
-    def get(self):
-        self.render(u"app/sheet.html")
+    def get(self, date = None):
+        date_obj = None
+        today = datetime.date.today()
+
+        if date:
+            try:
+                parts = date.split("-")
+                if len(parts) != 3:
+                    raise ValueErrror("Date should be in YYYY-MM-DD")
+                else:
+                    date_obj = datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+            except:
+                logging.warning("Could not verify date")
+                raise HTTPError(500)
+        else:
+            date_obj = today
+
+        yesterday = date_obj - datetime.timedelta(days = 1)
+        tomorrow = date_obj + datetime.timedelta(days = 1)
+
+        weekday = date_obj.strftime("%A")
+        self.render(u"app/sheet.html", date = date_obj, weekday = weekday,
+            today = today, yesterday = yesterday, tomorrow = tomorrow)

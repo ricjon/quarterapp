@@ -7,6 +7,7 @@ quarterapp.js
     "use strict";
 
     function Quarterapp() {
+        this.current_date = undefined;
         this.init();
     };
 
@@ -15,11 +16,23 @@ quarterapp.js
         activity_markup : '<div class="activity-module" data-activity-id="{0}"><div class="activity-color" data-palette-value="{2}"><input class="palette" type="text" value="" style="background-color: {2};" disabled /></div><div class="activity-title">{1}</div><div class="activity-edit-title"><input type="text" value="{1}" /></div><div class="activity-control activity-edit-control"><a href="#" title="Edit"><span>&nbsp;</span></a></div><div class="activity-control activity-save-control"><a href="#" title="Save"><span>&nbsp;</span></a></div><div class="activity-control activity-cancel-control"><a  href="#" title="Cancel"><span>&nbsp;</span></a></div><div class="activity-control activity-delete-control"><a href="#" title="Delete"><span>&nbsp;</span></a></div></div>',
 
         init : function() {
+            // Activity controls
             $("#create-activity").submit($.proxy(this.on_create_activity, this));
             $("div.activity-edit-control > a").click($.proxy(this.on_edit_activity, this));
             $("div.activity-cancel-control > a").click($.proxy(this.on_cancel_activity, this));
             $("div.activity-save-control > a").click($.proxy(this.on_save_activity, this));
             $("div.activity-delete-control > a").click($.proxy(this.on_delete_activity, this));
+
+            // Sheet date control
+            var current_date = $("#sheet").attr("data-sheet-date");
+            this.current_date = new Date(current_date);
+            var picker = new Pikaday({
+                field: document.getElementById('datepicker'),
+                firstDay : 1,
+                defaultDate : this.current_date,
+                setDefaultDate : true,
+                onSelect: $.proxy(this.on_select_date, this)
+            });
         },
 
         log : function(msg) {
@@ -135,12 +148,31 @@ quarterapp.js
                 });
             }
             return false;
+        },
+
+        on_select_date : function(date) {
+            if((date.getFullYear() === this.current_date.getFullYear()) &&
+                (date.getMonth() === this.current_date.getMonth()) &&
+                (date.getDate() === this.current_date.getDate())) {
+                return;
+            }
+
+            var month = (date.getMonth() + 1).toString();
+            if(month.length === 1) {
+                month = "0" + month;
+            }
+
+            var day = date.getDate().toString();
+            if(day.length === 1) {
+                day = "0" + day;
+            }
+            var location = "/sheet/{0}-{1}-{2}".format(date.getFullYear(), month, day);
+            window.location = location;
         }
     }
 
     window.quarterapp = new Quarterapp();
 })();
-
 
 /*
  * Add a format function to String that formats a string containing

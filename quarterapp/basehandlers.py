@@ -65,7 +65,7 @@ def authenticated_admin(method):
         return method(self, *args, **kwargs)
     return wrapper
 
-class BaseHandler(tornado.web.RequestHandler):    
+class BaseHandler(tornado.web.RequestHandler):
     def write_success(self):
         """
         Respond with a successful code and HTTP 200
