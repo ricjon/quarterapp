@@ -771,3 +771,11 @@ div.activity input.palette {
 #available-activities div.activity:hover div.activity-title {
     font-weight: bold;
 }
+
+.extend-sheet {
+    margin-left: 204px;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 26px;
+    cursor: pointer;
+}

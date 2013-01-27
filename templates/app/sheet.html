@@ -8,46 +8,34 @@
                     <h1 class="sheet">{{ weekday }}</h1>
                 </header>
                 <section class="content">
+                    <div class="extend-sheet">
+                        <span id="extend-sod">+</span>
+                    </div>
                     <table class="sheet" id="sheet" data-sheet-date="{{ date }}">
                         <tbody>
                             <!-- render all hours, hide some -->
-                            <tr>
-                                <th class="time">06:00</th>
+                            {% for index, quarter in enumerate(quarters) %}
+                                
+                                {% if (index == 0) or (index % 4 == 0) %}
+                                    {% if index == 0 %}
+                                        </tr>
+                                    {% end %}
+                                    <tr>
+                                        <th class="time">{{ int(index/4) }}:00</th>
+                                {% end %}
+
                                 <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                            </tr>
-                            <tr>
-                                <th class="time">07:00</th>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                            </tr>
-                            <tr>
-                                <th class="time">08:00</th>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                            </tr>
-                            <tr>
-                                <th class="time">09:00</th>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                            </tr>
-                            <tr>
-                                <th class="time">10:00</th>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
-                            </tr>
+
+                                {% if index == 98 %}
+                                    </tr>
+                                {% end %}
+
+                            {% end %}
                         </tbody>
                     </table>
+                    <div class="extend-sheet">
+                        <span id="extend-eod">+</span>
+                    </div>
                 </section>
             </section>
 
@@ -62,7 +50,6 @@
 
                 <section class="container box small widget time-summary">
                     <section class="content">
-                        
                         <div class="total-time">
                             <span id="summary-hours">2</span>
                             <span class="unit">hours</span>
@@ -85,8 +72,6 @@
                 <section class="container box small widget activity">
                     <section class="content">
                         <h2>Activity</h2>
-                        
-                        
                             <div id="current-activity" class="activity">
                                 <div class="activity-color">
                                     <input class="palette" type="text" value="" style="background-color: #fff;" disabled />

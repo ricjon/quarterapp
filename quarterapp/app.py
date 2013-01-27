@@ -47,6 +47,12 @@ class ActivityHandler(AuthenticatedHandler):
         self.render(u"app/activities.html", activities = activities)
 
 class SheetHandler(AuthenticatedHandler):
+    def default_sheet(self):
+        quarters = []
+        for i in range(0, 96):
+            quarters.append(-1)
+        return quarters
+
     @authenticated_user
     def get(self, date = None):
         user_id  = self.get_current_user_id()
@@ -76,6 +82,8 @@ class SheetHandler(AuthenticatedHandler):
 
         activities = get_activities(self.application.db, user_id)
 
+        quarters = self.default_sheet()
+
         self.render(u"app/sheet.html", date = date_obj, weekday = weekday,
             today = today, yesterday = yesterday, tomorrow = tomorrow,
-            activities = activities)
+            activities = activities, quarters = quarters)

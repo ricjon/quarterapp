@@ -38,6 +38,15 @@ quarterapp.js
             // Sheet activity selector
             $("#current-activity").click($.proxy(this.on_show_activity_selector, this));
             $("#available-activities div.activity").on("click", $.proxy(this.on_select_activity, this));
+
+            // Only render work hours
+            $("table.sheet tr").slice(0, 6).hide();
+            $("table.sheet tr").slice(18, 24).hide();
+
+            // Sheet extend controls
+            $("#extend-sod").click($.proxy(this.on_extend_sod, this));
+            $("#extend-eod").click($.proxy(this.on_extend_eod, this));
+
         },
 
         log : function(msg) {
@@ -196,6 +205,25 @@ quarterapp.js
             }
             
             $("#available-activities").hide();
+        },
+
+        on_extend_sod : function() {
+            var $rows = $("table.sheet tbody tr").slice(0, 11);
+            for(var i = $rows.length-1; i > -1; i--) {
+                if(! $rows.eq(i).is(":visible") ) {
+                    $rows.eq(i).show();
+                    return;
+                }
+            }
+        },
+        on_extend_eod : function() {
+            var $rows = $("table.sheet tbody tr").slice(12, 24);
+            for(var i = 0; i < $rows.length; i++) {
+                if(! $rows.eq(i).is(":visible") ) {
+                    $rows.eq(i).show();
+                    return;
+                }
+            }
         }
     }
 
