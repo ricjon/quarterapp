@@ -43,13 +43,17 @@ class ActivityHandler(AuthenticatedHandler):
             logging.error("Could not retrieve usr id")
             raise HTTPError(500)
 
-        activities = None
         activities = get_activities(self.application.db, user_id)
         self.render(u"app/activities.html", activities = activities)
 
 class SheetHandler(AuthenticatedHandler):
     @authenticated_user
     def get(self, date = None):
+        user_id  = self.get_current_user_id()
+        if not user_id:
+            logging.error("Could not retrieve usr id")
+            raise HTTPError(500)
+            
         date_obj = None
         today = datetime.date.today()
 
@@ -68,7 +72,10 @@ class SheetHandler(AuthenticatedHandler):
 
         yesterday = date_obj - datetime.timedelta(days = 1)
         tomorrow = date_obj + datetime.timedelta(days = 1)
-
         weekday = date_obj.strftime("%A")
+
+        activities = get_activities(self.application.db, user_id)
+
         self.render(u"app/sheet.html", date = date_obj, weekday = weekday,
-            today = today, yesterday = yesterday, tomorrow = tomorrow)
+            today = today, yesterday = yesterday, tomorrow = tomorrow,
+            activities = activities)

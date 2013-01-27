@@ -7,6 +7,7 @@ quarterapp.js
     "use strict";
 
     function Quarterapp() {
+        this.current_activity = { "id": -1, "color" : "#fff", "title" : "Not working"};
         this.current_date = undefined;
         this.init();
     };
@@ -33,6 +34,10 @@ quarterapp.js
                 setDefaultDate : true,
                 onSelect: $.proxy(this.on_select_date, this)
             });
+
+            // Sheet activity selector
+            $("#current-activity").click($.proxy(this.on_show_activity_selector, this));
+            $("#available-activities div.activity").on("click", $.proxy(this.on_select_activity, this));
         },
 
         log : function(msg) {
@@ -168,6 +173,29 @@ quarterapp.js
             }
             var location = "/sheet/{0}-{1}-{2}".format(date.getFullYear(), month, day);
             window.location = location;
+        },
+
+        on_show_activity_selector : function() {
+            $("#available-activities").show();
+        },
+
+        on_select_activity : function(event) {
+            var $element = $(event.target).parents("div.activity"),
+                new_id = $element.attr("data-activity-id"),
+                new_color = $element.attr("data-activity-color"),
+                new_title = $element.attr("data-activity-title");
+
+            if(new_id !== undefined && new_color !== undefined && new_title !== undefined) {
+                this.current_activity.id = new_id;
+                this.current_activity.color = new_color;
+                this.current_activity.title = new_title;
+
+                var $current_activity = $("#current-activity");
+                $current_activity.find("input.palette").css("background-color", new_color);
+                $current_activity.find("div.activity-title").text(new_title)
+            }
+            
+            $("#available-activities").hide();
         }
     }
 

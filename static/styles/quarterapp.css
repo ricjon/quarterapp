@@ -601,7 +601,7 @@ div.activity-module.edit div.activity-color {
     padding: 0px;
 }
 
-div.activity-module input.palette {
+/*div.activity-module*/ input.palette {
     padding: 6px;
     min-width: 15px;
     max-width: 15px;
@@ -742,4 +742,32 @@ section.date-picker a.date {
     background: #ccc !important;
     box-shadow: none !important;
     border-radius: 3px !important;
+}
+
+div.activity {
+    width: 170px;
+    display: inline-block;
+    margin: 4px 0px;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+div.activity input.palette {
+    cursor: pointer;
+}
+
+#available-activities {
+    display: none;
+    border-top: 1px solid #ccc;
+    overflow-y: scroll;
+    max-height: 300px;
+    padding-top: 10px;
+}
+
+#available-activities div.activity:hover input.palette {
+    border-color: #000;
+}
+
+#available-activities div.activity:hover div.activity-title {
+    font-weight: bold;
 }

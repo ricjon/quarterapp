@@ -82,9 +82,32 @@
                     </section>
                 </section>
 
-                <section class="container box small widget">
+                <section class="container box small widget activity">
                     <section class="content">
                         <h2>Activity</h2>
+                        
+                        
+                            <div id="current-activity" class="activity">
+                                <div class="activity-color">
+                                    <input class="palette" type="text" value="" style="background-color: #fff;" disabled />
+                                </div>
+                                <div class="activity-title">No work</div>
+                            </div>
+                        
+                        {% if activities %}
+                        <div id="available-activities">
+                        
+                        {% for activity in activities %}
+                            <div class="activity" data-activity-id="{{ activity['id'] }}" data-activity-color="{{ activity['color'] }}" data-activity-title="{{ activity['title'] }}">
+                                <div class="activity-color">
+                                    <input class="palette" type="text" value="" style="background-color: {{ activity['color'] }};" disabled />
+                                </div>
+                                <div class="activity-title">{{ activity['title'] }}</div>
+                            </div>
+                        {% end %}
+
+                        </div>
+                        {% end %}
                         
                     </section>
                 </section>
