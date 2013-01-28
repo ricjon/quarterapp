@@ -24,6 +24,7 @@ import logging
 import sys
 import os
 import json
+import string
 
 import tornado.web
 import tornado.escape
@@ -139,3 +140,23 @@ class ActivityApiHandler(AuthenticatedHandler):
         except:
             logging.warn("Could not delete activity: %s", sys.exc_info())
             self.respond_with_error(ERROR_DELETE_ACTIVITY)
+
+class SheetApiHandler(AuthenticatedHandler):
+    @authenticated_user
+    def put(self, date):
+        """
+        Update a sheet with the quarters passed
+        """
+        user_id  = self.get_current_user_id()
+        if not user_id:
+            logging.error("Could not retrieve usr id")
+            raise HTTPError(500)
+
+        quarters = self.get_argument("quarters", "")
+        
+        if quarters:
+            quarters_array = quarters[1:-1].split(',')
+            self.write_success()
+        else:
+            logging.warn("Could not extract quarters from PUT request")
+            self.respond_with_error(ERROR_NO_QUARTERS)

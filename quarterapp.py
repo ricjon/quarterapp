@@ -94,7 +94,7 @@ def main():
             (r"/api/activities", ActivityApiHandler),
             (r"/api/activity", ActivityApiHandler),
             (r"/api/activity/([^\/]+)", ActivityApiHandler),
-            
+            (r"/api/sheet/([^\/]+)", SheetApiHandler),
             (r"/", IndexHandler),
             
             # Static files

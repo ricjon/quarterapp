@@ -552,6 +552,9 @@ table.sheet tbody tr td:last-of-type span.used {
     border-right: 2px solid #ccc;
 }
 
+span.activity-cell {
+    background-color: #fff;
+}
 
 .widget.time-summary #summary-hours {
     font-size: 48px;
@@ -778,4 +781,43 @@ div.activity input.palette {
     font-size: 20px;
     line-height: 26px;
     cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+/**
+Spinning stripes in CSS3 from:
+http://jsfiddle.net/brennan/mcYKE/
+*/
+span.activity-cell.pending {
+    background-image: -webkit-gradient(linear, 0 0, 100% 100%,
+        color-stop(.25, rgba(0, 0, 0, .10)), 
+        color-stop(.25, transparent),
+        color-stop(.5, transparent), 
+        color-stop(.5, rgba(0, 0, 0, .10)),
+        color-stop(.75, rgba(0, 0, 0, .10)), 
+        color-stop(.75, transparent), 
+        to(transparent));
+    background-image: 
+        -moz-linear-gradient(-45deg, 
+            rgba(0, 0, 0, .10) 25%, 
+            transparent 25%,
+            transparent 50%, rgba(0, 0, 0, .10) 50%, 
+            rgba(0, 0, 0, .10) 75%, 
+            transparent 75%, transparent
+        );
+    background-size: 50px 50px;
+    -moz-background-size: 50px 50px;
+    -webkit-background-size: 50px 50px;
+    -webkit-animation: animate-stripes 2s linear infinite;
+}
+
+@-webkit-keyframes animate-stripes {
+    from {
+        background-position: 0 0;
+    } 
+    to {
+       background-position: -50px 0;
+    }
 }

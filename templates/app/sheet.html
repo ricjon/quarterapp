@@ -81,7 +81,12 @@
                         
                         {% if activities %}
                         <div id="available-activities">
-                        
+                            <div class="activity" data-activity-id="-1" data-activity-color="#fff" data-activity-title="No work">
+                                <div class="activity-color">
+                                    <input class="palette" type="text" value="" style="background-color: #fff;" disabled />
+                                </div>
+                                <div class="activity-title">No work</div>
+                            </div>
                         {% for activity in activities %}
                             <div class="activity" data-activity-id="{{ activity['id'] }}" data-activity-color="{{ activity['color'] }}" data-activity-title="{{ activity['title'] }}">
                                 <div class="activity-color">

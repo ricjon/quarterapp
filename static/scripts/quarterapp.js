@@ -2,6 +2,13 @@
 
 quarterapp.js
 
+This script contains all the JavaScript used by the public part of quarterapp. The script itself is not a jQuery
+plugin, ut hevily relies on jQuery.
+
+Convention is that any event handler, or other callback function is prefixed with "on_".
+
+Copyright (c) 2013 - markus.eliasson@gmail.com
+
 */
 (function() {
     "use strict";
@@ -9,6 +16,7 @@ quarterapp.js
     function Quarterapp() {
         this.current_activity = { "id": -1, "color" : "#fff", "title" : "Not working"};
         this.current_date = undefined;
+        this.pending_update = false;
         this.init();
     };
 
@@ -47,11 +55,70 @@ quarterapp.js
             $("#extend-sod").click($.proxy(this.on_extend_sod, this));
             $("#extend-eod").click($.proxy(this.on_extend_eod, this));
 
+            // Sheet marker event
+            $("table.sheet td").bind("mousedown", $.proxy(this.on_sheet_mouse_down, this));
+            $("table.sheet td").bind("mousemove", $.proxy(this.on_sheet_mouse_move, this));
+            $("table.sheet td").bind("mouseup", $.proxy(this.on_sheet_mouse_up, this));
+
         },
 
+        /**
+         * Log message to console
+         */
         log : function(msg) {
             if(console.log !== undefined) {
                 console.log(msg);
+            }
+        },
+
+        /**
+         * Return the YYYY-MM-DD representation for the given date object.
+         */
+        to_date_string : function(date) {
+            var month = (date.getMonth() + 1).toString();
+            if(month.length === 1) {
+                month = "0" + month;
+            }
+
+            var day = date.getDate().toString();
+            if(day.length === 1) {
+                day = "0" + day;
+            }
+            return "{0}-{1}-{2}".format(date.getFullYear(), month, day);
+        },
+
+        /**
+         * Function used to calculate a darker or lighter shade of a color.
+         * hex - The base hex color
+         * lum - Percentage luminance to alter
+         *
+         * Inspired from http://www.sitepoint.com/javascript-generate-lighter-darker-color/
+         */
+        luminance : function(hex, lum) {
+            function from_hex(x) {
+                return ("0" + parseInt(x).toString(16)).slice(-2);
+            }
+
+            try {
+                // validate hex string
+                hex = String(hex).replace(/[^0-9a-f]/gi, '');
+                if (hex.length < 6) {
+                    hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]
+                }
+
+                lum = lum || 0;
+
+                // convert to decimal and change luminosity
+                var rgb = "#", c, i
+                for (i = 0; i < 3; i++) {
+                    c = parseInt(hex.substr(i*2,2), 16)
+                    c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+                    rgb += ("00"+c).substr(c.length);
+                }
+                return rgb;
+            }
+            catch(e) {
+                return hex;
             }
         },
 
@@ -164,6 +231,9 @@ quarterapp.js
             return false;
         },
 
+        /**
+         * Load a new page when the user selects a different date in the sheet view
+         */
         on_select_date : function(date) {
             if((date.getFullYear() === this.current_date.getFullYear()) &&
                 (date.getMonth() === this.current_date.getMonth()) &&
@@ -171,26 +241,23 @@ quarterapp.js
                 return;
             }
 
-            var month = (date.getMonth() + 1).toString();
-            if(month.length === 1) {
-                month = "0" + month;
-            }
-
-            var day = date.getDate().toString();
-            if(day.length === 1) {
-                day = "0" + day;
-            }
-            var location = "/sheet/{0}-{1}-{2}".format(date.getFullYear(), month, day);
+            var location = "/sheet/" + to_date_string(date);
             window.location = location;
         },
 
+        /**
+         * Show the sheet views activity selector
+         */
         on_show_activity_selector : function() {
             $("#available-activities").show();
         },
 
+        /**
+         * Update the current activity when the user selects an activity from the activity selector.
+         */
         on_select_activity : function(event) {
-            var $element = $(event.target).parents("div.activity"),
-                new_id = $element.attr("data-activity-id"),
+            var $element = $(event.target).parents("div.activity");
+            var new_id = $element.attr("data-activity-id"),
                 new_color = $element.attr("data-activity-color"),
                 new_title = $element.attr("data-activity-title");
 
@@ -207,6 +274,9 @@ quarterapp.js
             $("#available-activities").hide();
         },
 
+        /**
+         * Extend the sheet view with an hour at the start of day (if possible)
+         */
         on_extend_sod : function() {
             var $rows = $("table.sheet tbody tr").slice(0, 11);
             for(var i = $rows.length-1; i > -1; i--) {
@@ -216,6 +286,10 @@ quarterapp.js
                 }
             }
         },
+
+        /**
+         * Extend the sheet view with an hour at the end of day (if possible)
+         */
         on_extend_eod : function() {
             var $rows = $("table.sheet tbody tr").slice(12, 24);
             for(var i = 0; i < $rows.length; i++) {
@@ -224,6 +298,127 @@ quarterapp.js
                     return;
                 }
             }
+        },
+
+        /**
+         * Setup the activity update "transaction". Nothing will be sent to the server until the
+         * mouse is relased and all updated activities are sent at once.
+         */
+        on_sheet_mouse_down : function(event) {
+            if(event.which !== 1) {
+                return;
+            }
+
+            this.pending_update = true;
+        },
+
+        /**
+         * Update activity cell if mouse is pressed, keep original values in case of update error.
+         * This function does not communicate with the server, all pending updates are accumalated
+         * and transmitted at mouse up.
+         */
+        on_sheet_mouse_move : function(event) {
+            if(event.which !== 1) {
+                return;
+            }
+
+            if(!this.pending_update) {
+                return;
+            }
+
+            var $activity_cell = $(event.target);
+            var activity_id = $activity_cell.attr("data-activity-id");
+
+            if(activity_id === undefined) {
+                return; // Not an activity cell, just ignore.
+            }
+
+            // Cell is already updated, just ignore.
+            // (this is safe since we only allow one update at a time, it is's painted, it's painted)
+            if($activity_cell.attr("data-activity-previous-id") !== undefined) {
+                return;
+            }
+
+            // Store the old activity id and old color for the activity
+            // these will be reused if the update does not succeed.
+            $activity_cell.attr("data-activity-previous-id", activity_id);
+            $activity_cell.attr("data-activity-previous-color", $activity_cell.css("background-color"));
+
+            // Set new id
+            $activity_cell.attr("data-activity-id", this.current_activity.id);
+
+            // Update cells background color and border to new activities color
+            $activity_cell.css("background-color", this.current_activity.color);
+            $activity_cell.css("border-color", this.luminance(this.current_activity.color, -0.2));
+
+            // Add pending state class (used for visual feedback)
+            $activity_cell.addClass("pending");
+        },
+
+        /**
+         * Finalize the activity update by issueing an update request to the server. We expect that
+         * all goes well (as we already updated UI and state), but if it failes restore to old activities
+         * again.
+         */
+        on_sheet_mouse_up : function(event) {
+            function cleanup_pending_activities() {
+                var $activities = $("table.sheet span.activity-cell.pending");
+                // Remove any temporary attributes
+                $activities.removeAttr("data-activity-previous-id");
+                $activities.removeAttr("data-activity-previous-color");
+
+                // Remove all pending states
+                $activities.removeClass("pending");
+            }
+
+            if(event.which !== 1) {
+                return;
+            }
+
+            var self = this;
+
+            // Get all activities from sheet (all 96), regardless of state. Transform the these
+            // into a JSON array and PUT that at the server.
+            var quarters = []
+            var $cells = $("table.sheet span.activity-cell").each(function(index, cell) {
+                quarters.push($(cell).attr("data-activity-id"));
+            });
+
+            if(quarters.length !== 96) {
+                self.log("Crap, cannot find all 96 quarters");
+                // TODO Display error dialog.
+                return;
+            }
+
+            // Convert to String instead of Array
+            quarters = quarters + "";
+
+            $.ajax({
+                    url : "/api/sheet/" + self.to_date_string(self.current_date),
+                    type : "PUT",
+                    data : {
+                        "quarters" : quarters
+                    },
+                    success : function(data, status, jqXHR) {
+                        // If all goes well we have already updated the activity attributes
+                        // final cleanup will remove any state class from UI
+                    },
+                    error : function(jqXHR, status, errorThrown) {
+                        var $activities = $("table.sheet span.activity-cell.pending");
+                        $("table.sheet span.activity-cell.pending").each(function(index, element) {
+                            var $element = $(element);
+                            $element.attr("data-activity-id", $element.attr("data-activity-previous-id"));
+                            
+                            var activity_color = $element.attr("data-activity-previous-color");
+                            $element.css("background-color", activity_color);
+                            $element.css("border-color", self.luminance(activity_color, -0.2));
+                            self.log("doh");
+                        });
+                    }
+                });
+
+            cleanup_pending_activities();
+            this.pending_update = false;
         }
     }
 
