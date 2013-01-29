@@ -58,7 +58,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             // Sheet marker event
             $("table.sheet td").bind("mousedown", $.proxy(this.on_sheet_mouse_down, this));
             $("table.sheet td").bind("mousemove", $.proxy(this.on_sheet_mouse_move, this));
-            $("table.sheet td").bind("mouseup", $.proxy(this.on_sheet_mouse_up, this));
+            $("body").bind("mouseup", $.proxy(this.on_sheet_mouse_up, this));
 
         },
 
@@ -372,6 +372,9 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             }
 
             if(event.which !== 1) {
+                return;
+            }
+            if(!this.pending_update) {
                 return;
             }
 
