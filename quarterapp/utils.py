@@ -20,11 +20,11 @@
 #  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import datetime
 import hashlib
 import base64
 import re
 
-sha = hashlib.sha512()
 color_hex_re = re.compile(r"^(#)([0-9a-fA-F]{3})([0-9a-fA-F]{3})?$")
 
 def hash_password(password, salt):
@@ -35,14 +35,36 @@ def hash_password(password, salt):
     @param salt The applications salt
     @return The hashed password
     """
+    sha = hashlib.sha512()
     sha.update(password + salt)
     hashed_password = base64.urlsafe_b64encode(sha.digest())
     return hashed_password
 
 def valid_color_hex(color_code):
     """
-    Validates that the given color code is a correct HEX code
+    Validates that the given color code is a correct HEX code. For this
+    function the hex code must start with a hash (#)
 
     @return True if valid, else False
     """
     return color_hex_re.match(color_code)
+
+def valid_date(date):
+    """
+    Check if the given string is a valid date format YYYY-MM-DD
+
+    @param date The date in string format
+    @return True if the date string is correctly formatted
+    """
+    try:
+        parts = date.split("-")
+        if len(parts) != 3:
+            raise ValueErrror("Date should be in YYYY-MM-DD")
+        else:
+            if len(parts[0]) == 4 and len(parts[1]) == 2 and len(parts[2]) == 2:
+                date_obj = datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+                return True
+            else:
+                raise ValueErrror("Date should be in YYYY-MM-DD")
+    except:
+        return False

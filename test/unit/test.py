@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Markus Eliasson, http://www.quarterapp.com/
+#  Copyright (c) 2012-2013 Markus Eliasson, http://www.quarterapp.com/
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the
@@ -30,6 +30,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "../.."))
 
 import quarterapp.storage
+from quarterapp.utils import *
 
 # Test configuration
 mysql_database = "quarterapp2"
@@ -37,7 +38,44 @@ mysql_host = "127.0.0.1:3306"
 mysql_user = "quarterapp"
 mysql_password = "quarterapp"
 
-class TestStorage(unittest.TestCase):
+class TestUnit(unittest.TestCase):
+    def test_hex(self):
+        self.assertTrue(valid_color_hex("#fff"))
+        self.assertTrue(valid_color_hex("#ffffff"))
+        self.assertTrue(valid_color_hex("#000"))
+        self.assertTrue(valid_color_hex("#123456"))
+        
+        self.assertFalse(valid_color_hex("fff"))
+        self.assertFalse(valid_color_hex("cdcdcd"))
+        self.assertFalse(valid_color_hex("#ggg"))
+        self.assertFalse(valid_color_hex("#cccc"))
+        self.assertFalse(valid_color_hex("0"))
+        self.assertFalse(valid_color_hex(""))
+
+    def test_hash_password(self):
+        self.assertEqual( 88, len(hash_password("secret", "salt")) )
+        self.assertEqual( 88, len(hash_password("anothersecret", "salt")) )
+        self.assertEqual( hash_password("secret", "salt"), hash_password("secret", "salt"))
+        self.assertNotEqual( hash_password("secret", "salt"), hash_password("secret", "pepper"))
+
+    def test_valid_date(self):
+        self.assertTrue(valid_date("2013-01-29"))
+        self.assertTrue(valid_date("1999-12-29"))
+        self.assertTrue(valid_date("2013-11-01"))
+        self.assertTrue(valid_date("2012-02-29"))
+
+        self.assertFalse(valid_date("2013-29-11"))
+        self.assertFalse(valid_date("2013-9-1"))
+        self.assertFalse(valid_date("2013-02-29"))
+        self.assertFalse(valid_date("13-1-29"))
+        self.assertFalse(valid_date("29/01/2013"))
+        self.assertFalse(valid_date("01/29/2013"))
+
+
+
+
+#class TestStorage(unittest.TestCase):
+class TestStorage:
     @classmethod
     def setUpClass(cls):
         cls.db = tornado.database.Connection(mysql_host, mysql_database, 
