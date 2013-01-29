@@ -152,11 +152,18 @@ class SheetApiHandler(AuthenticatedHandler):
             logging.error("Could not retrieve usr id")
             raise HTTPError(500)
 
+        if not valid_date(date):
+            self.respond_with_error(ERROR_INVALID_SHEET_DATE)
+
         quarters = self.get_argument("quarters", "")
-        
+
         if quarters:
             quarters_array = quarters[1:-1].split(',')
-            self.write_success()
+            if len(quarters_array) == 96:
+                update_sheet(self.application.db, user_id, date, quarters)
+                self.write_success()
+            else:
+                self.respond_with_error(ERROR_NOT_96_QUARTERS)
         else:
             logging.warn("Could not extract quarters from PUT request")
             self.respond_with_error(ERROR_NO_QUARTERS)

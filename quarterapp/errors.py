@@ -51,3 +51,5 @@ ERROR_NO_ACTIVITY_ID        = ApiError(503, "Missing activity id")
 ERROR_DELETE_ACTIVITY       = ApiError(504, "Could not delete activity")
 
 ERROR_NO_QUARTERS           = ApiError(600, "No quarters given")
+ERROR_NOT_96_QUARTERS       = ApiError(601, "Expected 96 quarters")
+ERROR_INVALID_SHEET_DATE    = ApiError(602, "Expected date in YYYY-MM-DD format")

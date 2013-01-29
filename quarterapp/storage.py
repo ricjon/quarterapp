@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Markus Eliasson, http://www.quarterapp.com/
+#  Copyright (c) 2012-2013 Markus Eliasson, http://www.quarterapp.com/
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the
@@ -272,3 +272,17 @@ def delete_activity(db, user_id, activity_id):
     """
     return db.execute("DELETE FROM quarterapp.activities WHERE user=%s AND id=%s;", user_id, activity_id)
 
+def update_sheet(db, user_id, date, quarters):
+    """
+    Inserts the given time sheet for the given date. If a record exist for this
+    date it will be replaced, if nothing exists a new record will be created.
+
+    @param db The database connection to use
+    @param user_id The id of the authenticated user the activity is associated with
+    @param date The time sheets date, must be in the format YYYY-MM-DD
+    @param quarters the time sheets list of quarters
+    """
+    result = db.execute_rowcount("UPDATE quarterapp.sheets SET quarters=%s WHERE user=%s and date=%s", quarters, user_id, date)
+    if result == 0:
+        result = db.execute("INSERT INTO quarterapp.sheets (user, date, quarters) VALUES(%s, %s, %s);", user_id, date, quarters)
+    return result
