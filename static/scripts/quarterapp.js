@@ -33,15 +33,17 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             $("div.activity-delete-control > a").click($.proxy(this.on_delete_activity, this));
 
             // Sheet date control
-            var current_date = $("#sheet").attr("data-sheet-date");
-            this.current_date = new Date(current_date);
-            var picker = new Pikaday({
-                field: document.getElementById('datepicker'),
-                firstDay : 1,
-                defaultDate : this.current_date,
-                setDefaultDate : true,
-                onSelect: $.proxy(this.on_select_date, this)
-            });
+            if($("#datepicker").length > 0) {
+                var current_date = $("#sheet").attr("data-sheet-date");
+                this.current_date = new Date(current_date);
+                var picker = new Pikaday({
+                    field: document.getElementById('datepicker'),
+                    firstDay : 1,
+                    defaultDate : this.current_date,
+                    setDefaultDate : true,
+                    onSelect: $.proxy(this.on_select_date, this)
+                });   
+            }
 
             // Sheet activity selector
             $("#current-activity").click($.proxy(this.on_show_activity_selector, this));
