@@ -33,10 +33,12 @@ import quarterapp.storage
 from quarterapp.utils import *
 
 # Test configuration
-mysql_database = "quarterapp2"
+mysql_database = "quarterapp_test"
 mysql_host = "127.0.0.1:3306"
 mysql_user = "quarterapp"
 mysql_password = "quarterapp"
+
+BOB_THE_USER = 1
 
 class TestUnit(unittest.TestCase):
     def test_hex(self):
@@ -71,11 +73,7 @@ class TestUnit(unittest.TestCase):
         self.assertFalse(valid_date("29/01/2013"))
         self.assertFalse(valid_date("01/29/2013"))
 
-
-
-
-#class TestStorage(unittest.TestCase):
-class TestStorage:
+class TestStorage(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.db = tornado.database.Connection(mysql_host, mysql_database, 
@@ -83,37 +81,23 @@ class TestStorage:
 
     @classmethod
     def tearDownClass(cls):
-        cls.db.execute("TRUNCATE TABLE quarterapp.activities;")
-        cls.db.execute("TRUNCATE TABLE quarterapp.users;")
+        cls.db.execute("TRUNCATE TABLE " + cls.db.database + ".activities;")
+        cls.db.execute("TRUNCATE TABLE " + cls.db.database + ".users;")
         cls.db.close()
 
     def testCleanup(self):
-        self.db.execute("DELETE FROM quarterapp.activities")
-        self.db.execute("DELETE FROM quarterapp.users")
-
-    #def test_no_users(self):
-    #    self.assertEqual(0, quarterapp.storage.get_user_count(self.db))
-    #    users = quarterapp.storage.get_users(self.db, 0, 10)
-    #    self.assertEqual(0, len(users))
-
-    def test_add_one_user(self):
-        self.assertEqual(0, quarterapp.storage.get_user_count(self.db))
-        quarterapp.storage.add_user(self.db, username = "bob@example.com", password="secret")
-        self.assertEqual(1, quarterapp.storage.get_user_count(self.db))
+        self.db.execute("DELETE FROM " + self.db.database + ".activities")
+        self.db.execute("DELETE FROM " + self.db.database + ".users")
 
     def testNoActivities(self):
-        activities = quarterapp.storage.get_activities(self.db, "bob@example.com")
+        activities = quarterapp.storage.get_activities(self.db, BOB_THE_USER)
         self.assertEqual(0, len(activities))
 
     def testAddActivity(self):
-        quarterapp.storage.add_activity(self.db, "bob@example.com", "activity 1", "#ffffff")
-        activities = quarterapp.storage.get_activities(self.db, "bob@example.com")
+        quarterapp.storage.add_activity(self.db, BOB_THE_USER, "activity 1", "#ffffff")
+        activities = quarterapp.storage.get_activities(self.db, BOB_THE_USER)
         self.assertEqual(1, len(activities))
-
-    def testAddAnotherActivity(self):
-        quarterapp.storage.add_activity(self.db, "bob@example.com", "activity 2", "#000")
-        activities = quarterapp.storage.get_activities(self.db, "bob@example.com")
-        self.assertEqual(2, len(activities))
+        pass
 
 if __name__ == "__main__":
     unittest.main()
