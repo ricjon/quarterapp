@@ -4,7 +4,7 @@ use quarterapp;
 
 CREATE TABLE `activities` (
     `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(256) NOT NULL DEFAULT '',
+    `user` INT(11) NOT NULL,
     `title` VARCHAR(32) NOT NULL DEFAULT '',
     `color` VARCHAR(32) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`)
@@ -12,7 +12,7 @@ CREATE TABLE `activities` (
 
 CREATE TABLE `sheets` (
     `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(256) NOT NULL DEFAULT '',
+    `user` INT(11) NOT NULL,
     `date` DATE NOT NULL,
     `quarters` TEXT NOT NULL,
     PRIMARY KEY (`id`)
