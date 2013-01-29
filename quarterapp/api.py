@@ -145,7 +145,11 @@ class SheetApiHandler(AuthenticatedHandler):
     @authenticated_user
     def put(self, date):
         """
-        Update a sheet with the quarters passed
+        Update a sheet with the quarters passed and return a map containing
+        the unique occurance of each activity.
+
+        @param date The sheet date in format YYYY-MM-DD
+        @return a JSON map containing the unique count for each activity
         """
         user_id  = self.get_current_user_id()
         if not user_id:
@@ -158,10 +162,12 @@ class SheetApiHandler(AuthenticatedHandler):
         quarters = self.get_argument("quarters", "")
 
         if quarters:
-            quarters_array = quarters[1:-1].split(',')
+            quarters_array = quarters.split(',')
             if len(quarters_array) == 96:
                 update_sheet(self.application.db, user_id, date, quarters)
-                self.write_success()
+                summary = Counter(quarters_array)
+                self.write({ "summary" : summary })
+                self.finish()
             else:
                 self.respond_with_error(ERROR_NOT_96_QUARTERS)
         else:
