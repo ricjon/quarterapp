@@ -46,10 +46,6 @@ class ActivityApiHandler(AuthenticatedHandler):
         Get the complete list of activities
         """
         user_id  = self.get_current_user_id()
-        if not user_id:
-            logging.error("Could not retrieve usr id")
-            raise HTTPError(500)
-
         activities = get_activities(self.application.db, user_id)
         if not activities:
             activities = []
@@ -62,10 +58,6 @@ class ActivityApiHandler(AuthenticatedHandler):
         Create a new activity
         """
         user_id  = self.get_current_user_id()
-        if not user_id:
-            logging.error("Could not retrieve usr id")
-            raise HTTPError(500)
-
         title = self.get_argument("title", "")
         color = self.get_argument("color", "")
 
@@ -92,10 +84,6 @@ class ActivityApiHandler(AuthenticatedHandler):
         Update a given activity
         """
         user_id  = self.get_current_user_id()
-        if not user_id:
-            logging.error("Could not retrieve usr id")
-            raise HTTPError(500)
-
         title = self.get_argument("title", "")
         color = self.get_argument("color", "")
 
@@ -122,10 +110,6 @@ class ActivityApiHandler(AuthenticatedHandler):
         Delete a given activity
         """
         user_id  = self.get_current_user_id()
-        if not user_id:
-            logging.error("Could not retrieve usr id")
-            raise HTTPError(500)
-
         errors = []
 
         if not activity_id or len(activity_id) == 0:
@@ -152,9 +136,6 @@ class SheetApiHandler(AuthenticatedHandler):
         @return a JSON map containing the unique count for each activity
         """
         user_id  = self.get_current_user_id()
-        if not user_id:
-            logging.error("Could not retrieve usr id")
-            raise HTTPError(500)
 
         if not valid_date(date):
             self.respond_with_error(ERROR_INVALID_SHEET_DATE)
