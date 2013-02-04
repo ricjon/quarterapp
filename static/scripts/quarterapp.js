@@ -62,6 +62,9 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             $("table.sheet td").bind("mousemove", $.proxy(this.on_sheet_mouse_move, this));
             $("body").bind("mouseup", $.proxy(this.on_sheet_mouse_up, this));
 
+            // Set the current activity
+            var activity = this.get_preferred_activity();
+            this.set_current_activity(activity);
         },
 
         /**
@@ -121,6 +124,31 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             }
             catch(e) {
                 return hex;
+            }
+        },
+
+        /**
+         * Set the preferred activity to use in the sheet view.
+         */
+        set_preferred_activity : function(activity) {
+            if(typeof(localStorage) != "undefined") {
+                localStorage.setItem("quarter-activity-id", activity.id);
+                localStorage.setItem("quarter-activity-title", activity.title);
+                localStorage.setItem("quarter-activity-color", activity.color);
+            }
+        },
+
+        /**
+         * Get the preferred activity to use as the default activity on the sheet view.
+         */
+        get_preferred_activity : function() {
+            if(typeof(localStorage) != "undefined") {
+                return { "id" :  localStorage.getItem("quarter-activity-id"),
+                         "title" : localStorage.getItem("quarter-activity-title"),
+                         "color" : localStorage.getItem("quarter-activity-color") };
+            }
+            else {
+                return this.current_activity;
             }
         },
 
@@ -243,7 +271,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                 return;
             }
 
-            var location = "/sheet/" + to_date_string(date);
+            var location = "/sheet/" + this.to_date_string(date);
             window.location = location;
         },
 
@@ -264,16 +292,22 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                 new_title = $element.attr("data-activity-title");
 
             if(new_id !== undefined && new_color !== undefined && new_title !== undefined) {
-                this.current_activity.id = new_id;
-                this.current_activity.color = new_color;
-                this.current_activity.title = new_title;
-
-                var $current_activity = $("#current-activity");
-                $current_activity.find("input.palette").css("background-color", new_color);
-                $current_activity.find("div.activity-title").text(new_title)
+                this.set_current_activity({ "id": new_id, "color" : new_color, "title" : new_title})
             }
             
             $("#available-activities").hide();
+        },
+
+        /**
+         * Set the current activity in the sheet view, and update the visual representation
+         */
+        set_current_activity : function(activity) {
+            this.current_activity = activity;
+            var $current_activity = $("#current-activity");
+            $current_activity.find("input.palette").css("background-color", activity.color);
+            $current_activity.find("div.activity-title").text(activity.title)
+
+            this.set_preferred_activity(activity);
         },
 
         /**
