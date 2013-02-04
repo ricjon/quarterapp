@@ -81,23 +81,48 @@ class TestStorage(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.db.execute("TRUNCATE TABLE " + cls.db.database + ".activities;")
-        cls.db.execute("TRUNCATE TABLE " + cls.db.database + ".users;")
         cls.db.close()
 
-    def testCleanup(self):
+    def tearDown(self):
+        self.db.execute("TRUNCATE TABLE " + self.db.database + ".activities;")
+        self.db.execute("TRUNCATE TABLE " + self.db.database + ".users;")
+
+    def test_cleanup(self):
         self.db.execute("DELETE FROM " + self.db.database + ".activities")
         self.db.execute("DELETE FROM " + self.db.database + ".users")
 
-    def testNoActivities(self):
+    def test_no_activities(self):
         activities = quarterapp.storage.get_activities(self.db, BOB_THE_USER)
         self.assertEqual(0, len(activities))
 
-    def testAddActivity(self):
+    def test_add_activity(self):
         quarterapp.storage.add_activity(self.db, BOB_THE_USER, "activity 1", "#ffffff")
         activities = quarterapp.storage.get_activities(self.db, BOB_THE_USER)
         self.assertEqual(1, len(activities))
-        pass
+
+    def test_get_activity(self):
+        activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 2", "#ccc")
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        self.assertEqual(activity.title, "Activity 2")
+
+    def test_delete_activity(self):
+        activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 3", "#123123")
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        self.assertIsNotNone(activity)
+
+        quarterapp.storage.delete_activity(self.db, BOB_THE_USER, activity_id)
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        self.assertIsNone(activity)
+
+    def test_get_activity(self):
+        activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 444", "#ccc")
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        self.assertEqual(activity.title, "Activity 444")
+
+        quarterapp.storage.update_activity(self.db, BOB_THE_USER, activity_id, "Activity 4", activity.color)
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        self.assertEqual(activity.title, "Activity 4")
+        self.assertEqual(activity.color, "#ccc")
 
 if __name__ == "__main__":
     unittest.main()
