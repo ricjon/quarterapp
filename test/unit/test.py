@@ -40,6 +40,12 @@ mysql_password = "quarterapp"
 
 BOB_THE_USER = 1
 
+def default_sheet():
+    quarters = []
+    for i in range(0, 96):
+        quarters.append(-1)
+    return quarters
+
 class TestUnit(unittest.TestCase):
     def test_hex(self):
         self.assertTrue(valid_color_hex("#fff"))
@@ -90,6 +96,7 @@ class TestStorage(unittest.TestCase):
     def test_cleanup(self):
         self.db.execute("DELETE FROM " + self.db.database + ".activities")
         self.db.execute("DELETE FROM " + self.db.database + ".users")
+        self.db.execute("DELETE FROM " + self.db.database + ".sheets")
 
     def test_no_activities(self):
         activities = quarterapp.storage.get_activities(self.db, BOB_THE_USER)
@@ -123,6 +130,19 @@ class TestStorage(unittest.TestCase):
         activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
         self.assertEqual(activity.title, "Activity 4")
         self.assertEqual(activity.color, "#ccc")
+
+    def test_get_empty_sheet(self):
+        sheet = quarterapp.storage.get_sheet(self.db, BOB_THE_USER, "2013-02-05")
+        self.assertIsNone(sheet)
+
+    def test_update_sheet(self):
+        sheet = quarterapp.storage.get_sheet(self.db, BOB_THE_USER, "2013-02-05")
+        self.assertIsNone(sheet)
+
+        quarterapp.storage.update_sheet(self.db, BOB_THE_USER, "2012-02-05", str(default_sheet()))
+        sheet = quarterapp.storage.get_sheet(self.db, BOB_THE_USER, "2012-02-05")
+        
+        sself.assertIsNotNone(sheet)
 
 if __name__ == "__main__":
     unittest.main()

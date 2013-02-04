@@ -286,3 +286,18 @@ def update_sheet(db, user_id, date, quarters):
     if result == 0:
         result = db.execute("INSERT INTO " + db.database + ".sheets (user, date, quarters) VALUES(%s, %s, %s);", user_id, date, quarters)
     return result
+
+def get_sheet(db, user_id, date):
+    """
+    Get a timesheet for the given user and date
+
+    @param db The database connection to use
+    @param user_id The id of the authenticated user the activity is associated with
+    @param date The time sheets date, must be in the format YYYY-MM-DD
+    @return The sheet containing the quarters or None if no sheet found
+    """
+    sheets = db.query("SELECT quarters FROM " + db.database + ".sheets WHERE user=%s and date=%s", user_id, date)
+    if sheets and len(sheets) == 1:
+        return sheets[0]
+    else:
+        return None
