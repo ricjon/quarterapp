@@ -27,7 +27,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.auth
 import tornado.options
-import tornado.database
+import MySQLdb
 from tornado.options import options, define
 
 from quarterapp.settings import QuarterSettings
@@ -121,8 +121,8 @@ def main():
     main_loop = tornado.ioloop.IOLoop.instance()
 
     # Setup database connection
-    application.db = tornado.database.Connection(options.mysql_host, options.mysql_database,
-        options.mysql_user, options.mysql_password)
+    application.db = MySQLdb.connect(host=options.mysql_host, db=options.mysql_database,
+        user=options.mysql_user, passwd=options.mysql_password)
 
     # Setup application settings
     application.quarter_settings = QuarterSettings(application.db)
