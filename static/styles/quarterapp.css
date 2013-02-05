@@ -604,7 +604,9 @@ div.activity-module.edit div.activity-color {
     padding: 0px;
 }
 
-/*div.activity-module*/ input.palette {
+#current-activity input.palette,
+#available-activities input.palette,
+.activity-module input.palette {
     padding: 6px;
     min-width: 15px;
     max-width: 15px;
@@ -625,7 +627,11 @@ div.activity-title {
     float: left;
     padding: 4px;
     padding-left: 8px;
-    margin-left:2px;
+    margin-left: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 120px;
+    text-overflow: ellipsis;
 }
 
 .activity-module.edit div.activity-title {
