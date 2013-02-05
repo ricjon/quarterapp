@@ -21,9 +21,10 @@
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import unittest
-import tornado.database
+import sqlite3
 import os
 import sys
+import tempfile
 
 # Need to add the quarterapp root directory to enable imports
 sys.path.append(
@@ -39,6 +40,64 @@ mysql_user = "quarterapp"
 mysql_password = "quarterapp"
 
 BOB_THE_USER = 1
+
+def setup_db(filename):
+
+    conn = sqlite3.connect(filename)
+
+    sql = """
+    CREATE TABLE `activities` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `user` INT(11) NOT NULL,
+    `title` VARCHAR(32) NOT NULL DEFAULT '',
+    `color` VARCHAR(32) NOT NULL DEFAULT ''
+);
+
+CREATE TABLE `sheets` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `user` INT(11) NOT NULL,
+    `date` DATE NOT NULL,
+    `quarters` TEXT NOT NULL
+) ;
+
+CREATE TABLE `settings` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `key` VARCHAR(64) NOT NULL UNIQUE,
+    `value` TEXT NOT NULL
+    
+);
+
+CREATE TABLE `users` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `username` VARCHAR(256) NOT NULL DEFAULT '',
+    `password` VARCHAR(90) NOT NULL DEFAULT '',
+    `type` TINYINT NOT NULL DEFAULT '0',
+    `state`  TINYINT NOT NULL DEFAULT '0',
+    `last_login` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `reset_code` VARCHAR(64)
+) ;
+
+CREATE TABLE `signups` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `username` VARCHAR(256) NOT NULL DEFAULT '',
+    `activation_code` VARCHAR(64) NOT NULL DEFAULT '',
+    `ip` VARCHAR(39) NOT NULL DEFAULT '',
+    `signup_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+INSERT INTO settings (`key`, `value`) VALUES("allow-signups", "1");
+INSERT INTO settings (`key`, `value`) VALUES("allow-activations", "1");
+
+INSERT INTO users (`username`, `password`, `type`, `state`) VALUES("admin", "", 1, 1);"""
+    cur = conn.cursor()
+    for stmt in sql.split(';'):
+        try:
+            cur.execute(stmt)
+        except:
+            print("Exception when executing '" + stmt + "'")
+            raise
+    return conn
 
 def default_sheet():
     quarters = []
@@ -82,37 +141,39 @@ class TestUnit(unittest.TestCase):
 class TestStorage(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.db = tornado.database.Connection(mysql_host, mysql_database, 
-            mysql_user, mysql_password)
+        fd, temp_name = tempfile.mkstemp()
+        os.close(fd) #Don't need the fd
+        cls.db = setup_db(temp_name)
+        #cls.db = tornado.database.Connection(mysql_host, mysql_database, 
+        #    mysql_user, mysql_password)
 
     @classmethod
     def tearDownClass(cls):
         cls.db.close()
 
     def tearDown(self):
-        self.db.execute("TRUNCATE TABLE " + self.db.database + ".activities;")
-        self.db.execute("TRUNCATE TABLE " + self.db.database + ".users;")
+        pass
 
     def test_cleanup(self):
-        self.db.execute("DELETE FROM " + self.db.database + ".activities")
-        self.db.execute("DELETE FROM " + self.db.database + ".users")
-        self.db.execute("DELETE FROM " + self.db.database + ".sheets")
+        self.db.execute("DELETE FROM activities")
+        self.db.execute("DELETE FROM users")
+        self.db.execute("DELETE FROM sheets")
 
-    def test_no_activities(self):
+    def test_010_no_activities(self):
         activities = quarterapp.storage.get_activities(self.db, BOB_THE_USER)
         self.assertEqual(0, len(activities))
 
-    def test_add_activity(self):
+    def test_020_add_activity(self):
         quarterapp.storage.add_activity(self.db, BOB_THE_USER, "activity 1", "#ffffff")
         activities = quarterapp.storage.get_activities(self.db, BOB_THE_USER)
         self.assertEqual(1, len(activities))
 
-    def test_get_activity(self):
+    def test_030_get_activity(self):
         activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 2", "#ccc")
         activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
         self.assertEqual(activity.title, "Activity 2")
 
-    def test_delete_activity(self):
+    def test_040_delete_activity(self):
         activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 3", "#123123")
         activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
         self.assertIsNotNone(activity)
@@ -121,7 +182,7 @@ class TestStorage(unittest.TestCase):
         activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
         self.assertIsNone(activity)
 
-    def test_get_activity(self):
+    def test_050_get_activity(self):
         activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 444", "#ccc")
         activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
         self.assertEqual(activity.title, "Activity 444")
@@ -131,18 +192,18 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(activity.title, "Activity 4")
         self.assertEqual(activity.color, "#ccc")
 
-    def test_get_empty_sheet(self):
+    def test_060_get_empty_sheet(self):
         sheet = quarterapp.storage.get_sheet(self.db, BOB_THE_USER, "2013-02-05")
         self.assertIsNone(sheet)
 
-    def test_update_sheet(self):
+    def test_070_update_sheet(self):
         sheet = quarterapp.storage.get_sheet(self.db, BOB_THE_USER, "2013-02-05")
         self.assertIsNone(sheet)
 
         quarterapp.storage.update_sheet(self.db, BOB_THE_USER, "2012-02-05", str(default_sheet()))
         sheet = quarterapp.storage.get_sheet(self.db, BOB_THE_USER, "2012-02-05")
         
-        sself.assertIsNotNone(sheet)
+        self.assertIsNotNone(sheet)
 
 if __name__ == "__main__":
     unittest.main()

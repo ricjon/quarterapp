@@ -22,11 +22,34 @@
 
 import tornado.database
 
-class User:
+class User(object):
     Normal=0
     Administrator=1
     Enabled = 1
     Disabled = 0
+
+
+class Data(object):
+    def __init__(self, data):
+        for key, val in data:
+            setattr(self, key, val)
+
+def _query(db, sql, params):
+    cursor = db.cursor()
+    cursor.execute(sql, params)
+    cols = [c[0] for c in cursor.description]
+    return [Data(zip(cols, row)) for row in cursor.fetchall()]
+
+def _query_rowcount(db, sql, params):
+    cursor = db.cursor()
+    cursor.execute(sql, params)
+    
+    return cursor.rowcount
+
+def _exec(db, sql, params):
+    cursor = db.cursor()
+    cursor.execute(sql, params)
+    return cursor.lastrowid
 
 def get_signup_count(db):
     """
@@ -34,7 +57,7 @@ def get_signup_count(db):
 
     @return The number of users
     """
-    count = db.query("SELECT COUNT(*) FROM " + db.database + ".signups;")
+    count = _query(db, "SELECT COUNT(*) FROM signups;")
     if len(count) > 0:
         return count[0]["COUNT(*)"]
     else:
@@ -46,7 +69,7 @@ def get_user_count(db):
 
     @return The number of users
     """
-    count = db.query("SELECT COUNT(*) FROM " + db.database + ".users;")
+    count = _query(db, "SELECT COUNT(*) FROM users;")
     if len(count) > 0:
         return count[0]["COUNT(*)"]
     else:
@@ -54,7 +77,7 @@ def get_user_count(db):
 
 def get_filtered_user_count(db, query_filter):
     query_filter = "%{0}%".format(query_filter) # MySQL formatting using % as wildcard
-    count = db.query("SELECT COUNT(*) FROM " + db.database + ".users WHERE username LIKE %s;", query_filter)
+    count = _query(db, "SELECT COUNT(*) FROM users WHERE username LIKE %s;", query_filter)
     if len(count) > 0:
         return count[0]["COUNT(*)"]
     else:
@@ -70,14 +93,14 @@ def get_users(db, start = 0, count = 50):
     @param start The start index in the user table (default is 0)
     @param count The number of users to receive (default is 50)
     """
-    users = db.query("SELECT id, username, type, state, last_login FROM " + db.database + ".users ORDER BY id LIMIT %s, %s;", int(start), int(count))
+    users = _query(db, "SELECT id, username, type, state, last_login FROM users ORDER BY id LIMIT %s, %s;", int(start), int(count))
     if not users:
         users = []
     return users
 
 def get_filtered_users(db, query_filter, start = 0, count = 50):
     query_filter = "%{0}%".format(query_filter) # MySQL formatting using % as wildcard
-    users = db.query("SELECT id, username, type, state, last_login FROM " + db.database + ".users WHERE username LIKE %s ORDER BY id LIMIT %s, %s;", query_filter, int(start), int(count))
+    users = _query(db, "SELECT id, username, type, state, last_login FROM users WHERE username LIKE %s ORDER BY id LIMIT %s, %s;", query_filter, int(start), int(count))
     if not users:
         users = []
     return users
@@ -98,7 +121,7 @@ def add_user(db, username, password, user_type = User.Normal):
     @param username The username
     @param password The users password
     """
-    return db.execute("INSERT INTO " + db.database + ".users (username, password, type, state) VALUES(%s, %s, %s, \"1\");",
+    return _exec(db, "INSERT INTO users (username, password, type, state) VALUES(%s, %s, %s, \"1\");",
         username, password, user_type)
 
 def username_unique(db, username):
@@ -109,7 +132,7 @@ def username_unique(db, username):
     @param username The username to check
     @return True if the username is not used, else False
     """
-    users = db.query("SELECT username FROM " + db.database + ".users WHERE username=%s;", username)
+    users = _query(db, "SELECT username FROM users WHERE username=:username;", {'username': username})
     return len(users) < 1
 
 def enable_user(db, username):
@@ -119,7 +142,7 @@ def enable_user(db, username):
     @param db The database connection to use
     @param username The user to enable
     """
-    return db.execute("UPDATE " + db.database + ".users SET state=%s WHERE username=%s;", User.Enabled, username) == 1
+    return _query(db, "UPDATE users SET state=%s WHERE username=%s;", User.Enabled, username) == 1
 
 def disable_user(db, username):
     """
@@ -128,7 +151,7 @@ def disable_user(db, username):
     @param db The database connection to use
     @param username The user to disable
     """
-    return db.execute("UPDATE " + db.database + ".users SET state=%s WHERE username=%s;", User.Disabled, username) == 1
+    return _query(db, "UPDATE users SET state=%s WHERE username=%s;", User.Disabled, username) == 1
 
 def delete_user(db, username):
     """
@@ -139,11 +162,11 @@ def delete_user(db, username):
     @param username The user to delete
     """
     # TODO Make a transaction and also delete all activities and quarters!
-    return db.execute("DELETE FROM " + db.database + ".users WHERE username=%s;", username)
+    return _query(db, "DELETE FROM users WHERE username=%s;", username)
 
 def signup_user(db, email, code, ip):
     # TODO Make transaction to see if username is unique
-    return db.execute("INSERT INTO " + db.database + ".signups (username, activation_code, ip) VALUES(%s, %s, %s);",
+    return _exec(db, "INSERT INTO signups (username, activation_code, ip) VALUES(%s, %s, %s);",
         email, code, ip)
 
 def activate_user(db, code, password):
@@ -156,11 +179,11 @@ def activate_user(db, code, password):
     """
     try:
         # TODO Make transaction
-        signups = db.query("SELECT username, activation_code FROM " + db.database + ".signups WHERE activation_code=%s;", code)
+        signups = _query(db, "SELECT username, activation_code FROM signups WHERE activation_code=%s;", code)
 
         if signups[0]["activation_code"] == code:
-            db.execute("DELETE FROM " + db.database + ".signups WHERE activation_code=%s;", code)
-            db.execute("INSERT INTO " + db.database + ".users (username, password, type, state) VALUES(%s, %s, \"0\", \"1\");", signups[0]["username"], password)
+            _query(db, "DELETE FROM signups WHERE activation_code=%s;", code)
+            _exec(db, "INSERT INTO users (username, password, type, state) VALUES(%s, %s, \"0\", \"1\");", signups[0]["username"], password)
             return True
     except:
         return False
@@ -174,7 +197,7 @@ def set_user_reset_code(db, username, reset_code):
     @param reset_code The reset code to store
     """
     try:
-        db.execute("UPDATE " + db.database + ".users SET reset_code=%s WHERE username=%s;", reset_code, username)
+        _query(db, "UPDATE users SET reset_code=:code WHERE username=:user", {'code': reset_code, 'user': username})
         return True
     except:
         return False
@@ -188,10 +211,10 @@ def reset_password(db, reset_code, new_password):
     @param new_password The password to set (will not be hashed)
     """
     try:
-        users = db.query("SELECT username FROM " + db.database + ".users WHERE reset_code=%s;", reset_code)
+        users = _query(db, "SELECT username FROM users WHERE reset_code=:code;", {'code': reset_code})
         if len(users) == 1:
-            db.execute("UPDATE " + db.database + ".users SET password=%s WHERE reset_code=%s;", new_password, reset_code)
-            db.execute("UPDATE " + db.database + ".users SET reset_code='' WHERE reset_code=%s;", reset_code)
+            _query(db, "UPDATE users SET password=:newpass WHERE reset_code=:code;", {'code': reset_code, 'newpass': new_password})
+            _query(db, "UPDATE users SET reset_code='' WHERE reset_code=:code;", {'code': reset_code})
             return True
         else:
             return False
@@ -208,7 +231,7 @@ def authenticate_user(db, username, password):
     @return The user object (except the password)
     """
     try:
-        users = db.query("SELECT id, username, type, state FROM " + db.database + ".users WHERE username=%s AND password=%s;", username, password)
+        users = _query(db, "SELECT id, username, type, state FROM users WHERE username=%s AND password=%s;", username, password)
         if len(users) == 1:
             return users[0]
         else:
@@ -223,7 +246,7 @@ def get_activities(db, user_id):
     @param db The database connection to use
     @param user_id The id of the authenticated username to retrieve activities for
     """
-    activities = db.query("SELECT id, title, color FROM " + db.database + ".activities WHERE user=%s;", user_id)
+    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=:user;", {'user': user_id})
     if not activities:
         activities = []
     return activities    
@@ -237,7 +260,7 @@ def add_activity(db, user_id, title, color):
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return db.execute("INSERT INTO " + db.database + ".activities (user, title, color) VALUES(%s, %s, %s);", user_id, title, color)
+    return _exec(db, "INSERT INTO activities (user, title, color) VALUES(:id, :title, :color);", {'id': user_id, 'title': title, 'color':color})
 
 def get_activity(db, user_id, activity_id):
     """
@@ -246,7 +269,8 @@ def get_activity(db, user_id, activity_id):
     @param user_id The id of the authenticated user to associate the activity with
     @param activity_id The id of the activity to retrieve
     """
-    activities = db.query("SELECT id, title, color FROM " + db.database + ".activities WHERE user=%s AND id=%s;", user_id, activity_id)
+    print(activity_id, type(activity_id))
+    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=:user AND id=:activity_id;", {'user': user_id, 'activity_id': activity_id})
     if activities and len(activities) == 1:
         return activities[0]
     else:
@@ -261,7 +285,7 @@ def update_activity(db, user_id, activity_id, title, color):
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return db.execute("UPDATE " + db.database + ".activities SET title=%s, color=%s WHERE user=%s AND id=%s;", title, color, user_id, activity_id)
+    return _exec(db, "UPDATE activities SET title=:title, color=:color WHERE user=:user AND id=:activity_id;", {'title': title, 'color': color, 'user': user_id, 'activity_id': activity_id})
 
 def delete_activity(db, user_id, activity_id):
     """Deletes a given activity
@@ -270,7 +294,7 @@ def delete_activity(db, user_id, activity_id):
     @param user_id The id of the authenticated user the activity is associated with
     @param activity_id The id of the activity to delete
     """
-    return db.execute("DELETE FROM " + db.database + ".activities WHERE user=%s AND id=%s;", user_id, activity_id)
+    return _exec(db, "DELETE FROM activities WHERE user=:user AND id=:activity;", {'user': user_id, 'activity': activity_id})
 
 def update_sheet(db, user_id, date, quarters):
     """
@@ -282,9 +306,9 @@ def update_sheet(db, user_id, date, quarters):
     @param date The time sheets date, must be in the format YYYY-MM-DD
     @param quarters the time sheets list of quarters
     """
-    result = db.execute_rowcount("UPDATE " + db.database + ".sheets SET quarters=%s WHERE user=%s and date=%s", quarters, user_id, date)
+    result = _query_rowcount(db, "UPDATE sheets SET quarters=:quarters WHERE user=:user and date=:date", {'quarters': quarters, 'user': user_id, 'date': date})
     if result == 0:
-        result = db.execute("INSERT INTO " + db.database + ".sheets (user, date, quarters) VALUES(%s, %s, %s);", user_id, date, quarters)
+        result = _exec(db, "INSERT INTO sheets (user, date, quarters) VALUES(:user, :date, :quarters);", {'quarters': quarters, 'user': user_id, 'date': date})
     return result
 
 def get_sheet(db, user_id, date):
@@ -296,7 +320,7 @@ def get_sheet(db, user_id, date):
     @param date The time sheets date, must be in the format YYYY-MM-DD
     @return The sheet containing the quarters or None if no sheet found
     """
-    sheets = db.query("SELECT quarters FROM " + db.database + ".sheets WHERE user=%s and date=%s", user_id, date)
+    sheets = _query(db, "SELECT quarters FROM sheets WHERE user=:user and date=:date", {'user':user_id, 'date': date})
     if sheets and len(sheets) == 1:
         return sheets[0]
     else:
