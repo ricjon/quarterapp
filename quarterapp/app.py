@@ -30,6 +30,7 @@ from tornado.web import HTTPError
 from quarterapp.basehandlers import *
 from quarterapp.storage import *
 from quarterapp.errors import *
+from quarterapp.utils import *
 
 class IndexHandler(BaseHandler):
     def get(self):
@@ -46,7 +47,7 @@ class SheetHandler(AuthenticatedHandler):
     def default_sheet(self):
         quarters = []
         for i in range(0, 96):
-            quarters.append(-1)
+            quarters.append({ "id" : -1, "color" : "#fff", "border-color" : "#ccc"})
         return quarters
 
     @authenticated_user
@@ -74,7 +75,23 @@ class SheetHandler(AuthenticatedHandler):
 
         activities = get_activities(self.application.db, user_id)
 
-        quarters = self.default_sheet()
+        # Create a dict representation of the list of activities, to quicker resolve colors
+        # for cells.
+        activity_dict = get_dict_from_sequence(activities, "id")
+
+        sheet = get_sheet(self.application.db, user_id, date)
+        quarters = []
+        if sheet:
+            ids = sheet.split(',')
+            for i in ids:
+                if int(i) > -1:
+                    color = activity_dict[int(i)]["color"]
+                    border_color = "#ccc" # darken color
+                    quarters.append({ "id" : i, "color" : color, "border-color" : border_color})
+                else:
+                    quarters.append({ "id" : i, "color" : "#fff", "border-color" : "#ccc"})
+        else:
+            quarters = self.default_sheet()
 
         self.render(u"app/sheet.html", date = date_obj, weekday = weekday,
             today = today, yesterday = yesterday, tomorrow = tomorrow,
