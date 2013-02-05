@@ -20,7 +20,6 @@
 #  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import tornado.database
 
 class User(object):
     Normal=0
@@ -50,6 +49,19 @@ def _exec(db, sql, params):
     cursor = db.cursor()
     cursor.execute(sql, params)
     return cursor.lastrowid
+
+
+def get_settings(db):
+    """
+    Get all settings from the database
+    """
+    return _query(db, "SELECT * FROM settings;", tuple())
+
+   
+def put_setting(db, key, value):
+    """
+    """
+    _exec(db, "UPDATE settings SET value=:value WHERE key=:key;", {'value': value, 'key': key})
 
 def get_signup_count(db):
     """

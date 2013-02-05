@@ -21,6 +21,7 @@
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import logging
+import storage
 import tornado.database
 
 class QuarterSettings:
@@ -48,7 +49,7 @@ class QuarterSettings:
         Update the settings from the database, if cannot read from database the
         old settings remain active
         """
-        settings = self.db.query("SELECT * FROM quarterapp.settings;")
+        settings = storage.get_settings(self.db)
         if settings:
             for row in settings:
                 self.settings[row.key] = row.value
@@ -76,7 +77,7 @@ class QuarterSettings:
         @param value The new value
         """
         if self.settings.has_key(key):
-            self.db.execute("UPDATE quarterapp.settings SET settings.value=%s WHERE settings.key=%s;", value, key)
+            storage.put_setting(db, key, value)
             self.settings[key] = value
         else:
             logging.warning("Trying to update a settings key that does not exists! (%s)", key)

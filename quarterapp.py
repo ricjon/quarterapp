@@ -27,7 +27,6 @@ import tornado.ioloop
 import tornado.web
 import tornado.auth
 import tornado.options
-import MySQLdb
 from tornado.options import options, define
 
 from quarterapp.settings import QuarterSettings
@@ -49,6 +48,8 @@ def read_configuration():
     define("mysql_database", help="MySQL database name")
     define("mysql_user", help="MySQL username")
     define("mysql_password", help="MySQL password")
+    define("backend", help="Choice of backend, sqlite or mysql")
+    define("sqlite_database", help="SQLite3 database file")
     define("mail_host", help="SMTP host name")
     define("mail_port", type=int, help="SMTP port number")
     define("mail_user", help="SMTP Authentication username")
@@ -120,9 +121,16 @@ def main():
 
     main_loop = tornado.ioloop.IOLoop.instance()
 
+    options.sqlite_database
+
     # Setup database connection
-    application.db = MySQLdb.connect(host=options.mysql_host, db=options.mysql_database,
-        user=options.mysql_user, passwd=options.mysql_password)
+    if options.backend == 'sqlite':
+        import sqlite3
+        application.db = sqlite3.connect(options.sqlite_database)
+    else:
+        import MySQLdb
+        application.db = MySQLdb.connect(host=options.mysql_host, port=options.mysql_port, db=options.mysql_database,
+            user=options.mysql_user, passwd=options.mysql_password)
 
     # Setup application settings
     application.quarter_settings = QuarterSettings(application.db)
