@@ -65,7 +65,6 @@ class SignupHandler(BaseHandler):
                     signup_user(self.application.db, username, code, self.request.remote_ip)
                     self.render(u"public/signup_instructions.html")
                 else:
-                    logging.error("Could not signup user: %s", sys.exc_info())
                     self.render(u"public/signup.html", error = error, username = username)    
             except Exception, e:
                 logging.error("Could not signup user: %s" % (e,))
