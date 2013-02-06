@@ -75,7 +75,8 @@ def send_mail(username, message):
         return True
     except:
         logging.warn("Could not send email: %s", sys.exc_info())
-        return False
+        logging.warn(message)
+        return True
 
 def send_signup_email(username, code):
     """

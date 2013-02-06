@@ -20,6 +20,9 @@
 #  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+from functools import wraps
+import sqlite3, re
+_SQLITE_RE = re.compile(r'%\((\w+)\)s')
 
 class User(object):
     Normal=0
@@ -33,23 +36,35 @@ class Data(object):
         for key, val in data:
             setattr(self, key, val)
 
+def hack_sql(fn):
+    """Hack MySQL driver SQL into SQLite3 driver SQL. 
+    WISHLIST: Should have zero impact when using MySQL."""
+    @wraps(fn)
+    def hack_sql(db, sql, *args, **kwargs): 
+        if isinstance(db, sqlite3.Connection):
+            sql = _SQLITE_RE.sub(r':\1', sql.replace('%s', '?'))
+        return fn(db, sql, *args, **kwargs)
+    return hack_sql
+
+@hack_sql
 def _query(db, sql, params):
     cursor = db.cursor()
     cursor.execute(sql, params)
     cols = [c[0] for c in cursor.description]
     return [Data(zip(cols, row)) for row in cursor.fetchall()]
 
+@hack_sql
 def _query_rowcount(db, sql, params):
     cursor = db.cursor()
     cursor.execute(sql, params)
     
     return cursor.rowcount
 
+@hack_sql
 def _exec(db, sql, params):
     cursor = db.cursor()
     cursor.execute(sql, params)
     return cursor.lastrowid
-
 
 def get_settings(db):
     """
@@ -61,7 +76,7 @@ def get_settings(db):
 def put_setting(db, key, value):
     """
     """
-    _exec(db, "UPDATE settings SET value=:value WHERE key=:key;", {'value': value, 'key': key})
+    _exec(db, "UPDATE settings SET value=%(value)s WHERE key=%(key)s;", {'value': value, 'key': key})
 
 def get_signup_count(db):
     """
@@ -144,7 +159,7 @@ def username_unique(db, username):
     @param username The username to check
     @return True if the username is not used, else False
     """
-    users = _query(db, "SELECT username FROM users WHERE username=:username;", {'username': username})
+    users = _query(db, "SELECT username FROM users WHERE username=%(username)s;", {'username': username})
     return len(users) < 1
 
 def enable_user(db, username):
@@ -178,8 +193,8 @@ def delete_user(db, username):
 
 def signup_user(db, email, code, ip):
     # TODO Make transaction to see if username is unique
-    return _exec(db, "INSERT INTO signups (username, activation_code, ip) VALUES(%s, %s, %s);",
-        email, code, ip)
+    return _exec(db, "INSERT INTO signups (username, activation_code, ip) VALUES(:email, :code, :ip);",
+        {'email': email, 'code': code, 'ip': ip})
 
 def activate_user(db, code, password):
     """
@@ -209,7 +224,7 @@ def set_user_reset_code(db, username, reset_code):
     @param reset_code The reset code to store
     """
     try:
-        _query(db, "UPDATE users SET reset_code=:code WHERE username=:user", {'code': reset_code, 'user': username})
+        _query(db, "UPDATE users SET reset_code=%(code)s WHERE username=%(user)s", {'code': reset_code, 'user': username})
         return True
     except:
         return False
@@ -223,10 +238,10 @@ def reset_password(db, reset_code, new_password):
     @param new_password The password to set (will not be hashed)
     """
     try:
-        users = _query(db, "SELECT username FROM users WHERE reset_code=:code;", {'code': reset_code})
+        users = _query(db, "SELECT username FROM users WHERE reset_code=%(code)s;", {'code': reset_code})
         if len(users) == 1:
-            _query(db, "UPDATE users SET password=:newpass WHERE reset_code=:code;", {'code': reset_code, 'newpass': new_password})
-            _query(db, "UPDATE users SET reset_code='' WHERE reset_code=:code;", {'code': reset_code})
+            _query(db, "UPDATE users SET password=%(newpass)s WHERE reset_code=%(code)s;", {'code': reset_code, 'newpass': new_password})
+            _query(db, "UPDATE users SET reset_code='' WHERE reset_code=%(code)s;", {'code': reset_code})
             return True
         else:
             return False
@@ -258,7 +273,7 @@ def get_activities(db, user_id):
     @param db The database connection to use
     @param user_id The id of the authenticated username to retrieve activities for
     """
-    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=:user;", {'user': user_id})
+    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=%(user)s;", {'user': user_id})
     if not activities:
         activities = []
     return activities    
@@ -272,7 +287,7 @@ def add_activity(db, user_id, title, color):
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return _exec(db, "INSERT INTO activities (user, title, color) VALUES(:id, :title, :color);", {'id': user_id, 'title': title, 'color':color})
+    return _exec(db, "INSERT INTO activities (user, title, color) VALUES(%(id)s, %(title)s, %(color)s);", {'id': user_id, 'title': title, 'color':color})
 
 def get_activity(db, user_id, activity_id):
     """
@@ -281,8 +296,7 @@ def get_activity(db, user_id, activity_id):
     @param user_id The id of the authenticated user to associate the activity with
     @param activity_id The id of the activity to retrieve
     """
-    print(activity_id, type(activity_id))
-    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=:user AND id=:activity_id;", {'user': user_id, 'activity_id': activity_id})
+    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=%(user)s AND id=%(activity_id)s;", {'user': user_id, 'activity_id': activity_id})
     if activities and len(activities) == 1:
         return activities[0]
     else:
@@ -297,7 +311,7 @@ def update_activity(db, user_id, activity_id, title, color):
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return _exec(db, "UPDATE activities SET title=:title, color=:color WHERE user=:user AND id=:activity_id;", {'title': title, 'color': color, 'user': user_id, 'activity_id': activity_id})
+    return _exec(db, "UPDATE activities SET title=%(title)s, color=%(color)s WHERE user=%(user)s AND id=%(activity_id)s;", {'title': title, 'color': color, 'user': user_id, 'activity_id': activity_id})
 
 def delete_activity(db, user_id, activity_id):
     """Deletes a given activity
@@ -306,7 +320,7 @@ def delete_activity(db, user_id, activity_id):
     @param user_id The id of the authenticated user the activity is associated with
     @param activity_id The id of the activity to delete
     """
-    return _exec(db, "DELETE FROM activities WHERE user=:user AND id=:activity;", {'user': user_id, 'activity': activity_id})
+    return _exec(db, "DELETE FROM activities WHERE user=%(user)s AND id=%(activity)s;", {'user': user_id, 'activity': activity_id})
 
 def update_sheet(db, user_id, date, quarters):
     """
@@ -318,9 +332,9 @@ def update_sheet(db, user_id, date, quarters):
     @param date The time sheets date, must be in the format YYYY-MM-DD
     @param quarters the time sheets list of quarters
     """
-    result = _query_rowcount(db, "UPDATE sheets SET quarters=:quarters WHERE user=:user and date=:date", {'quarters': quarters, 'user': user_id, 'date': date})
+    result = _query_rowcount(db, "UPDATE sheets SET quarters=%(quarters)s WHERE user=%(user)s and date=%(date)s", {'quarters': quarters, 'user': user_id, 'date': date})
     if result == 0:
-        result = _exec(db, "INSERT INTO sheets (user, date, quarters) VALUES(:user, :date, :quarters);", {'quarters': quarters, 'user': user_id, 'date': date})
+        result = _exec(db, "INSERT INTO sheets (user, date, quarters) VALUES(%(user)s, %(date)s, %(quarters)s);", {'quarters': quarters, 'user': user_id, 'date': date})
     return result
 
 def get_sheet(db, user_id, date):
@@ -332,7 +346,7 @@ def get_sheet(db, user_id, date):
     @param date The time sheets date, must be in the format YYYY-MM-DD
     @return The sheet containing the quarters or None if no sheet found
     """
-    sheets = _query(db, "SELECT quarters FROM sheets WHERE user=:user and date=:date", {'user':user_id, 'date': date})
+    sheets = _query(db, "SELECT quarters FROM sheets WHERE user=%(user)s and date=%(date)s", {'user': user_id, 'date': date})
     if sheets and len(sheets) == 1:
         return sheets[0]
     else:

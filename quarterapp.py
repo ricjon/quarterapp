@@ -45,6 +45,7 @@ def read_configuration():
     define("cookie_secret", help="Random long hexvalue to secure cookies")
     define("salt", help="Password salt used")
     define("mysql_host", help="MySQL hostname")
+    define("mysql_port", help="MySQL port", type=int)
     define("mysql_database", help="MySQL database name")
     define("mysql_user", help="MySQL username")
     define("mysql_password", help="MySQL password")

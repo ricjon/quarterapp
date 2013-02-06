@@ -67,8 +67,8 @@ class SignupHandler(BaseHandler):
                 else:
                     logging.error("Could not signup user: %s", sys.exc_info())
                     self.render(u"public/signup.html", error = error, username = username)    
-            except:
-                logging.error("Could not signup user: %s", sys.exc_info())
+            except Exception, e:
+                logging.error("Could not signup user: %s" % (e,))
                 self.render(u"public/signup.html", error = error, username = username)
         else:
             self.render(u"public/signup.html", error = error, username = username)

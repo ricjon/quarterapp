@@ -55,6 +55,7 @@ INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow-activations", "1"
 # Insert default administrator
 INSERT INTO quarterapp.users (`username`, `password`, `type`, `state`) VALUES("admin", "", 1, 1);
 
+commit;
 #
 # type
 #  0 = Normal user
