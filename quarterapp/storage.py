@@ -47,9 +47,9 @@ def hack_sql(fn):
     return hack_sql
 
 @hack_sql
-def _query(db, sql, params):
+def _query(db, sql, *params):
     cursor = db.cursor()
-    cursor.execute(sql, params)
+    cursor.execute(sql, *params)
     cols = [c[0] for c in cursor.description]
     return [Data(zip(cols, row)) for row in cursor.fetchall()]
 
@@ -61,20 +61,27 @@ def _query_rowcount(db, sql, params):
     return cursor.rowcount
 
 @hack_sql
-def _exec(db, sql, params):
+def _exec(db, sql, *params):
     cursor = db.cursor()
-    cursor.execute(sql, params)
+    cursor.execute(sql, *params)
     return cursor.lastrowid
 
 def get_settings(db):
     """
     Get all settings from the database
+
+    @param db The database connection
+    @return a list of toupes (key / value)
     """
     return _query(db, "SELECT * FROM settings;", tuple())
-
    
 def put_setting(db, key, value):
     """
+    Set a specific setting to the given value
+
+    @param db The database connection
+    @param key The setting's key
+    @param value The setting's value
     """
     _exec(db, "UPDATE settings SET value=%(value)s WHERE key=%(key)s;", {'value': value, 'key': key})
 
@@ -82,11 +89,12 @@ def get_signup_count(db):
     """
     Get the total number of pending users (signed up, not active)
 
+    @param db The database connection
     @return The number of users
     """
     count = _query(db, "SELECT COUNT(*) FROM signups;")
     if len(count) > 0:
-        return count[0]["COUNT(*)"]
+        return getattr(count[0], "COUNT(*)")
     else:
         return 0
 
@@ -94,19 +102,28 @@ def get_user_count(db):
     """
     Get the total number of users (not pending users), regardless of their state of type.
 
+    @param db The database connection
     @return The number of users
     """
     count = _query(db, "SELECT COUNT(*) FROM users;")
     if len(count) > 0:
-        return count[0]["COUNT(*)"]
+        return getattr(count[0], "COUNT(*)")
     else:
         return 0
 
 def get_filtered_user_count(db, query_filter):
+    """
+    Get the total number of users (not pending users), regardless of their state of type, but
+    filter the user based on a their usernames.
+
+    @param db The database connection
+    @param query_filter The filter to match against username
+    @return The number of users
+    """
     query_filter = "%{0}%".format(query_filter) # MySQL formatting using % as wildcard
-    count = _query(db, "SELECT COUNT(*) FROM users WHERE username LIKE %s;", query_filter)
+    count = _query(db, "SELECT COUNT(*) FROM users WHERE username LIKE %(filter)s;", { "filter" : query_filter })
     if len(count) > 0:
-        return count[0]["COUNT(*)"]
+        return getattr(count[0], "COUNT(*)")
     else:
         return 0
 
@@ -119,15 +136,30 @@ def get_users(db, start = 0, count = 50):
     @param db The database connection
     @param start The start index in the user table (default is 0)
     @param count The number of users to receive (default is 50)
+    @return The list of users
     """
-    users = _query(db, "SELECT id, username, type, state, last_login FROM users ORDER BY id LIMIT %s, %s;", int(start), int(count))
+    users = _query(db, "SELECT id, username, type, state, last_login FROM users ORDER BY id LIMIT %(start)s, %(count)s;",
+        { "start" : start, "count" : count })
     if not users:
         users = []
     return users
 
 def get_filtered_users(db, query_filter, start = 0, count = 50):
+    """
+    Get a filtered list of user rows starting at the given position. If the start index is out of bounds
+    an empty list will be returned. If there are as many users as the given 'count' the list will
+    be filled with as many as there is.
+
+
+    @param db The database connection
+    @param query_filter The query filter to use
+    @param start The start index in the user table (default is 0)
+    @param count The number of users to receive (default is 50)
+    @return A list of matched users
+    """
     query_filter = "%{0}%".format(query_filter) # MySQL formatting using % as wildcard
-    users = _query(db, "SELECT id, username, type, state, last_login FROM users WHERE username LIKE %s ORDER BY id LIMIT %s, %s;", query_filter, int(start), int(count))
+    users = _query(db, "SELECT id, username, type, state, last_login FROM users WHERE username LIKE %(filter)s ORDER BY id LIMIT %(start)s, %(count)s;",
+        { "filter" : query_filter, "start" : start, "count" : count })
     if not users:
         users = []
     return users
@@ -147,9 +179,11 @@ def add_user(db, username, password, user_type = User.Normal):
     @param db The database connection
     @param username The username
     @param password The users password
+    @returun True if the user was added else false
     """
-    return _exec(db, "INSERT INTO users (username, password, type, state) VALUES(%s, %s, %s, \"1\");",
-        username, password, user_type)
+    rowid = _exec(db, "INSERT INTO users (username, password, type, state) VALUES(%(username)s, %(password)s, %(user_type)s, \"1\");",
+        { "username" : username, "password" : password, "user_type" : user_type })
+    return rowid > -1
 
 def username_unique(db, username):
     """
@@ -162,6 +196,20 @@ def username_unique(db, username):
     users = _query(db, "SELECT username FROM users WHERE username=%(username)s;", {'username': username})
     return len(users) < 1
 
+def enabled_user(db, username):
+    """
+    Check if the given user is enabled
+
+    @param db The database connection to use
+    @param username The user to check
+    @return True if the user is enabled, else False (user is disabled)
+    """
+    users = _query(db, "SELECT state FROM users WHERE username=%(username)s;", { "username" : username })
+    if len(users) > 0:
+        return users[0].state == User.Enabled
+    return False
+
+
 def enable_user(db, username):
     """
     Set the given user as an active user - regardless of previous state
@@ -169,7 +217,7 @@ def enable_user(db, username):
     @param db The database connection to use
     @param username The user to enable
     """
-    return _query(db, "UPDATE users SET state=%s WHERE username=%s;", User.Enabled, username) == 1
+    _exec(db, "UPDATE users SET state=%(state)s WHERE username=%(username)s;", { "state" : User.Enabled, "username" : username })
 
 def disable_user(db, username):
     """
@@ -178,7 +226,7 @@ def disable_user(db, username):
     @param db The database connection to use
     @param username The user to disable
     """
-    return _query(db, "UPDATE users SET state=%s WHERE username=%s;", User.Disabled, username) == 1
+    _exec(db, "UPDATE users SET state=%(state)s WHERE username=%(username)s;", { "state" : User.Disabled, "username" : username })
 
 def delete_user(db, username):
     """
@@ -189,12 +237,22 @@ def delete_user(db, username):
     @param username The user to delete
     """
     # TODO Make a transaction and also delete all activities and quarters!
-    return _query(db, "DELETE FROM users WHERE username=%s;", username)
+    _exec(db, "DELETE FROM users WHERE username=%(username)s;", { "username" : username })
 
 def signup_user(db, email, code, ip):
+    """
+    Add the given signup details
+
+    @param db The database connection to use
+    @param email The new users email
+    @param code The activation code
+    @param ip The IP address that requested the sign up
+    @return True on success, else False 
+    """
     # TODO Make transaction to see if username is unique
-    return _exec(db, "INSERT INTO signups (username, activation_code, ip) VALUES(:email, :code, :ip);",
-        {'email': email, 'code': code, 'ip': ip})
+    rowid = _exec(db, "INSERT INTO signups (username, activation_code, ip) VALUES(%(email)s, %(code)s, %(ip)s);",
+        { "email" : email, "code" : code, "ip" : ip })
+    return rowid > -1
 
 def activate_user(db, code, password):
     """
@@ -203,14 +261,19 @@ def activate_user(db, code, password):
 
     A standard user is created.
 
+    @param db The database connection to use
+    @param code The activation code
+    @param password The users encrypted password
+    @return True if the user was activated, else False
     """
     try:
         # TODO Make transaction
-        signups = _query(db, "SELECT username, activation_code FROM signups WHERE activation_code=%s;", code)
+        signups = _query(db, "SELECT username, activation_code FROM signups WHERE activation_code=%(code)s;", { "code" : code })
 
-        if signups[0]["activation_code"] == code:
-            _query(db, "DELETE FROM signups WHERE activation_code=%s;", code)
-            _exec(db, "INSERT INTO users (username, password, type, state) VALUES(%s, %s, \"0\", \"1\");", signups[0]["username"], password)
+        if signups[0].activation_code == code:
+            _exec(db, "DELETE FROM signups WHERE activation_code=%(code)s;", { 'code' : code })
+            _exec(db, "INSERT INTO users (username, password, type, state) VALUES(%(username)s, %(password)s, \"0\", \"1\");",
+                { "username": signups[0].username, "password" : password })
             return True
     except:
         return False
@@ -222,9 +285,10 @@ def set_user_reset_code(db, username, reset_code):
     @param db The database connection to use
     @param username The user to update
     @param reset_code The reset code to store
+    @return True on success, else False
     """
     try:
-        _query(db, "UPDATE users SET reset_code=%(code)s WHERE username=%(user)s", {'code': reset_code, 'user': username})
+        _exec(db, "UPDATE users SET reset_code=%(code)s WHERE username=%(user)s", { "code" : reset_code, "user" : username} )
         return True
     except:
         return False
@@ -236,12 +300,13 @@ def reset_password(db, reset_code, new_password):
     @param db The database connection to use
     @param reset_code The unique reset code
     @param new_password The password to set (will not be hashed)
+    @return True on success, else False
     """
     try:
-        users = _query(db, "SELECT username FROM users WHERE reset_code=%(code)s;", {'code': reset_code})
+        users = _query(db, "SELECT username FROM users WHERE reset_code=%(code)s;", { "code" : reset_code })
         if len(users) == 1:
-            _query(db, "UPDATE users SET password=%(newpass)s WHERE reset_code=%(code)s;", {'code': reset_code, 'newpass': new_password})
-            _query(db, "UPDATE users SET reset_code='' WHERE reset_code=%(code)s;", {'code': reset_code})
+            _exec(db, "UPDATE users SET password=%(newpass)s WHERE reset_code=%(code)s;", { "code" : reset_code, "newpass" : new_password })
+            _exec(db, "UPDATE users SET reset_code='' WHERE reset_code=%(code)s;", { "code" : reset_code })
             return True
         else:
             return False
@@ -258,7 +323,8 @@ def authenticate_user(db, username, password):
     @return The user object (except the password)
     """
     try:
-        users = _query(db, "SELECT id, username, type, state FROM users WHERE username=%s AND password=%s;", username, password)
+        users = _query(db, "SELECT id, username, type, state FROM users WHERE username=%(username)s AND password=%(password)s;",
+            { "username" : username, "password" : password })
         if len(users) == 1:
             return users[0]
         else:
@@ -273,7 +339,7 @@ def get_activities(db, user_id):
     @param db The database connection to use
     @param user_id The id of the authenticated username to retrieve activities for
     """
-    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=%(user)s;", {'user': user_id})
+    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=%(user)s;", { "user" : user_id })
     if not activities:
         activities = []
     return activities    
@@ -287,7 +353,8 @@ def add_activity(db, user_id, title, color):
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return _exec(db, "INSERT INTO activities (user, title, color) VALUES(%(id)s, %(title)s, %(color)s);", {'id': user_id, 'title': title, 'color':color})
+    return _exec(db, "INSERT INTO activities (user, title, color) VALUES(%(id)s, %(title)s, %(color)s);",
+        { "id" : user_id, "title" : title, "color" : color })
 
 def get_activity(db, user_id, activity_id):
     """
@@ -296,7 +363,8 @@ def get_activity(db, user_id, activity_id):
     @param user_id The id of the authenticated user to associate the activity with
     @param activity_id The id of the activity to retrieve
     """
-    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=%(user)s AND id=%(activity_id)s;", {'user': user_id, 'activity_id': activity_id})
+    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=%(user)s AND id=%(activity_id)s;",
+        { "user" : user_id, "activity_id" : activity_id })
     if activities and len(activities) == 1:
         return activities[0]
     else:
@@ -311,7 +379,8 @@ def update_activity(db, user_id, activity_id, title, color):
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return _exec(db, "UPDATE activities SET title=%(title)s, color=%(color)s WHERE user=%(user)s AND id=%(activity_id)s;", {'title': title, 'color': color, 'user': user_id, 'activity_id': activity_id})
+    return _exec(db, "UPDATE activities SET title=%(title)s, color=%(color)s WHERE user=%(user)s AND id=%(activity_id)s;",
+        { "title" : title, "color" : color, "user" : user_id, "activity_id" : activity_id})
 
 def delete_activity(db, user_id, activity_id):
     """Deletes a given activity
@@ -332,9 +401,11 @@ def update_sheet(db, user_id, date, quarters):
     @param date The time sheets date, must be in the format YYYY-MM-DD
     @param quarters the time sheets list of quarters
     """
-    result = _query_rowcount(db, "UPDATE sheets SET quarters=%(quarters)s WHERE user=%(user)s and date=%(date)s", {'quarters': quarters, 'user': user_id, 'date': date})
+    result = _query_rowcount(db, "UPDATE sheets SET quarters=%(quarters)s WHERE user=%(user)s and date=%(date)s",
+        { "quarters" : quarters, "user" : user_id, "date" : date })
     if result == 0:
-        result = _exec(db, "INSERT INTO sheets (user, date, quarters) VALUES(%(user)s, %(date)s, %(quarters)s);", {'quarters': quarters, 'user': user_id, 'date': date})
+        result = _exec(db, "INSERT INTO sheets (user, date, quarters) VALUES(%(user)s, %(date)s, %(quarters)s);",
+            { "quarters" : quarters, "user" : user_id, "date" : date })
     return result
 
 def get_sheet(db, user_id, date):
@@ -346,7 +417,7 @@ def get_sheet(db, user_id, date):
     @param date The time sheets date, must be in the format YYYY-MM-DD
     @return The sheet containing the quarters or None if no sheet found
     """
-    sheets = _query(db, "SELECT quarters FROM sheets WHERE user=%(user)s and date=%(date)s", {'user': user_id, 'date': date})
+    sheets = _query(db, "SELECT quarters FROM sheets WHERE user=%(user)s and date=%(date)s", { "user" : user_id, "date" : date })
     if sheets and len(sheets) == 1:
         return sheets[0]
     else:
