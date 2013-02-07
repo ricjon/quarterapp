@@ -53,7 +53,6 @@ class QuarterSettings:
         if settings:
             for row in settings:
                 self.settings[row.key] = row.value
-                
         else:
             logging.warn("Could not find any settings in database - everything setup ok?")
 
@@ -77,7 +76,7 @@ class QuarterSettings:
         @param value The new value
         """
         if self.settings.has_key(key):
-            storage.put_setting(db, key, value)
+            storage.put_setting(self.db, key, value)
             self.settings[key] = value
         else:
             logging.warning("Trying to update a settings key that does not exists! (%s)", key)

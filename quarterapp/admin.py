@@ -233,7 +233,8 @@ class SettingsHandler(AuthenticatedHandler):
                 self.finish()
             else:
                 self.respond_with_error(ERROR_NO_SETTING_VALUE)
-        except:
+        except Exception, e:
+            logging.warn("Could not update setting %s" % e)
             self.respond_with_error(ERROR_UPDATE_SETTING)
 
 class AdminDisableUser(AuthenticatedHandler):

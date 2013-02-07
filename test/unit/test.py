@@ -31,6 +31,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "../.."))
 
 import quarterapp.storage
+from quarterapp.settings import *
 from quarterapp.utils import *
 
 #
@@ -391,7 +392,35 @@ class TestStorage(unittest.TestCase):
         result = quarterapp.storage.get_filtered_users(self.db, ".com", 1)
         self.assertEqual(4, len(result))
 
-        
+
+    ## Test settings
+
+    def test_default_settings(self):
+        settings = QuarterSettings(self.db)
+        self.assertEqual("1", settings.get_value("allow-signups"))
+        self.assertEqual("1", settings.get_value("allow-activations"))
+    
+    def test_all_settings(self):
+        all_settings = quarterapp.storage.get_settings(self.db)
+        self.assertEqual(2, len(all_settings))
+
+    def test_update_setting(self):
+        settings = QuarterSettings(self.db)
+        self.assertEqual("1", settings.get_value("allow-signups"))
+
+        settings.put_value("allow-signups", "0")
+        self.assertEqual("0", settings.get_value("allow-signups"))
+
+    def test_setting_cache(self):
+        settings = QuarterSettings(self.db)
+        self.assertEqual("1", settings.get_value("allow-signups"))
+
+        # Update in database
+        quarterapp.storage.put_setting(self.db, "allow-signups", "nwe")
+        self.assertEqual("1", settings.get_value("allow-signups"))
+
+        # Restore to not messup next test
+        quarterapp.storage.put_setting(self.db, "allow-signups", "1")
 
 if __name__ == "__main__":
     unittest.main()

@@ -85,7 +85,7 @@ def put_setting(db, key, value):
     @param key The setting's key
     @param value The setting's value
     """
-    _exec(db, "UPDATE settings SET value=%(value)s WHERE key=%(key)s;", {'value': value, 'key': key})
+    _exec(db, "UPDATE settings SET settings.value=%(value)s WHERE settings.key=%(key)s;", { "value" : value, "key" : key })
 
 def get_signup_count(db):
     """
