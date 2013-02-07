@@ -77,6 +77,23 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
         },
 
         /**
+         * Show an error "dialog" (not modal) at the top of the page
+         */
+        show_error : function(title, message) {
+            $("#main-region")
+                .prepend('<div class="error box"><section class="content"><h3>{0}</h3><p>{1}</p><a class="dismiss" href="#" title="Dismiss" data-dismiss-action>dismiss</a></section></div>'.format(title, message));
+                $("a.dismiss").bind("click", $.proxy(this.on_dismiss_error, this));
+        },
+
+        /**
+         * Callback used to dismiss error dialog
+         */
+        on_dismiss_error : function() {
+            var $element = $(event.target);
+            $element.parents("div.error.box").fadeOut(300, function() { $(this).remove(); } );
+        },
+
+        /**
          * Return the YYYY-MM-DD representation for the given date object.
          */
         to_date_string : function(date) {
@@ -234,8 +251,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                         $("[data-activity-id='" + id + "']").removeClass("edit");
                     },
                     error : function(jqXHR, status, errorThrown) {
-                        // TODO Error dialog
-                        quarterapp.log("Could not delete activity!");
+                        quarterapp.show_error("Oops", "Could not save activity!");
                     }
                 });
             }
@@ -253,8 +269,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                         $module.remove();
                     },
                     error : function(jqXHR, status, errorThrown) {
-                        // TODO Error dialog
-                        quarterapp.log("Could not delete activity!");
+                        quarterapp.show_error("Oops", "Could not delete activity!");
                     }
                 });
             }
@@ -426,8 +441,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             });
 
             if(quarters.length !== 96) {
-                self.log("Crap, cannot find all 96 quarters");
-                // TODO Display error dialog.
+                quarterapp.show_error("Oops", "Sheet is broken, try to refresh the page.");
                 return;
             }
 
@@ -453,7 +467,6 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                             var activity_color = $element.attr("data-activity-previous-color");
                             $element.css("background-color", activity_color);
                             $element.css("border-color", self.luminance(activity_color, -0.2));
-                            self.log("doh");
                         });
                     }
                 });

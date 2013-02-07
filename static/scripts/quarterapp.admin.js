@@ -8,16 +8,10 @@ Functions specific to the administrator mode
 (function($) {
     "use strict";
 
-    function Admin() {
-
-    };
+    function Admin() {};
 
     Admin.prototype = {
         constructor : Admin,
-
-        init : function() {
-
-        },
 
         disable_user : function(element, username) {
             var $element = $(element);
@@ -30,7 +24,7 @@ Functions specific to the administrator mode
                     $element.attr("onclick", $element.attr("onclick").replace("disable_user", "enable_user"));
                 },
                 error : function(jqXHR, status, errorThrown) {
-                    quarterapp.log("Error on disable");
+                    quarterapp.show_error("Oops", "Could not disable user!");
                 }
             });
         },
@@ -46,7 +40,7 @@ Functions specific to the administrator mode
                     $element.attr("onclick", $element.attr("onclick").replace("enable_user", "disable_user"));
                 },
                 error : function(jqXHR, status, errorThrown) {
-                    quarterapp.log("Error on enable");
+                    quarterapp.show_error("Oops", "Could not enable user!");
                 }
             });
         },
@@ -59,7 +53,7 @@ Functions specific to the administrator mode
                     $(element).parents("tr").remove();
                 },
                 error : function(jqXHR, status, errorThrown) {
-                    quarterapp.log("Error on enable");
+                    quarterapp.show_error("Oops", "Could not delete user!");
                 }
             });
         },
@@ -83,7 +77,9 @@ Functions specific to the administrator mode
                 },
                 error : function(jqXHR, status, errorThrown) {
                     var $desc = $element.parent(".setting-control").siblings(".setting-description");
-                    $desc.append('<div class="error-message">Could not change setting!</div>');
+                    if($desc.find("div.error-message").length == 0) {
+                        $desc.append('<div class="error-message">Could not change setting!</div>');    
+                    }
                 }
             });
         }
