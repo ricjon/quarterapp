@@ -31,10 +31,12 @@ class User(object):
     Disabled = 0
 
 
-class Data(object):
-    def __init__(self, data):
-        for key, val in data:
-            setattr(self, key, val)
+class Data(dict):
+    def __getattr__(self, name):
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(name)
 
 def hack_sql(fn):
     """Hack MySQL driver SQL into SQLite3 driver SQL. 
