@@ -19,7 +19,7 @@ Functions specific to the administrator mode
 
         },
 
-        disable_user = function(element, username) {
+        disable_user : function(element, username) {
             var $element = $(element);
             $.ajax({
                 url : $element.attr("href"),
@@ -35,7 +35,7 @@ Functions specific to the administrator mode
             });
         },
 
-        enable_user = function(element, username) {
+        enable_user : function(element, username) {
             var $element = $(element);
             $.ajax({
                 url : $element.attr("href"),
@@ -51,7 +51,7 @@ Functions specific to the administrator mode
             });
         },
 
-        delete_user = function(element, username) {
+        delete_user : function(element, username) {
             $.ajax({
                 url : element.href,
                 type : "POST",
@@ -64,11 +64,11 @@ Functions specific to the administrator mode
             });
         },
 
-        clear_filter = function() {
+        clear_filter : function() {
             $("#filter").val(""); // Clear the username filter
         },
 
-        toggle_setting = function(element) {
+        toggle_setting : function(element) {
             var $element = $(element);
             var checked = $element.attr("checked");
 
