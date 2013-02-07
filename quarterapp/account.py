@@ -155,7 +155,9 @@ class ResetPasswordHandler(BaseHandler):
 
 class LoginHandler(AuthenticatedHandler):
     def get(self):
-        self.render(u"public/login.html")
+        allow_signups = self.application.quarter_settings.get_value("allow-signups")
+
+        self.render(u"public/login.html", allow_signups = allow_signups)
 
     def post(self):
         username = self.get_argument("username", "")

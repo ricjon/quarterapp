@@ -25,7 +25,11 @@
                         </fieldset>
                     </form>
 
-                    <p class="note">Do you want to <a href="/signup">signup</a> for a free account, or did you <a href="/forgot">forget</a> your login details?</a>
+                    {% if allow_signups == "1" %}
+                        <p class="note">Do you want to <a href="/signup">signup</a> for a free account, or did you <a href="/forgot">forget</a> your login details?</a>
+                    {% else %}
+                        <p class="note">Did you <a href="/forgot">forget</a> your login details?</a>
+                    {% end %}
                 </section>
             </section>
 {% end %}

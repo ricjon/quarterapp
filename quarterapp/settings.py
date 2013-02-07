@@ -24,7 +24,7 @@ import logging
 import storage
 import tornado.database
 
-class QuarterSettings:
+class QuarterSettings(object):
     """
     Application settings contains the settings specific to the application,
     not the running server. I.e. port numbers and such should not be kept here
@@ -49,10 +49,11 @@ class QuarterSettings:
         Update the settings from the database, if cannot read from database the
         old settings remain active
         """
+        logging.info("Updating settings...")
         settings = storage.get_settings(self.db)
         if settings:
             for row in settings:
-                self.settings[row.key] = row.value
+                self.settings[row.name] = row.value
         else:
             logging.warn("Could not find any settings in database - everything setup ok?")
 

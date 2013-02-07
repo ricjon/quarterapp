@@ -20,10 +20,10 @@ CREATE TABLE `sheets` (
 
 CREATE TABLE `settings` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `key` VARCHAR(64) NOT NULL,
+    `name` VARCHAR(64) NOT NULL,
     `value` TEXT NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `key` (`key`)
+    UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `users` (
@@ -48,8 +48,8 @@ CREATE TABLE `signups` (
 
 #
 # Insert default settings
-INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow-signups", "1");
-INSERT INTO quarterapp.settings (`key`, `value`) VALUES("allow-activations", "1");
+INSERT INTO quarterapp.settings (`name`, `value`) VALUES("allow-signups", "1");
+INSERT INTO quarterapp.settings (`name`, `value`) VALUES("allow-activations", "1");
 
 #
 # Insert default administrator

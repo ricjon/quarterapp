@@ -76,16 +76,30 @@ def get_settings(db):
     @return a list of toupes (key / value)
     """
     return _query(db, "SELECT * FROM settings;", tuple())
-   
-def put_setting(db, key, value):
+
+def get_setting(db, name):
+    """
+    Get a specific setting
+
+    @param db The database connection
+    @param name The setting's name
+    @return The setting's value
+    """
+    result = _query(db, "SELECT value FROM settings WHERE name=%(name)s;", { "name" : name })
+    if len(result) > 0:
+        return getattr(result[0], "value")
+    return None
+
+def put_setting(db, name, value):
     """
     Set a specific setting to the given value
 
     @param db The database connection
-    @param key The setting's key
+    @param name The setting's name
     @param value The setting's value
+    @return True on success, else False
     """
-    _exec(db, "UPDATE settings SET settings.value=%(value)s WHERE settings.key=%(key)s;", { "value" : value, "key" : key })
+    return _exec(db, "UPDATE settings SET value=%(value)s WHERE name=%(name)s ;", { "value" : value, "name" : name }) == 1
 
 def get_signup_count(db):
     """

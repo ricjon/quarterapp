@@ -68,7 +68,7 @@ CREATE TABLE `sheets` (
 
 CREATE TABLE `settings` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-    `key` VARCHAR(64) NOT NULL UNIQUE,
+    `name` VARCHAR(64) NOT NULL UNIQUE,
     `value` TEXT NOT NULL
     
 );
@@ -92,8 +92,8 @@ CREATE TABLE `signups` (
 );
 
 
-INSERT INTO settings (`key`, `value`) VALUES("allow-signups", "1");
-INSERT INTO settings (`key`, `value`) VALUES("allow-activations", "1");
+INSERT INTO settings (`name`, `value`) VALUES("allow-signups", "1");
+INSERT INTO settings (`name`, `value`) VALUES("allow-activations", "1");
 
 INSERT INTO users (`username`, `password`, `type`, `state`) VALUES("admin", "", 1, 1);"""
     cur = conn.cursor()
@@ -411,6 +411,9 @@ class TestStorage(unittest.TestCase):
         settings.put_value("allow-signups", "0")
         self.assertEqual("0", settings.get_value("allow-signups"))
 
+        # Restore
+        settings.put_value("allow-signups", "1")
+
     def test_setting_cache(self):
         settings = QuarterSettings(self.db)
         self.assertEqual("1", settings.get_value("allow-signups"))
@@ -421,6 +424,21 @@ class TestStorage(unittest.TestCase):
 
         # Restore to not messup next test
         quarterapp.storage.put_setting(self.db, "allow-signups", "1")
+
+    def test_setting_sync(self):
+        settings = QuarterSettings(self.db)
+        self.assertEqual("1", settings.get_value("allow-signups"))
+
+        settings.put_value("allow-signups", "0")
+
+        self.assertEqual("0", quarterapp.storage.get_setting(self.db, "allow-signups"))
+        settings.put_value("allow-signups", "1")
+        
+    def test_settings_db(self):
+        quarterapp.storage.put_setting(self.db, "allow-signups", "w")
+        self.assertEqual("w", quarterapp.storage.get_setting(self.db, "allow-signups"))
+        quarterapp.storage.put_setting(self.db, "allow-signups", "1")
+
 
 if __name__ == "__main__":
     unittest.main()
