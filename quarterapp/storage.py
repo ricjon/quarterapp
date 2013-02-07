@@ -421,6 +421,6 @@ def get_sheet(db, user_id, date):
     """
     sheets = _query(db, "SELECT quarters FROM sheets WHERE user=%(user)s and date=%(date)s", { "user" : user_id, "date" : date })
     if sheets and len(sheets) == 1:
-        return sheets[0]
+        return sheets[0]["quarters"]
     else:
         return None

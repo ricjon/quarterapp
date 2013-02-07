@@ -13,7 +13,6 @@
                     </div>
                     <table class="sheet" id="sheet" data-sheet-date="{{ date }}">
                         <tbody>
-                            <!-- render all hours, hide some -->
                             {% for index, quarter in enumerate(quarters) %}
                                 
                                 {% if (index == 0) or (index % 4 == 0) %}
@@ -24,7 +23,7 @@
                                         <th class="time">{{ int(index/4) }}:00</th>
                                 {% end %}
 
-                                <td class="activity"><span class="activity-cell" data-activity-id="-1">&nbsp;</span></td>
+                                <td class="activity"><span class="activity-cell" data-activity-id="{{ quarter['id'] }}" style="background-color: {{ quarter['color'] }}; border-color: {{ quarter['border-color'] }};">&nbsp;</span></td>
 
                                 {% if index == 98 %}
                                     </tr>

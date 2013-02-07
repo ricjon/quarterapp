@@ -68,3 +68,7 @@ def valid_date(date):
                 raise ValueErrror("Date should be in YYYY-MM-DD")
     except:
         return False
+
+def get_dict_from_sequence(seq, key):
+    # from http://stackoverflow.com/a/4391722
+    return dict((d[key], dict(d, index=index)) for (index, d) in enumerate(seq))

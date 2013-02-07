@@ -302,12 +302,14 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
          * Set the current activity in the sheet view, and update the visual representation
          */
         set_current_activity : function(activity) {
-            this.current_activity = activity;
-            var $current_activity = $("#current-activity");
-            $current_activity.find("input.palette").css("background-color", activity.color);
-            $current_activity.find("div.activity-title").text(activity.title)
+            if($('div.activity[data-activity-id="' + activity.id + '"]').length > 0) {
+                this.current_activity = activity;
+                var $current_activity = $("#current-activity");
+                $current_activity.find("input.palette").css("background-color", activity.color);
+                $current_activity.find("div.activity-title").text(activity.title)
 
-            this.set_preferred_activity(activity);
+                this.set_preferred_activity(activity);
+            }
         },
 
         /**
