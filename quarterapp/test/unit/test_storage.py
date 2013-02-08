@@ -26,10 +26,6 @@ import os
 import sys
 import tempfile
 
-# Need to add the quarterapp root directory to enable imports
-sys.path.append(
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), "../.."))
-
 import quarterapp.storage
 from quarterapp.settings import *
 from quarterapp.utils import *
@@ -114,39 +110,6 @@ def default_sheet():
     for i in range(0, 96):
         quarters.append(-1)
     return quarters
-
-class TestUnit(unittest.TestCase):
-    def test_hex(self):
-        self.assertTrue(valid_color_hex("#fff"))
-        self.assertTrue(valid_color_hex("#ffffff"))
-        self.assertTrue(valid_color_hex("#000"))
-        self.assertTrue(valid_color_hex("#123456"))
-        
-        self.assertFalse(valid_color_hex("fff"))
-        self.assertFalse(valid_color_hex("cdcdcd"))
-        self.assertFalse(valid_color_hex("#ggg"))
-        self.assertFalse(valid_color_hex("#cccc"))
-        self.assertFalse(valid_color_hex("0"))
-        self.assertFalse(valid_color_hex(""))
-
-    def test_hash_password(self):
-        self.assertEqual( 88, len(hash_password("secret", "salt")) )
-        self.assertEqual( 88, len(hash_password("anothersecret", "salt")) )
-        self.assertEqual( hash_password("secret", "salt"), hash_password("secret", "salt"))
-        self.assertNotEqual( hash_password("secret", "salt"), hash_password("secret", "pepper"))
-
-    def test_valid_date(self):
-        self.assertTrue(valid_date("2013-01-29"))
-        self.assertTrue(valid_date("1999-12-29"))
-        self.assertTrue(valid_date("2013-11-01"))
-        self.assertTrue(valid_date("2012-02-29"))
-
-        self.assertFalse(valid_date("2013-29-11"))
-        self.assertFalse(valid_date("2013-9-1"))
-        self.assertFalse(valid_date("2013-02-29"))
-        self.assertFalse(valid_date("13-1-29"))
-        self.assertFalse(valid_date("29/01/2013"))
-        self.assertFalse(valid_date("01/29/2013"))
 
 class TestStorage(unittest.TestCase):
     @classmethod
@@ -439,6 +402,5 @@ class TestStorage(unittest.TestCase):
         self.assertEqual("w", quarterapp.storage.get_setting(self.db, "allow-signups"))
         quarterapp.storage.put_setting(self.db, "allow-signups", "1")
 
-
-if __name__ == "__main__":
-    unittest.main()
+#if __name__ == "__main__":
+#    unittest.main()

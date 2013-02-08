@@ -1,5 +1,6 @@
 #
-# MySQL script that sets up the necessary tables 
+# MySQL script that sets up the necessary tables and data
+#
 use quarterapp;
 
 CREATE TABLE `activities` (

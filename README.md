@@ -120,6 +120,12 @@ Make a copy the example configuration file and enter your specific details. See 
 for details.
 
 
+## Contributors
+
+Special thanks to
+
+Fredrik Håård 
+
 ## License
 
 Copyright © 2012-2013 Markus Eliasson

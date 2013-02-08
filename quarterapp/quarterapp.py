@@ -29,11 +29,12 @@ import tornado.auth
 import tornado.options
 from tornado.options import options, define
 
-from quarterapp.settings import QuarterSettings
-from quarterapp.account import *
-from quarterapp.admin import *
-from quarterapp.api import *
-from quarterapp.app import *
+from settings import QuarterSettings
+from account import *
+from admin import *
+from api import *
+from app import *
+from utils import *
 
 def read_configuration():
     """
@@ -100,14 +101,14 @@ def main():
             (r"/", IndexHandler),
             
             # Static files
-            (r"/(.*)", tornado.web.StaticFileHandler, { "path" : "static"})
+            (r"/(.*)", tornado.web.StaticFileHandler, { "path" : "web/static"})
         ],
 
         # Static files
-        static_path = os.path.join(os.path.dirname(__file__), "static"),
+        static_path = os.path.join(os.path.dirname(__file__), "web/static"),
         
         # Location of HTML templates
-        template_path = os.path.join(os.path.dirname(__file__), "templates"),
+        template_path = os.path.join(os.path.dirname(__file__), "web/templates"),
 
         # Enable HTTP compression
         gzip = True,
@@ -153,5 +154,5 @@ def main():
         exit()
 
 if __name__ == "__main__":
-        read_configuration()
-        main()
+        quarterapp.read_configuration()
+        quarterapp.main()
