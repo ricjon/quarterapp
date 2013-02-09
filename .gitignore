@@ -3,6 +3,8 @@
 
 # Python
 *.py[co]
+dist/
+MANIFEST
 
 # Sublime editor
 *.sublime-project

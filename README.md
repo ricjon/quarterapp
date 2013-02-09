@@ -18,9 +18,9 @@ Start the server using the command:
 
 ## Test
 
-Run the unit test using the command
+Run the unit test using nose:
 
-    python test/unit/test.py
+    nosetests
 
 
 ## Configuration

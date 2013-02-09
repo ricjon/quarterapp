@@ -23,7 +23,9 @@
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import quarterapp
+from quarterapp import *
+
 
 if __name__ == "__main__":
-        quarterapp.read_configuration()
-        quarterapp.main()
+    quarterapp.read_configuration()
+    quarterapp_main()

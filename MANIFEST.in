@@ -1,2 +1,2 @@
-include *.txt
-recursive-include docs *.txt
+include *.html *.css *.js
+recursive-include bin *.html *.css *.js

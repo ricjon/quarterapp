@@ -5,7 +5,7 @@ setup(
     version='0.0.1',
     author='Markus Eliasson',
     author_email='markus.eliasson@gmail.com',
-    packages=['quarterapp', 'quarterapp.test'],
+    packages=['quarterapp', 'quarterapp.tests', 'quarterapp.resources'],
     scripts=['bin/quarterapp.py'],
     url='https://github.com/eliasson/quarterapp',
     license='LICENSE',
