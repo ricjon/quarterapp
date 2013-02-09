@@ -1,15 +1,13 @@
 from distutils.core import setup
 import os.path
 
-
 def get_resources():
     resources = []
     def assembler(arg, folder, files):
-       resources.append((folder, [os.path.join('quarterapp', folder, f) 
-        for f in files if not os.path.isdir(os.path.join(folder, f))]))
+        if folder:
+            resources.append(folder[len('quarterapp/'):] + '/*.*')
     os.path.walk('quarterapp/resources', assembler, True)
     return resources
-
 
 setup(
     name='Quarterapp',
@@ -29,6 +27,7 @@ setup(
         'qapp = quarterapp:main',
         ]
     },
-    data_files=get_resources() + [('.', ['./README.md', './LICENSE'])],
+    package_data = {'quarterapp': get_resources()},
+    data_files=[('.', ['./README.md', './LICENSE'])],
     zip_safe = False,
 )

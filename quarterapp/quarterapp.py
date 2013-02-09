@@ -66,6 +66,11 @@ def read_configuration():
         logging.warning("Configuration file not found (quarterapp.conf)!")
         exit(1)
 
+def main():
+    """Entry point"""
+    read_configuration()
+    quarterapp_main()
+
 def quarterapp_main():
     application = tornado.web.Application(
         # Application routes
