@@ -16,9 +16,9 @@ setup(
     author_email='markus.eliasson@gmail.com',
     packages=['quarterapp', 'quarterapp.tests'],
     url='https://github.com/eliasson/quarterapp',
-    license=open('LICENSE').read(),
+    #license=open('LICENSE').read(),
     description='Personal time management',
-    long_description=open('README.md').read(),
+    #long_description=open('README.md').read(),
     install_requires=[
         "tornado >= 2.4.0"
     ],
@@ -28,6 +28,5 @@ setup(
         ]
     },
     package_data = {'quarterapp': get_resources()},
-    data_files=[('.', ['./README.md', './LICENSE'])],
     zip_safe = False,
 )
