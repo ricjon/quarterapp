@@ -22,7 +22,7 @@
 
 import unittest
 
-from quarterapp.utils import *
+from quarterapp.quarter_utils import *
 
 class TestUnit(unittest.TestCase):
     def test_hex(self):

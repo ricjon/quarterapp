@@ -10,20 +10,22 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
 
         <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="stylesheet" media="all" href="/styles/reset.css" />
-        <link rel="stylesheet" media="all" href="/styles/quarterapp.css" />
+        <link rel="stylesheet" media="all" href="/static/styles/reset.css" />
+        <link rel="stylesheet" media="all" href="/static/libraries/jquery.palette.css" />
+        <link rel="stylesheet" media="all" href="/static/libraries/pikaday.css" />
+        <link rel="stylesheet" media="all" href="/static/styles/quarterapp.css" />
     </head>
     <body>
         <header id="header-region">
             <div class="container wide">
                 <div id="logo">
-                    <h1>quarterapp - administration</h1>
+                    <h1>quarterapp</h1>
                 </div>
                 <nav>
                     <ul>
-                        <li><a href="/admin">General</a></li>
-                        <li><a href="/admin/users">Users</a></li>
-                        <li><a href="/admin/statistics">Statistics</a></li>
+                        <li><a href="/sheet">Sheet</a></li>
+                        <li><a href="/activities">Activities</a></li>
+                        <li><a href="/report">Report</a></li>
                         <li><a href="/logout">Logout</a></li>
                     </ul>
                 </nav>
@@ -34,15 +36,16 @@
         <div id="main-region">
             {% block main %}{% end %}
         </div>
-
+        <div class="clear-fix"></div>
         <footer id="footer-region">
             <div class="container">
                 <p class="note">Copyright &copy; 2013 <a href="mailto:markus.eliasson@gmail.com">Markus Eliasson</a> - All rights reserved.</p>
             </div>
         </footer>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-        <script src="/libraries/jquery.validator.js"></script>
-        <script src="/scripts/quarterapp.js"></script>
-        <script src="/scripts/quarterapp.admin.js"></script>
+        <script src="/static/libraries/jquery.validator.js"></script>
+        <script src="/static/libraries/jquery.palette.js"></script>
+        <script src="/static/libraries/pikaday.min.js"></script>
+        <script src="/static/scripts/quarterapp.js"></script>
     </body>
 </html>

@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012-2013 Markus Eliasson, http://www.quarterapp.com/
+#  Copyright (c) 2013 Markus Eliasson, http://www.quarterapp.com/
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the
@@ -28,7 +28,7 @@ import tempfile
 
 import quarterapp.storage
 from quarterapp.settings import *
-from quarterapp.utils import *
+from quarterapp.quarter_utils import *
 
 #
 # Test can be run using either SQLite or MySQL as database. By default

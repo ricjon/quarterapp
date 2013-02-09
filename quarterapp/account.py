@@ -28,11 +28,11 @@ import tornado.web
 import tornado.escape
 from tornado.options import options
 
-from quarterapp.basehandlers import *
-from quarterapp.storage import *
-from quarterapp.email import *
-from quarterapp.errors import *
-from quarterapp.utils import *
+from basehandlers import *
+from storage import *
+from email_utils import *
+from quarter_errors import *
+from quarter_utils import *
 
 class LogoutHandler(BaseHandler):
     def get(self):

@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012-2013 Markus Eliasson, http://www.quarterapp.com/
+#  Copyright (c) 2013 Markus Eliasson, http://www.quarterapp.com/
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the
@@ -31,10 +31,9 @@ import tornado.web
 import tornado.escape
 from tornado.options import options
 
-from quarterapp.storage import *
-from quarterapp.email import *
-from quarterapp.errors import *
-from quarterapp.utils import *
+from storage import *
+from quarter_errors import *
+from settings import *
 
 class QuarterEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -64,6 +63,16 @@ def authenticated_admin(method):
             raise tornado.web.HTTPError(404)
         return method(self, *args, **kwargs)
     return wrapper
+
+
+class IndexHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render(u"public/index.html")
+
+
+class Http404Handler(tornado.web.RequestHandler):
+    def get(self):
+        self.render(u"public/404.html")
 
 class BaseHandler(tornado.web.RequestHandler):
     def write_success(self):

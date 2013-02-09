@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Markus Eliasson, http://www.quarterapp.com/
+#  Copyright (c) 2013 Markus Eliasson, http://www.quarterapp.com/
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the

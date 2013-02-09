@@ -74,7 +74,7 @@ Quarterapp sends e-mail for signups, password reset, etc. and needs the followin
 ## Installation
 
 
-### Install needed tools on Debian
+### Install on Debian
 
 Install tha needed packages for doing python, MySQL and web by running these commands
 
@@ -84,6 +84,12 @@ Install tha needed packages for doing python, MySQL and web by running these com
     sudo pip install --upgrade pip
     sudo pip install tornado
     sudo pip install mysql-python
+
+
+### Install on OSX
+
+    pip install tornado
+    pip install mysql-python
 
 
 ### Setup the MySQL database.

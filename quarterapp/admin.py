@@ -31,10 +31,10 @@ import tornado.escape
 from tornado.options import options
 from tornado.web import HTTPError
 
-from quarterapp.basehandlers import *
-from quarterapp.storage import *
-from quarterapp.errors import *
-from quarterapp.utils import *
+from basehandlers import *
+from storage import *
+from quarter_errors import *
+from quarter_utils import *
 
 DEFAULT_PAGINATION_ITEMS_PER_PAGE = 5
 DEFAULT_PAGINATION_PAGES = 10

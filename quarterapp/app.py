@@ -27,14 +27,10 @@ import tornado.web
 from tornado.options import options
 from tornado.web import HTTPError
 
-from quarterapp.basehandlers import *
-from quarterapp.storage import *
-from quarterapp.errors import *
-from quarterapp.utils import *
-
-class IndexHandler(BaseHandler):
-    def get(self):
-        self.render(u"public/index.html")
+from basehandlers import *
+from storage import *
+from quarter_errors import *
+from quarter_utils import *
 
 class ActivityHandler(AuthenticatedHandler):
     @authenticated_user

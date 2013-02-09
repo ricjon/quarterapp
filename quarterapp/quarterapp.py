@@ -1,5 +1,6 @@
+#!/usr/bin/env python
 #
-#  Copyright (c) 2012-2013 Markus Eliasson, http://www.quarterapp.com/
+#  Copyright (c) 2013 Markus Eliasson, http://www.quarterapp.com/
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the
@@ -34,7 +35,7 @@ from account import *
 from admin import *
 from api import *
 from app import *
-from utils import *
+from quarter_utils import *
 
 def read_configuration():
     """
@@ -63,6 +64,7 @@ def read_configuration():
         tornado.options.parse_config_file("quarterapp.conf")
     except IOError:
         logging.warning("Configuration file not found (quarterapp.conf)!")
+        exit(1)
 
 def main():
     application = tornado.web.Application(
@@ -100,15 +102,15 @@ def main():
             (r"/api/sheet/([^\/]+)", SheetApiHandler),
             (r"/", IndexHandler),
             
-            # Static files
-            (r"/(.*)", tornado.web.StaticFileHandler, { "path" : "web/static"})
+            (r".*", Http404Handler)
         ],
 
         # Static files
-        static_path = os.path.join(os.path.dirname(__file__), "web/static"),
+        #static_url_prefix = "r",
+        static_path = os.path.join(os.path.dirname(__file__), "resources/static"),
         
         # Location of HTML templates
-        template_path = os.path.join(os.path.dirname(__file__), "web/templates"),
+        template_path = os.path.join(os.path.dirname(__file__), "resources/templates"),
 
         # Enable HTTP compression
         gzip = True,
@@ -120,7 +122,6 @@ def main():
     )
 
     logging.info("Starting application...")
-
     main_loop = tornado.ioloop.IOLoop.instance()
 
     options.sqlite_database
@@ -154,5 +155,5 @@ def main():
         exit()
 
 if __name__ == "__main__":
-        quarterapp.read_configuration()
-        quarterapp.main()
+    read_configuration()
+    main()
