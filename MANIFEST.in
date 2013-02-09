@@ -1,2 +1,0 @@
-include *.html *.css *.js
-recursive-include bin *.html *.css *.js
