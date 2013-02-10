@@ -1,2 +1,2 @@
-include *.html *.css *.js
-recursive-include bin *.html *.css *.js
+include LICENSE
+include README.md

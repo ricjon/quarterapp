@@ -82,3 +82,12 @@ class QuarterSettings(object):
         else:
             logging.warning("Trying to update a settings key that does not exists! (%s)", key)
             raise Exception("Trying to update a settings key that does not exists!")
+
+def create_default_config(path):
+    """Create a quarterapp.conf file from the example config file"""
+    import shutil, os.path
+    target = os.path.join(path, 'quarterapp.conf')
+    if os.path.exists(target):
+        print('Cowardly refusing to overwrite configuration file')
+    else:
+        shutil.copyfile(os.path.join(os.path.dirname(__file__), 'resources', 'quarterapp.example.conf'), target)

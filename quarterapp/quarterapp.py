@@ -66,6 +66,7 @@ def read_configuration():
         logging.warning("Configuration file not found (quarterapp.conf)!")
         exit(1)
 
+
 def quarterapp_main():
     application = tornado.web.Application(
         # Application routes
@@ -154,6 +155,16 @@ def quarterapp_main():
         print("Could not start application!")
         exit()
 
+def main():
+    """Entry point"""
+
+    if 'mkconfig' in sys.argv:
+        import settings
+        settings.create_default_config('.')
+        return
+    read_configuration()
+    quarterapp_main()
+
+
 if __name__ == "__main__":
-        read_configuration()
-        quarterapp_main()
+    main()
