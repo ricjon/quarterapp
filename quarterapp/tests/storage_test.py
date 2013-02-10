@@ -132,7 +132,6 @@ class TestStorage(unittest.TestCase):
         quarterapp.storage._exec(self.db, "DELETE FROM users")
         quarterapp.storage._exec(self.db, "DELETE FROM sheets")
 
-
     ## Activities test
 
     def test_no_activities(self):
@@ -401,6 +400,3 @@ class TestStorage(unittest.TestCase):
         quarterapp.storage.put_setting(self.db, "allow-signups", "w")
         self.assertEqual("w", quarterapp.storage.get_setting(self.db, "allow-signups"))
         quarterapp.storage.put_setting(self.db, "allow-signups", "1")
-
-#if __name__ == "__main__":
-#    unittest.main()
