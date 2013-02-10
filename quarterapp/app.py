@@ -82,7 +82,7 @@ class SheetHandler(AuthenticatedHandler):
             for i in ids:
                 if int(i) > -1:
                     color = activity_dict[int(i)]["color"]
-                    border_color = "#ccc" # darken color
+                    border_color = luminance_color(color, -0.2) # darken color
                     quarters.append({ "id" : i, "color" : color, "border-color" : border_color})
                 else:
                     quarters.append({ "id" : i, "color" : "#fff", "border-color" : "#ccc"})

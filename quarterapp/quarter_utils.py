@@ -24,8 +24,9 @@ import datetime
 import hashlib
 import base64
 import re
+import math
 
-color_hex_re = re.compile(r"^(#)([0-9a-fA-F]{3})([0-9a-fA-F]{3})?$")
+color_hex_match_re = re.compile(r"^(#)([0-9a-fA-F]{3})([0-9a-fA-F]{3})?$")
 
 def hash_password(password, salt):
     """
@@ -47,7 +48,7 @@ def valid_color_hex(color_code):
 
     @return True if valid, else False
     """
-    return color_hex_re.match(color_code)
+    return color_hex_match_re.match(color_code)
 
 def valid_date(date):
     """
@@ -72,3 +73,28 @@ def valid_date(date):
 def get_dict_from_sequence(seq, key):
     # from http://stackoverflow.com/a/4391722
     return dict((d[key], dict(d, index=index)) for (index, d) in enumerate(seq))
+
+
+def luminance_color(color_code, lum):
+    """
+    Change the luminance for the given color in HEX. Use positive for lighter and
+    negative to generate a darker color.
+
+    @param color_code The color code in HEX
+    @param lum Percentage luminance to alter. 
+    @return The color code in HEX for the new color
+    """
+    color_code = color_code.replace("#", "")
+    lum = lum or 0;
+    
+    if len(color_code) == 3:
+        color_code = color_code[0]+color_code[0]+color_code[1]+color_code[1]+color_code[2]+color_code[2]
+
+    color = "#"
+    for i in range(3):
+        c = int(color_code[i * 2 : (i * 2) + 2], 16)
+        c = int(round( min( max(0, c + (c * lum)), 255)))
+        c = hex(c)[2:]
+        color += str("00" + c)[len(c):]
+
+    return color

@@ -56,3 +56,9 @@ class TestUnit(unittest.TestCase):
         self.assertFalse(valid_date("13-1-29"))
         self.assertFalse(valid_date("29/01/2013"))
         self.assertFalse(valid_date("01/29/2013"))
+
+    def test_luminance_color(self):
+        self.assertEqual("#ffffff", luminance_color("#fff", 0))
+        self.assertEqual("#bd832f", luminance_color("#fcaf3e", -0.25))
+        self.assertEqual("#ffdb4e", luminance_color("#fcaf3e", 0.25))
+        self.assertEqual("#56a8ff", luminance_color("#3465a4", 0.66))
