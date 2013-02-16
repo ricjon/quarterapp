@@ -67,8 +67,12 @@ def authenticated_admin(method):
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render(u"public/index.html")
+        allow_signups = self.application.quarter_settings.get_value("allow-signups")
+        self.render(u"public/index.html", allow_signups = allow_signups)
 
+class TermsHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render(u"public/terms.html")
 
 class Http404Handler(tornado.web.RequestHandler):
     def get(self):

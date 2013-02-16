@@ -89,6 +89,7 @@ def quarterapp_main():
             (r"/reset/([^\/]+)", ResetPasswordHandler),
             (r"/reset", ResetPasswordHandler),
             (r"/login", LoginHandler),
+            (r"/terms", TermsHandler),
 
             # Application views
             (r"/activities", ActivityHandler),

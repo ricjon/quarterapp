@@ -2,6 +2,31 @@
 
 {% block main %}
 
-    <h1>Welcome</h1>
     
+    
+    <section class="container medium">
+
+        <h1>Welcome to Quarterapp</h1>
+
+        <p>Quarterapp is a personal time management service, where you can keep track of what you do each day.</p>
+
+        <p>Quarterapp is quite <strong>different</strong> from most software dealing with time, workhours, reports.  Rather than focus on generating various reports based on rows and columns of hours quarterapp focus on how you enter the hours for each day, based on activity.</p>
+
+        {% if allow_signups == "1" %}
+        <p>Sign up for an account <a href="/signup">here</a>, it's free!<p>
+        {% end %}
+    </section>
+
+    <section class="container medium">
+        <h3>Quarters</h3>
+        <p>Each day is divided in 96 quarters, 4 for each hour - nothing suprising. Each of those quarters can be associated with an activity. That is the granularity quarterapp offers, everything is down to the quarter</p>
+
+        <p>At the sheet view, you will have those quarters visualized in a time sheet, where you paint each cell based on what you did that day. You paint using colours, which corresponds to an activity, i.e. the activities are your palette.</p>
+
+        <p>Activities are nothing more than a name and an associated color, activities can be active or disabled - only active activities can be used for reporting time, disabled activities are used when generating reports.</p>
+
+        <p>The software is released free under the BSD License, and you can find it at <a href="http://github.com/eliasson/quarterapp/">github.</a></p>
+
+        <p class="note">Quarterapp is not yet finished software, and the quality of the service might be accordingly</p> 
+    </section>
 {% end %}

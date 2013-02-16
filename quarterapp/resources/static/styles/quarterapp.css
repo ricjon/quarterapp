@@ -72,6 +72,15 @@ strong {
     font-weight: bold;
 }
 
+p {
+    margin: 24px 0px;
+}
+
+li {
+    list-style: circle;
+    margin: 10px 0px;
+
+}
 /** Header region ************************************************************/
 #header-region {
     background-color: #f1f1f1;
