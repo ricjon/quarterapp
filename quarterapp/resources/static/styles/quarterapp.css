@@ -80,7 +80,7 @@ strong {
 }
 
 #logo { 
-    background: url("/images/logo-small.png") no-repeat 0 0;
+    background: url("/static/images/logo-small.png") no-repeat 0 0;
     min-height: 32px;
     float: left;
 }
@@ -701,7 +701,7 @@ div.activity-title {
 }
 
 div.activity-edit-control {
-    background: url("/images/edit-small.png") no-repeat 4px 8px;
+    background: url("/static/images/edit-small.png") no-repeat 4px 8px;
 }
 
 .activity-module.edit div.activity-edit-control {
@@ -722,17 +722,17 @@ div.activity-cancel-control {
 
 .activity-module.edit div.activity-delete-control {
     display: block;
-    background: url("/images/trash-small.png") no-repeat 4px 8px;
+    background: url("/static/images/trash-small.png") no-repeat 4px 8px;
 }
 
 .activity-module.edit div.activity-save-control {
     display: block;
-    background: url("/images/edit-small.png") no-repeat 4px 8px;
+    background: url("/static/images/edit-small.png") no-repeat 4px 8px;
 }
 
 .activity-module.edit div.activity-cancel-control {
     display: block;
-    background: url("/images/edit-small.png") no-repeat 4px 8px;
+    background: url("/static/images/edit-small.png") no-repeat 4px 8px;
 }
 
 #create-activity input.palette {
