@@ -50,21 +50,21 @@
                 <section class="container box small widget time-summary">
                     <section class="content">
                         <div class="total-time">
-                            <span id="summary-hours">2</span>
+                            <span id="summary-hours">{{ summary_total }}</span>
                             <span class="unit">hours</span>
                         </div>
+                        {% if summary %}
                         <table>
                             <tbody id="sheet-summary">
-                                <tr data-activity-id="">
-                                    <td class="value">1.5</td>
-                                    <td class="activity">One</td>
+                                {% for index, activity in enumerate(summary) %}
+                                <tr data-activity-id="{{ activity['id'] }}" style="color: {{ activity['color'] }};">
+                                    <td class="value">{{ activity["sum"] }}</td>
+                                    <td class="activity">{{ activity["title"] }}</td>
                                 </tr>
-                                <tr data-activity-id="">
-                                    <td class="value">0.5</td>
-                                    <td class="activity">Another</td>
-                                </tr>
+                                {% end %}
                             </tbody>
                         </table>
+                        {% end %}
                     </section>
                 </section>
 

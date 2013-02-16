@@ -126,7 +126,36 @@ class ActivityApiHandler(AuthenticatedHandler):
             logging.warn("Could not delete activity: %s", sys.exc_info())
             self.respond_with_error(ERROR_DELETE_ACTIVITY)
 
-class SheetApiHandler(AuthenticatedHandler):
+class BaseSheetHandler(AuthenticatedHandler):
+    def _default_sheet(self):
+        quarters = []
+        for i in range(0, 96):
+            quarters.append({ "id" : -1, "color" : "#fff", "border-color" : "#ccc"})
+        return quarters
+
+    def _sheet_summary(self, quarters, activity_dict):
+        summary_list = []
+        summary_dict = Counter(quarters)
+        summary_total = 0
+        for activity_id in summary_dict:
+            if activity_id == "-1":
+                continue
+
+            activity_color = "#ccc"
+            activity_title = "Unknown"
+
+            if long(activity_id) in activity_dict:
+                activity_color = activity_dict[long(activity_id)]["color"]
+                activity_title = activity_dict[long(activity_id)]["title"]
+
+            activity_summary = float(summary_dict[activity_id] / 4.0)
+            summary_total += activity_summary
+            summary_list.append({ "id" : activity_id, "color" : activity_color,
+                "title" : activity_title, "sum" : activity_summary})
+        return summary_list, summary_total
+
+class SheetApiHandler(BaseSheetHandler):
+
     @authenticated_user
     def put(self, date):
         """
@@ -145,9 +174,13 @@ class SheetApiHandler(AuthenticatedHandler):
 
         if quarters:
             quarters_array = quarters.split(',')
+
             if len(quarters_array) == 96:
                 update_sheet(self.application.db, user_id, date, quarters)
-                summary = Counter(quarters_array)
+
+                activities = get_activities(self.application.db, user_id)
+                activity_dict = get_dict_from_sequence(activities, "id")
+                summary = self._sheet_summary(quarters_array, activity_dict)
                 self.write({ "summary" : summary })
                 self.finish()
             else:

@@ -584,7 +584,6 @@ span.activity-cell {
 }
 
 .widget.time-summary #summary-hours {
-    font-size: 48px;
     line-height: 60px;
 }
 
@@ -596,12 +595,16 @@ span.activity-cell {
     font-size: 36px;
     text-align: center;
     font-weight: lighter;
+    line-height: 60px;
 }
 
 .widget.time-summary td {
     padding: 4px 8px;
     line-height: 18px;
-    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 120px;
+    text-overflow: ellipsis;
 }
 
 .widget.time-summary table th,

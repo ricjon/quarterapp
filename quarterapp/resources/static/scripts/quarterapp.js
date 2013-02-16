@@ -457,6 +457,8 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                     success : function(data, status, jqXHR) {
                         // If all goes well we have already updated the activity attributes
                         // final cleanup will remove any state class from UI
+                        // TODO - Update the activity summary list
+                        
                     },
                     error : function(jqXHR, status, errorThrown) {
                         var $activities = $("table.sheet span.activity-cell.pending");

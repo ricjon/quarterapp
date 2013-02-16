@@ -22,12 +22,14 @@
 
 import datetime
 import logging
-import tornado.web
+from collections import Counter
 
+import tornado.web
 from tornado.options import options
 from tornado.web import HTTPError
 
 from basehandlers import *
+from api import BaseSheetHandler
 from storage import *
 from quarter_errors import *
 from quarter_utils import *
@@ -39,12 +41,7 @@ class ActivityHandler(AuthenticatedHandler):
         activities = get_activities(self.application.db, user_id)
         self.render(u"app/activities.html", activities = activities)
 
-class SheetHandler(AuthenticatedHandler):
-    def default_sheet(self):
-        quarters = []
-        for i in range(0, 96):
-            quarters.append({ "id" : -1, "color" : "#fff", "border-color" : "#ccc"})
-        return quarters
+class SheetHandler(BaseSheetHandler):
 
     @authenticated_user
     def get(self, date = None):
@@ -75,8 +72,11 @@ class SheetHandler(AuthenticatedHandler):
         # for cells.
         activity_dict = get_dict_from_sequence(activities, "id")
 
-        sheet = get_sheet(self.application.db, user_id, date)
+        sheet = get_sheet(self.application.db, user_id, date_obj)
+        
         quarters = []
+        summary = []
+        summary_total = 0
         if sheet:
             ids = sheet.split(',')
             for i in ids:
@@ -86,9 +86,11 @@ class SheetHandler(AuthenticatedHandler):
                     quarters.append({ "id" : i, "color" : color, "border-color" : border_color})
                 else:
                     quarters.append({ "id" : i, "color" : "#fff", "border-color" : "#ccc"})
+            
+            summary, summary_total = self._sheet_summary(ids, activity_dict)
         else:
-            quarters = self.default_sheet()
-
+            quarters = self._default_sheet()
+        
         self.render(u"app/sheet.html", date = date_obj, weekday = weekday,
             today = today, yesterday = yesterday, tomorrow = tomorrow,
-            activities = activities, quarters = quarters)
+            activities = activities, quarters = quarters, summary = summary, summary_total = summary_total)
