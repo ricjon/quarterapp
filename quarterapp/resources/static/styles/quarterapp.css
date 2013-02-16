@@ -613,6 +613,10 @@ span.activity-cell {
     text-align: right;
 }
 
+.widget.time-summary td.activity {
+    text-align: left;
+}
+
 /** activities */
 .activity-module {
     border: 1px solid #ccc;
