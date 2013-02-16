@@ -45,7 +45,6 @@ def read_configuration():
     define("port", type=int, help="Port to listen on")
     define("app_config_age", type=int, help="Time in minutes between application config update")
     define("cookie_secret", help="Random long hexvalue to secure cookies")
-    define("salt", help="Password salt used")
     define("mysql_host", help="MySQL hostname")
     define("mysql_port", help="MySQL port", type=int)
     define("mysql_database", help="MySQL database name")

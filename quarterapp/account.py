@@ -101,8 +101,9 @@ class ActivationHandler(BaseHandler):
         if error:
             self.render(u"public/activate.html", error = "not_valid", code = None)
         else:
-            salted_password = hash_password(password, options.salt)
-            if activate_user(self.application.db, code, salted_password):
+            salt = username_for_activation_code(self.application.db, code)
+            salted_password = hash_password(password, salt)
+            if activate_user(self.application.db, code, salted_password, salt):
                 # TODO Do login
                 self.redirect(u"/sheet")
             else:
@@ -146,7 +147,8 @@ class ResetPasswordHandler(BaseHandler):
         if error:
             self.render(u"public/reset.html", error = "unknown", code = code)
         else:
-            salted_password = hash_password(password, options.salt)
+            salt = username_for_activation_code(self.application.db, code)
+            salted_password = hash_password(password, salt)
             if reset_password(self.application.db, code, salted_password):
                 # TODO Do login
                 self.redirect(u"/sheet")
@@ -157,12 +159,12 @@ class LoginHandler(AuthenticatedHandler):
     def get(self):
         allow_signups = self.application.quarter_settings.get_value("allow-signups")
 
-        self.render(u"public/login.html", allow_signups = allow_signups)
+        self.render(u"public/login.html", error = None, allow_signups = allow_signups)
 
     def post(self):
         username = self.get_argument("username", "")
         password = self.get_argument("password", "")
-        hashed_password = hash_password(password, options.salt)
+        hashed_password = hash_password(password, username)
 
         user = authenticate_user(self.application.db, username, hashed_password)
         if user:
@@ -172,4 +174,6 @@ class LoginHandler(AuthenticatedHandler):
         else:
             logging.warn("User not authenticated")
             self.set_current_user(None)
-            self.render(u"public/login.html")
+
+            allow_signups = self.application.quarter_settings.get_value("allow-signups")
+            self.render(u"public/login.html", error = "unauthenticated", allow_signups = allow_signups)

@@ -178,8 +178,9 @@ class AdminNewUserHandler(AuthenticatedHandler):
 
         if not error:
             try:
-                salted_password = hash_password(password, options.salt)
-                add_user(self.application.db, username, salted_password, ut)
+                salt = username
+                salted_password = hash_password(password, salt)
+                add_user(self.application.db, username, salted_password, salt, ut)
                 self.render(u"admin/new-user.html", completed = True, error = False)
             except:
                 self.render(u"admin/new-user.html", completed = False, error = True)

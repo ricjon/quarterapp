@@ -34,7 +34,7 @@ from quarterapp.quarter_utils import *
 # Test can be run using either SQLite or MySQL as database. By default
 # SQLite is used, but changing this to True and filling the details in the 
 # MYSQL_TEST_CONFIG dict will make you run on MySQL instead.
-USE_MYSQL = False
+USE_MYSQL = True
 
 MYSQL_TEST_CONFIG = {
     "database" : "quarterapp_test",
@@ -73,6 +73,7 @@ CREATE TABLE `users` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `username` VARCHAR(256) NOT NULL DEFAULT '',
     `password` VARCHAR(90) NOT NULL DEFAULT '',
+    `salt` VARCHAR(256) NOT NULL DEFAULT '',
     `type` TINYINT NOT NULL DEFAULT '0',
     `state`  TINYINT NOT NULL DEFAULT '0',
     `last_login` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -194,14 +195,14 @@ class TestStorage(unittest.TestCase):
         result = quarterapp.storage.signup_user(self.db, "one@example.com", "sleepy", "127.0.0.1")
         self.assertTrue(result)
 
-        result = quarterapp.storage.activate_user(self.db, "tired", "mybloodyvalentine")
+        result = quarterapp.storage.activate_user(self.db, "tired", "mybloodyvalentine", "salt")
         self.assertFalse(result)
 
     def test_user_activation_success(self):
         result = quarterapp.storage.signup_user(self.db, "one@example.com", "sleepy", "127.0.0.1")
         self.assertTrue(result)
 
-        result = quarterapp.storage.activate_user(self.db, "sleepy", "mybloodyvalentine")
+        result = quarterapp.storage.activate_user(self.db, "sleepy", "mybloodyvalentine", "salt")
         self.assertTrue(result)
 
     def test_many_signups(self):
@@ -217,9 +218,9 @@ class TestStorage(unittest.TestCase):
     ## User test
 
     def test_add_users(self):
-        result = quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
+        result = quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
         self.assertTrue(result)
-        result = quarterapp.storage.add_user(self.db, "bobby@example.com", "anothersecret   ")
+        result = quarterapp.storage.add_user(self.db, "bobby@example.com", "anothersecret", "salt")
         self.assertTrue(result)
         user_count = quarterapp.storage.get_user_count(self.db)
         self.assertEqual(2, user_count)
@@ -228,14 +229,18 @@ class TestStorage(unittest.TestCase):
         result = quarterapp.storage.username_unique(self.db, "bob@example.com")
         self.assertTrue(result)
 
-        result = quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
+        result = quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
         result = quarterapp.storage.username_unique(self.db, "bob@example.com")
         self.assertFalse(result)
 
+    def test_user_salt(self):
+        result = quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "mineral")
+        self.assertEqual("mineral", quarterapp.storage.user_salt(self.db, "bob@example.com"))
+
     def test_delete_user(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "robert@example.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "robert@example.com", "secretpassword", "salt")
         
         user_count = quarterapp.storage.get_user_count(self.db)
         self.assertEqual(3, user_count)
@@ -245,22 +250,22 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(2, user_count)
 
     def test_authenticate_user(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
 
         result = quarterapp.storage.authenticate_user(self.db, "bobby@example.com", "secretpassword")
         self.assertIsNotNone(result)
 
     def test_authenticate_user_fail(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
 
         result = quarterapp.storage.authenticate_user(self.db, "bobby@example.com", "iamahacker")
         self.assertIsNone(result)        
 
     def test_reset_user_password(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
 
         result = quarterapp.storage.set_user_reset_code(self.db, "bobby@example.com", "okay")
         self.assertTrue(result)
@@ -272,8 +277,8 @@ class TestStorage(unittest.TestCase):
         self.assertTrue(result)
 
     def test_reset_does_not_affect_password(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
 
         result = quarterapp.storage.authenticate_user(self.db, "bobby@example.com", "secretpassword")
         self.assertIsNotNone(result)
@@ -285,33 +290,33 @@ class TestStorage(unittest.TestCase):
         self.assertIsNotNone(result)
 
     def test_user_is_enabled_by_default(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
 
         result = quarterapp.storage.enabled_user(self.db, "bob@example.com")
         self.assertTrue(result)
 
     def test_disable_user(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
 
         quarterapp.storage.disable_user(self.db, "bob@example.com")
         result = quarterapp.storage.enabled_user(self.db, "bob@example.com")
         self.assertFalse(result)
 
     def test_enable_user(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
 
         quarterapp.storage.enable_user(self.db, "bob@example.com")
         result = quarterapp.storage.enabled_user(self.db, "bob@example.com")
         self.assertTrue(result)
 
     def test_filtered_user_count(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "robert@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "alice@internet.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "robert@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "alice@internet.com", "secretpassword", "salt")
 
         result = quarterapp.storage.get_filtered_user_count(self.db, "example.com")
         self.assertEqual(3, result)
@@ -323,11 +328,11 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(0, result)
 
     def test_get_users(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "robert@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "alice@internet.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "jane@internet.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "robert@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "alice@internet.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "jane@internet.com", "secretpassword", "salt")
 
         result = quarterapp.storage.get_users(self.db, 0)
         self.assertEqual(5, len(result))
@@ -339,11 +344,11 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(0, len(result))
 
     def test_get_users(self):
-        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "robert@example.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "alice@internet.com", "secretpassword")
-        quarterapp.storage.add_user(self.db, "jane@internet.com", "secretpassword")
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "robert@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "alice@internet.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "jane@internet.com", "secretpassword", "salt")
 
         result = quarterapp.storage.get_filtered_users(self.db, "example", 0)
         self.assertEqual(3, len(result))

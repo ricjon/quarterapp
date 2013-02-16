@@ -180,7 +180,7 @@ def get_filtered_users(db, query_filter, start = 0, count = 50):
         users = []
     return users
 
-def add_user(db, username, password, user_type = User.Normal):
+def add_user(db, username, password, salt, user_type = User.Normal):
     """
     Adds a new user
 
@@ -197,8 +197,8 @@ def add_user(db, username, password, user_type = User.Normal):
     @param password The users password
     @returun True if the user was added else false
     """
-    rowid = _exec(db, "INSERT INTO users (username, password, type, state) VALUES(%(username)s, %(password)s, %(user_type)s, \"1\");",
-        { "username" : username, "password" : password, "user_type" : user_type })
+    rowid = _exec(db, "INSERT INTO users (username, password, salt, type, state) VALUES(%(username)s, %(password)s, %(salt)s, %(user_type)s, \"1\");",
+        { "username" : username, "password" : password, "salt" : salt, "user_type" : user_type })
     return rowid > -1
 
 def username_unique(db, username):
@@ -270,7 +270,21 @@ def signup_user(db, email, code, ip):
         { "email" : email, "code" : code, "ip" : ip })
     return rowid > -1
 
-def activate_user(db, code, password):
+def username_for_activation_code(db, code):
+    """
+    Get the suggested username for the given activation code
+
+    @param db The database connection to use
+    @param code The activation code
+    @return The username
+    """
+    signups = _query(db, "SELECT username FROM signups WHERE activation_code=%(code)s;", { "code" : code })
+    print "Signups ", signups
+    if len(signups) > 0:
+        return signups[0].username
+    return None
+
+def activate_user(db, code, password, salt):
     """
     Creates a new user if the given email is found in the signup table and the code matches the assigned
     activation code.
@@ -280,6 +294,7 @@ def activate_user(db, code, password):
     @param db The database connection to use
     @param code The activation code
     @param password The users encrypted password
+    @param salt The user's specific password salt
     @return True if the user was activated, else False
     """
     try:
@@ -288,8 +303,8 @@ def activate_user(db, code, password):
 
         if signups[0].activation_code == code:
             _exec(db, "DELETE FROM signups WHERE activation_code=%(code)s;", { 'code' : code })
-            _exec(db, "INSERT INTO users (username, password, type, state) VALUES(%(username)s, %(password)s, \"0\", \"1\");",
-                { "username": signups[0].username, "password" : password })
+            _exec(db, "INSERT INTO users (username, password, salt, type, state) VALUES(%(username)s, %(password)s, %(salt)s, \"0\", \"1\");",
+                { "username": signups[0].username, "password" : password, "salt" : salt })
             return True
     except:
         return False
@@ -328,6 +343,19 @@ def reset_password(db, reset_code, new_password):
             return False
     except:
         return False
+
+def user_salt(db, username):
+    """
+    Get the user specific salt
+
+    @param db The database connection to use
+    @param username The username to get the salt for
+    @return The salt as string or None
+    """
+    users = _query(db, "SELECT salt FROM users WHERE username=%(username)s;", { "username" : username })
+    if len(users) > 0:
+        return users[0].salt
+    return None
 
 def authenticate_user(db, username, password):
     """

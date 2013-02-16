@@ -24,6 +24,11 @@
                             <button type="submit">Login</button>
                         </fieldset>
                     </form>
+                    {% if error == "unauthenticated" %}
+                        <div class="error-message note">
+                            <p>The given login is not valid</p>
+                        </div>
+                    {% end %}
 
                     {% if allow_signups == "1" %}
                         <p class="note">Do you want to <a href="/signup">signup</a> for a free account, or did you <a href="/forgot">forget</a> your login details?</a>
