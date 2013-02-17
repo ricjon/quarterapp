@@ -61,10 +61,10 @@ def read_configuration():
     try:
         tornado.options.parse_command_line()
         tornado.options.parse_config_file("quarterapp.conf")
+        
     except IOError:
         logging.warning("Configuration file not found (quarterapp.conf)!")
         exit(1)
-
 
 def quarterapp_main():
     application = tornado.web.Application(
@@ -107,7 +107,6 @@ def quarterapp_main():
         ],
 
         # Static files
-        #static_url_prefix = "r",
         static_path = os.path.join(os.path.dirname(__file__), "resources/static"),
         
         # Location of HTML templates

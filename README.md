@@ -13,7 +13,7 @@ activity. Quarterapp also supports extracting reports spanning more than a day.
 
 Start the server using the command: 
 
-    python quarterapp.py
+    python quarterapp/quarterapp.py
 
 
 ## Test
