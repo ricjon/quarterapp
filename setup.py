@@ -10,21 +10,20 @@ def get_resources():
     return resources
 
 setup(
-    name='Quarterapp',
-    version='0.0.1',
+    name='quarterapp',
+    version='0.0.2',
     author='Markus Eliasson',
     author_email='markus.eliasson@gmail.com',
     packages=['quarterapp', 'quarterapp.tests'],
     url='https://github.com/eliasson/quarterapp',
-    #license=open('LICENSE').read(),
+    license="BSD license",
     description='Personal time management',
-    #long_description=open('README.md').read(),
     install_requires=[
         "tornado >= 2.4.0"
     ],
     entry_points = {
     'console_scripts': [
-        'qapp = quarterapp:main',
+        'quarterapp = quarterapp:main',
         ]
     },
     package_data = {'quarterapp': get_resources()},
