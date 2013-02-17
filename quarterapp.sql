@@ -56,9 +56,9 @@ INSERT INTO quarterapp.settings (`name`, `value`) VALUES("allow-activations", "1
 
 #
 # Insert default administrator account
-#   Username: admin
-#   Password: admin
-INSERT INTO quarterapp.users (`username`, `password`, `salt`, `type`, `state`) VALUES("admin", "hFDsoBZlUW2a61MXdkkCt4SVUCY3yWGSyBsWg9MtaRoJZc8Df-youe2e5vxquPJ_zo93xP2bSkQqAPwxe4I35g==", "admin", 1, 1);
+#   Username: one@example.com
+#   Password: 123qweASD
+INSERT INTO quarterapp.users (`username`, `password`, `salt`, `type`, `state`) VALUES("one@example.com", "MYlkZO_QWaMjtCTJd76FJg--87ixaKBIoq7iKxjrOlLf358FqGuny4jbVUn5PeGmQoci4MOc_e5sBuLL2QN4UA==", "one@example.com", 1, 1);
 
 commit;
 #
