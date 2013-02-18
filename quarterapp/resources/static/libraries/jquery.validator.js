@@ -88,8 +88,10 @@
 
             if(this.$form.find("input." + self.options.error_class).length > 0) {
                 this.$form.attr("data-validation-result", "not-valid");
-                event.preventDefault();    
+                event.preventDefault();
+                return false;
             }
+            return true;
         },
 
         validate_element : function($element) {
