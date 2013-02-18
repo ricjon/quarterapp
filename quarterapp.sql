@@ -17,7 +17,7 @@ CREATE TABLE `sheets` (
     `date` DATE NOT NULL,
     `quarters` TEXT NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `date` (`date`, `id`)
+    UNIQUE KEY `date` (`date`, `user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `settings` (
