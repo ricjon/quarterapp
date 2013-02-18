@@ -11,7 +11,7 @@ def get_resources():
 
 setup(
     name='quarterapp',
-    version='0.0.2',
+    version='0.0.3',
     author='Markus Eliasson',
     author_email='markus.eliasson@gmail.com',
     packages=['quarterapp', 'quarterapp.tests'],
