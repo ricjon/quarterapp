@@ -231,6 +231,7 @@ a.dismiss:active {
 .note {
     color: #999;   
     text-align: center;
+    margin: 0px;
 }
 
 /** Form styling *************************************************************/
