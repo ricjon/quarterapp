@@ -76,7 +76,7 @@ class SheetHandler(BaseSheetHandler):
         
         quarters = []
         summary = []
-        summary_total = 0
+        summary_total = "%.2f" %  0
         if sheet:
             ids = sheet.split(',')
             for i in ids:

@@ -66,6 +66,9 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             // Set the current activity
             var activity = this.get_preferred_activity();
             this.set_current_activity(activity);
+
+            // Make activities before / after sod/eod visible
+            this.show_sheets_activities();
         },
 
         /**
@@ -167,6 +170,43 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             }
             else {
                 return this.current_activity;
+            }
+        },
+
+        /**
+         * In sheet view, show all activities that are used, even if they are before
+         * or after start-of-day or end-of-day limit.
+         */
+        show_sheets_activities : function() {
+            var $early_rows = $("table.sheet tbody tr").slice(0, 11),
+                $late_rows = $("table.sheet tbody tr").slice(12, 24),
+                found_it = false;
+
+            var process_row = function() {
+                if(found_it === true) {
+                    $current_row.show();
+                    return true;
+                }
+                else if(! $current_row.is(":visible") ) {
+                    if($current_row.find("span[data-activity-id!='-1']").length > 0) {
+                        $current_row.show();
+                        return true;
+                    }
+                }
+            };
+
+            // Go through early rows from start, if one row contains used activity. 
+            // Show that row, and all subsequent early rows
+            for(var i = 0; i < $early_rows.length; i++) {
+                var $current_row = $early_rows.eq(i);
+                found_it = process_row($current_row, found_it);
+            }
+
+            // Go through late rows from the end, if one row contains a used activity.
+            // Show that row and all subsequent rows.
+            for(var i = $late_rows.length-1; i > -1; i--) {
+                var $current_row = $late_rows.eq(i);
+                found_it = process_row($current_row, found_it);
             }
         },
 
