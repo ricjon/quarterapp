@@ -15,9 +15,9 @@
                     <div class="setting-control"><fieldset>
                         <label for="filter">Username</label>
                         {% if query_filter %}
-                            <input type="text" id="filter" name="filter" value="{{ query_filter }}" />
+                            <input type="text" id="filter" name="filter" value="{{ query_filter }}" autofocus="autofocus" />
                         {% else %}
-                            <input type="text" id="filter" name="filter" />
+                            <input type="text" id="filter" name="filter" autofocus="autofocus" />
                         {% end %}
                         <button type="submit">Filter</button>
                         {% if query_filter %}
