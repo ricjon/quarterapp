@@ -359,6 +359,15 @@ class TestStorage(unittest.TestCase):
         result = quarterapp.storage.get_filtered_users(self.db, ".com", 1)
         self.assertEqual(4, len(result))
 
+    def test_user_is_admin(self):
+        quarterapp.storage.add_user(self.db, "admin@example.com", "secretpassword", "salt", quarterapp.storage.User.Administrator)
+        quarterapp.storage.add_user(self.db, "notadmin@example.com", "secretpassword", "salt", quarterapp.storage.User.Normal)
+
+        result = quarterapp.storage.is_admin(self.db, "admin@example.com")
+        self.assertTrue(result)
+
+        result = quarterapp.storage.is_admin(self.db, "notadmin@example.com")
+        self.assertFalse(result)
 
     ## Test settings
 

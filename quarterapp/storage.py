@@ -212,6 +212,17 @@ def username_unique(db, username):
     users = _query(db, "SELECT username FROM users WHERE username=%(username)s;", {'username': username})
     return len(users) < 1
 
+def is_admin(db, username):
+    """
+    Check if the given user is an administrator or not.
+
+    @param db The database connection to use
+    @param username The username to check
+    @return True if the user is an administrator, else False
+    """
+    users = _query(db, "SELECT username FROM users WHERE username=%(username)s AND type=%(type)s;", { "username" : username, "type" : "1" })
+    return len(users) == 1    
+
 def enabled_user(db, username):
     """
     Check if the given user is enabled

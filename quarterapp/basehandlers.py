@@ -59,7 +59,7 @@ def authenticated_admin(method):
     def wrapper(self, *args, **kwargs):
         if not self.current_user:
             raise tornado.web.HTTPError(404)
-        elif self.current_user["type"] != User.Administrator:
+        elif not is_admin(self.application.db, self.current_user["username"]):
             raise tornado.web.HTTPError(404)
         return method(self, *args, **kwargs)
     return wrapper
