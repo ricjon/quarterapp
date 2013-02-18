@@ -23,6 +23,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
     Quarterapp.prototype = {
         constructor : Quarterapp,
         activity_markup : '<div class="activity-module" data-activity-id="{0}"><div class="activity-color" data-palette-value="{2}"><input class="palette" type="text" value="" style="background-color: {2};" disabled /></div><div class="activity-title">{1}</div><div class="activity-edit-title"><input type="text" value="{1}" /></div><div class="activity-control activity-edit-control"><a href="#" title="Edit"><span>&nbsp;</span></a></div><div class="activity-control activity-save-control"><a href="#" title="Save"><span>&nbsp;</span></a></div><div class="activity-control activity-cancel-control"><a  href="#" title="Cancel"><span>&nbsp;</span></a></div><div class="activity-control activity-delete-control"><a href="#" title="Delete"><span>&nbsp;</span></a></div></div>',
+        summary_markup : '<tr data-activity-id="{0}" style="color: {1};"><td class="value">{2}</td><td class="activity">{3}</td></tr>',
 
         init : function() {
             // Activity controls
@@ -457,8 +458,15 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                     success : function(data, status, jqXHR) {
                         // If all goes well we have already updated the activity attributes
                         // final cleanup will remove any state class from UI
-                        // TODO - Update the activity summary list
-                        
+                        var summary_total = $("#summary-hours"),
+                            summary_table = $("#sheet-summary");
+                        summary_total.html(new Number(data.total).toFixed(2));
+                        summary_table.empty();
+                        summary_table.append("<tbody></tbody>");
+                        $.each(data.summary, function(index, act) {
+                            var ac = self.summary_markup.format(act.id, act.color, new Number(act.sum).toFixed(2), act.title);
+                            summary_table.append(ac);
+                        });
                     },
                     error : function(jqXHR, status, errorThrown) {
                         var $activities = $("table.sheet span.activity-cell.pending");

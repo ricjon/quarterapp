@@ -53,18 +53,19 @@
                             <span id="summary-hours">{{ summary_total }}</span>
                             <span class="unit">hours</span>
                         </div>
-                        {% if summary %}
-                        <table>
-                            <tbody id="sheet-summary">
+                        <table id="sheet-summary">
+                            <tbody>
+                            {% if summary %}
+                        
                                 {% for index, activity in enumerate(summary) %}
                                 <tr data-activity-id="{{ activity['id'] }}" style="color: {{ activity['color'] }};">
                                     <td class="value">{{ activity["sum"] }}</td>
                                     <td class="activity">{{ activity["title"] }}</td>
                                 </tr>
                                 {% end %}
+                            {% end %}
                             </tbody>
                         </table>
-                        {% end %}
                     </section>
                 </section>
 

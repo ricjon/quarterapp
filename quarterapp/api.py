@@ -151,8 +151,8 @@ class BaseSheetHandler(AuthenticatedHandler):
             activity_summary = float(summary_dict[activity_id] / 4.0)
             summary_total += activity_summary
             summary_list.append({ "id" : activity_id, "color" : activity_color,
-                "title" : activity_title, "sum" : activity_summary})
-        return summary_list, summary_total
+                "title" : activity_title, "sum" : "%.2f" % activity_summary})
+        return summary_list, "%.2f" % summary_total
 
 class SheetApiHandler(BaseSheetHandler):
 
@@ -180,8 +180,8 @@ class SheetApiHandler(BaseSheetHandler):
 
                 activities = get_activities(self.application.db, user_id)
                 activity_dict = get_dict_from_sequence(activities, "id")
-                summary = self._sheet_summary(quarters_array, activity_dict)
-                self.write({ "summary" : summary })
+                summary, total = self._sheet_summary(quarters_array, activity_dict)
+                self.write({ "summary" : summary, "total" : total })
                 self.finish()
             else:
                 self.respond_with_error(ERROR_NOT_96_QUARTERS)
