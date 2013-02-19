@@ -47,7 +47,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             }
 
             // Sheet activity selector
-            $("#current-activity").click($.proxy(this.on_show_activity_selector, this));
+            $("#current-activity").click($.proxy(this.on_toggle_activity_selector, this));
             $("#available-activities div.activity").on("click", $.proxy(this.on_select_activity, this));
 
             // Only render work hours
@@ -332,10 +332,10 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
         },
 
         /**
-         * Show the sheet views activity selector
+         * Toggle the sheet views activity selector
          */
-        on_show_activity_selector : function() {
-            $("#available-activities").show();
+        on_toggle_activity_selector : function() {
+            $("#available-activities").toggle();
         },
 
         /**
