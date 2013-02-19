@@ -209,8 +209,10 @@ def username_unique(db, username):
     @param username The username to check
     @return True if the username is not used, else False
     """
-    users = _query(db, "SELECT username FROM users WHERE username=%(username)s;", {'username': username})
-    return len(users) < 1
+    signups = _query(db, "SELECT username FROM signups WHERE username=%(username)s;", { "username" : username })
+    users = _query(db, "SELECT username FROM users WHERE username=%(username)s;", { "username" : username })
+
+    return (len(signups) + len(users)) < 1
 
 def is_admin(db, username):
     """
