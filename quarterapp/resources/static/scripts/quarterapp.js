@@ -397,33 +397,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             }
         },
 
-        /**
-         * Setup the activity update "transaction". Nothing will be sent to the server until the
-         * mouse is relased and all updated activities are sent at once.
-         */
-        on_sheet_mouse_down : function(event) {
-            if(event.which !== 1) {
-                return;
-            }
-
-            this.pending_update = true;
-        },
-
-        /**
-         * Update activity cell if mouse is pressed, keep original values in case of update error.
-         * This function does not communicate with the server, all pending updates are accumalated
-         * and transmitted at mouse up.
-         */
-        on_sheet_mouse_move : function(event) {
-            if(event.which !== 1) {
-                return;
-            }
-
-            if(!this.pending_update) {
-                return;
-            }
-
-            var $activity_cell = $(event.target);
+        paint_cell : function($activity_cell) {
             var activity_id = $activity_cell.attr("data-activity-id");
 
             if(activity_id === undefined) {
@@ -450,6 +424,36 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
 
             // Add pending state class (used for visual feedback)
             $activity_cell.addClass("pending");
+        },
+
+        /**
+         * Setup the activity update "transaction". Nothing will be sent to the server until the
+         * mouse is relased and all updated activities are sent at once.
+         */
+        on_sheet_mouse_down : function(event) {
+            if(event.which !== 1) {
+                return;
+            }
+
+            this.pending_update = true;
+            this.paint_cell($(event.target));
+        },
+
+        /**
+         * Update activity cell if mouse is pressed, keep original values in case of update error.
+         * This function does not communicate with the server, all pending updates are accumalated
+         * and transmitted at mouse up.
+         */
+        on_sheet_mouse_move : function(event) {
+            if(event.which !== 1) {
+                return;
+            }
+
+            if(!this.pending_update) {
+                return;
+            }
+
+            this.paint_cell($(event.target));
         },
 
         /**
