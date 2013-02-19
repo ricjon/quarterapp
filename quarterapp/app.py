@@ -94,3 +94,35 @@ class SheetHandler(BaseSheetHandler):
         self.render(u"app/sheet.html", date = date_obj, weekday = weekday,
             today = today, yesterday = yesterday, tomorrow = tomorrow,
             activities = activities, quarters = quarters, summary = summary, summary_total = summary_total)
+
+class ProfileHandler(AuthenticatedHandler):
+    @authenticated_user
+    def get(self):
+        user_id  = self.get_current_user_id()
+        sheet_count = get_sheet_count(self.application.db, user_id)
+        
+        self.render(u"app/profile.html", sheet_count = sheet_count, error = None)
+
+class DeleteAccountHandler(AuthenticatedHandler):
+    @authenticated_user
+    def post(self):
+        password = self.get_argument("password", "")
+        username = self.current_user["username"]
+        user_id  = self.get_current_user_id()
+
+        error = None
+        if len(password) == 0:
+            error = "not_valid"
+
+        hashed_password = hash_password(password, username)
+        authenticated = authenticate_user(self.application.db, username, hashed_password)
+        if not authenticated:
+            error = "not_valid"
+
+        if error:
+            sheet_count = get_sheet_count(self.application.db, user_id)
+            self.render(u"app/profile.html", sheet_count = sheet_count, error = error)
+        else:
+            delete_user(self.application.db, username)
+            self.set_current_user(None)
+            self.redirect(u"/")

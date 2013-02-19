@@ -178,6 +178,7 @@ li {
 .container.box header.activities    { background-color: #824d7b; }
 .container.box header.sheet         { background-color: #8a99ae; }
 .container.box header.report        { background-color: #47b39b; }
+.container.box header.profile       { background-color: #8a99ae; }
 
 .container.box .content {
     background-color: #fff;
@@ -306,6 +307,17 @@ button[disabled=disabled] {
 
 button[disabled=disabled]:hover {
     background-color: #efefef;
+}
+
+button.delete {
+    border-color: #ef7e7d;
+    background-color: #ce5c5b;
+    color: #fff;
+}
+
+button.delete:hover {
+    background-color: #ef7e7d;
+    cursor: pointer;
 }
 
 .container.wide form {
@@ -875,4 +887,26 @@ span.activity-cell.pending {
     to {
        background-position: -50px 0;
     }
+}
+
+
+
+/** Profile view *************************************************************/
+section.profile button.delete {
+    margin-top: 20px;
+    float: left;
+}
+
+form#delete-account-form {
+    margin: 10px 40px;
+    text-align: left;
+}
+
+form#delete-account-form p {
+    margin: 0px;
+}
+
+form#delete-account-form button.delete {
+    margin: 0px;
+    float: left;
 }

@@ -264,7 +264,15 @@ def delete_user(db, username):
     @param username The user to delete
     """
     # TODO Make a transaction and also delete all activities and quarters!
-    _exec(db, "DELETE FROM users WHERE username=%(username)s;", { "username" : username })
+    result = _query(db, "SELECT * FROM users WHERE username=%(username)s;", { "username" : username })
+    if len(result) == 0:
+        return False
+
+    user_id =  getattr(result[0], "id")
+    
+    _exec(db, "DELETE FROM activities WHERE user=%(user)s;", { "user" : user_id })
+    _exec(db, "DELETE FROM sheets WHERE user=%(user)s;", { "user" : user_id })
+    _exec(db, "DELETE FROM users WHERE id=%(user)s;", { "user" : user_id })
 
 def signup_user(db, email, code, ip):
     """
@@ -352,6 +360,19 @@ def reset_password(db, reset_code, new_password):
             return True
         else:
             return False
+    except:
+        return False
+
+def change_password(db, username, new_password):
+    """
+    Update the users password
+
+    @param db The database connection to use
+    @param username The user to update
+    """
+    try:
+        _exec(db, "UPDATE users SET password=%(password)s WHERE username=%(user)s", { "password" : new_password, "user" : username} )
+        return True
     except:
         return False
 
@@ -477,3 +498,17 @@ def get_sheet(db, user_id, date):
         return sheets[0]["quarters"]
     else:
         return None
+
+def get_sheet_count(db, user_id):
+    """
+    Get the number of sheets reported by the user
+
+    @param db The database connection to use
+    @param user_id The id of the authenticated user
+    @return The number of sheets
+    """
+    count = _query(db, "SELECT COUNT(*) FROM sheets WHERE user=%(user)s;", { "user" : user_id })
+    if len(count) > 0:
+        return getattr(count[0], "COUNT(*)")
+    else:
+        return 0    

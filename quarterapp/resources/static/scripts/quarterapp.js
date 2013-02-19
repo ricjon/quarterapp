@@ -63,6 +63,9 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             $("table.sheet td").bind("mousemove", $.proxy(this.on_sheet_mouse_move, this));
             $("body").bind("mouseup", $.proxy(this.on_sheet_mouse_up, this));
 
+            // Profile view
+            $("#delete-account").click($.proxy(this.on_show_delete_account, this));
+
             // Set the current activity
             var activity = this.get_preferred_activity();
             this.set_current_activity(activity);
@@ -523,6 +526,10 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
 
             cleanup_pending_activities();
             this.pending_update = false;
+        },
+
+        on_show_delete_account : function() {
+            $("#delete-account-form").show();
         }
     }
 

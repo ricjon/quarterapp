@@ -141,6 +141,8 @@ class ResetPasswordHandler(BaseHandler):
         error = None
         if len(code) == 0:
             error = "not_valid"
+        if len(password) == 0:
+            error = "not_valid"
         if not password == verify_password:
             error = "not_matching"
 
@@ -177,3 +179,36 @@ class LoginHandler(AuthenticatedHandler):
 
             allow_signups = self.application.quarter_settings.get_value("allow-signups")
             self.render(u"public/login.html", error = "unauthenticated", allow_signups = allow_signups)
+
+class ChangePasswordHandler(AuthenticatedHandler):
+    @authenticated_user
+    def get(self):
+        self.render(u"app/password.html", error = None)
+
+    @authenticated_user
+    def post(self):
+        current_password = self.get_argument("current-password", "")
+        new_password = self.get_argument("new-password", "")
+        verify_password = self.get_argument("verify-password", "")
+        username = self.current_user["username"]
+
+        error = None
+        if len(current_password) == 0:
+            error = "not_valid"
+        if len(new_password) == 0:
+            error = "not_valid"
+        if not new_password == verify_password:
+            error = "not_matching"
+
+        current_hash = hash_password(current_password, username)
+        authenticated = authenticate_user(self.application.db, username, current_hash)
+
+        if not authenticated:
+            error = "not_valid"
+
+        if error:
+            self.render(u"app/password.html", error = error)
+        else:
+            hashed_password = hash_password(new_password, username)
+            change_password(self.application.db, username, hashed_password)
+            self.render(u"app/password.html", error = "success")

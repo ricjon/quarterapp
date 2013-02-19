@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <section class="container box wide profile">
+        <header class="profile">
+            <h1>Profile</h1>
+        </header>
+        <section class="content">
+
+            <div class="setting-group">
+                <div class="setting-control">&nbsp;</div>
+                <div class="setting-description">    
+                    <h3>Usage</h3>
+                    <p class="note">You have used Quarterapp to fill in {{ sheet_count }} time sheets.</p>
+                </div>
+                <div class="clear-fix"></div>
+            </div>
+
+            <div class="setting-group">
+                <div class="setting-control">&nbsp;</div>
+                <div class="setting-description">    
+                    <h3>Change password</h3>
+                    <p class="note">Change password <a href="/password">here</a></p>
+                </div>
+                <div class="clear-fix"></div>
+            </div>
+
+            <div class="setting-group">
+                <div class="setting-control">&nbsp;</div>
+                <div class="setting-description">    
+                    <h3>Delete account</h3>
+                    <p class="note">If you delete your account, all associated data will be removed as well. <strong>This action cannot be undone</strong></p>
+                    <button id="delete-account" class="delete">Delete account</button>
+                    <div class="clear-fix"></div>
+                    {% if error %}
+                    <form id="delete-account-form" action="/delete-account" method="POST" data-validation>
+                    {% else %}
+                    <form id="delete-account-form" action="/delete-account" method="POST" style="display: none;" data-validation>
+                    {% end %}
+                        <p class="note">To be able to delete your account, you need to confirm your password.</p>
+                        <fieldset>
+                            <label for="verify-password">Password</label>
+                            <input type="password" name="password" id="password"
+                                data-validator="required password"
+                                data-validator-on="focus-loss" />
+                        </fieldset>        
+                        <fieldset>
+                            <button type="submit" class="delete">Really delete account</button>
+                        </fieldset>
+                        {% if error == "not_valid" %}
+                            <div class="error-message note">
+                                <p>The given password is not valid</p>
+                            </div>
+                        {% end %}
+                    </form>
+                </div>
+                <div class="clear-fix"></div>
+            </div>
+        </section>
+    </section>
+{% end %}

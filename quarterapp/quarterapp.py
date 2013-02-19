@@ -90,11 +90,14 @@ def quarterapp_main():
             (r"/reset", ResetPasswordHandler),
             (r"/login", LoginHandler),
             (r"/terms", TermsHandler),
+            (r"/password", ChangePasswordHandler),
+            (r"/delete-account", DeleteAccountHandler),
 
             # Application views
             (r"/activities", ActivityHandler),
             (r"/sheet", SheetHandler),
             (r"/sheet/([^\/]+)", SheetHandler),
+            (r"/profile", ProfileHandler),
 
             # Application API
             (r"/api/activities", ActivityApiHandler),

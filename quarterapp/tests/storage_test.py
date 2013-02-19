@@ -369,6 +369,18 @@ class TestStorage(unittest.TestCase):
         result = quarterapp.storage.is_admin(self.db, "notadmin@example.com")
         self.assertFalse(result)
 
+    def test_change_password(self):
+        quarterapp.storage.add_user(self.db, "bob@example.com", "secretpassword", "salt")
+        quarterapp.storage.add_user(self.db, "bobby@example.com", "secretpassword", "salt")
+        
+        result = quarterapp.storage.authenticate_user(self.db, "bobby@example.com", "secretpassword")
+        self.assertIsNotNone(result)
+
+        quarterapp.storage.change_password(self.db, "bobby@example.com", "topsecretpassword")
+
+        result = quarterapp.storage.authenticate_user(self.db, "bobby@example.com", "topsecretpassword")
+        self.assertIsNotNone(result)
+        
     ## Test settings
 
     def test_default_settings(self):
