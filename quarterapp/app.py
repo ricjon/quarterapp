@@ -39,7 +39,7 @@ class ActivityHandler(AuthenticatedHandler):
     def get(self):
         user_id  = self.get_current_user_id()
         activities = get_activities(self.application.db, user_id)
-        self.render(u"app/activities.html", activities = activities)
+        self.render(u"app/activities.html", options = options, activities = activities)
 
 class SheetHandler(BaseSheetHandler):
 
@@ -91,7 +91,7 @@ class SheetHandler(BaseSheetHandler):
         else:
             quarters = self._default_sheet()
         
-        self.render(u"app/sheet.html", date = date_obj, weekday = weekday,
+        self.render(u"app/sheet.html", options = options, date = date_obj, weekday = weekday,
             today = today, yesterday = yesterday, tomorrow = tomorrow,
             activities = activities, quarters = quarters, summary = summary, summary_total = summary_total)
 
@@ -101,7 +101,7 @@ class ProfileHandler(AuthenticatedHandler):
         user_id  = self.get_current_user_id()
         sheet_count = get_sheet_count(self.application.db, user_id)
         
-        self.render(u"app/profile.html", sheet_count = sheet_count, error = None)
+        self.render(u"app/profile.html", options = options, sheet_count = sheet_count, error = None)
 
 class DeleteAccountHandler(AuthenticatedHandler):
     @authenticated_user
@@ -121,7 +121,7 @@ class DeleteAccountHandler(AuthenticatedHandler):
 
         if error:
             sheet_count = get_sheet_count(self.application.db, user_id)
-            self.render(u"app/profile.html", sheet_count = sheet_count, error = error)
+            self.render(u"app/profile.html", options = options, sheet_count = sheet_count, error = error)
         else:
             delete_user(self.application.db, username)
             self.set_current_user(None)

@@ -49,7 +49,7 @@ class AdminDefaultHandler(AuthenticatedHandler):
         allow_activations = self.application.quarter_settings.get_value("allow-activations")
 
         self.render(u"admin/general.html",
-            allow_signups = allow_signups, allow_activations = allow_activations)
+            options = options, allow_signups = allow_signups, allow_activations = allow_activations)
 
 class AdminUsersHandler(AuthenticatedHandler):
     """
@@ -138,12 +138,12 @@ class AdminUsersHandler(AuthenticatedHandler):
                     pagination_links = self.generate_pagination(user_count, start, count, DEFAULT_PAGINATION_PAGES)
                     users = get_users(self.application.db, start, count)
 
-                self.render(u"admin/users.html", users = users, pagination = pagination_links, error = False, query_filter = query_filter)
+                self.render(u"admin/users.html", options = options, users = users, pagination = pagination_links, error = False, query_filter = query_filter)
             except:
                 logging.error("Could not get users: %s", sys.exc_info())
-                self.render(u"admin/users.html", users = [], pagination = [], error = True, query_filter = query_filter)
+                self.render(u"admin/users.html", options = options, users = [], pagination = [], error = True, query_filter = query_filter)
         else:
-            self.render(u"admin/users.html", users = [], pagination = [], error = False, query_filter = query_filter)
+            self.render(u"admin/users.html", options = options, users = [], pagination = [], error = False, query_filter = query_filter)
 
     @authenticated_admin
     def post(self):
@@ -155,7 +155,7 @@ class AdminNewUserHandler(AuthenticatedHandler):
     """
     @authenticated_admin
     def get(self):
-        self.render(u"admin/new-user.html", completed = False, error = False)
+        self.render(u"admin/new-user.html", options = options, completed = False, error = False)
 
     @authenticated_admin
     def post(self):
@@ -181,11 +181,11 @@ class AdminNewUserHandler(AuthenticatedHandler):
                 salt = username
                 salted_password = hash_password(password, salt)
                 add_user(self.application.db, username, salted_password, salt, ut)
-                self.render(u"admin/new-user.html", completed = True, error = False)
+                self.render(u"admin/new-user.html", options = options, completed = True, error = False)
             except:
-                self.render(u"admin/new-user.html", completed = False, error = True)
+                self.render(u"admin/new-user.html", options = options, completed = False, error = True)
         else:
-            self.render(u"admin/new-user.html", completed = False, error = True)
+            self.render(u"admin/new-user.html", options = options, completed = False, error = True)
 
 class AdminStatisticsHandler(AuthenticatedHandler):
     """
@@ -198,7 +198,7 @@ class AdminStatisticsHandler(AuthenticatedHandler):
         quarter_count = 0
 
         self.render(u"admin/statistics.html",
-            user_count = user_count, signup_count = signup_count, quarter_count = quarter_count)
+            options = options, user_count = user_count, signup_count = signup_count, quarter_count = quarter_count)
 
 #
 # Admin API handlers
