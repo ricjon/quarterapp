@@ -209,10 +209,9 @@ def username_unique(db, username):
     @param username The username to check
     @return True if the username is not used, else False
     """
-    signups = _query(db, "SELECT username FROM signups WHERE username=%(username)s;", { "username" : username })
     users = _query(db, "SELECT username FROM users WHERE username=%(username)s;", { "username" : username })
 
-    return (len(signups) + len(users)) < 1
+    return len(users) < 1
 
 def is_admin(db, username):
     """
@@ -286,10 +285,12 @@ def signup_user(db, email, code, ip):
     @param ip The IP address that requested the sign up
     @return True on success, else False 
     """
-    # TODO Make transaction to see if username is unique
-    rowid = _exec(db, "INSERT INTO signups (username, activation_code, ip) VALUES(%(email)s, %(code)s, %(ip)s);",
+    result = _query_rowcount(db, "UPDATE signups SET activation_code=%(code)s WHERE username=%(email)s;",
         { "email" : email, "code" : code, "ip" : ip })
-    return rowid > -1
+    if result == 0:
+        result = _exec(db, "INSERT INTO signups (username, activation_code, ip) VALUES(%(email)s, %(code)s, %(ip)s);",
+            { "email" : email, "code" : code, "ip" : ip })
+    return result
 
 def username_for_activation_code(db, code):
     """

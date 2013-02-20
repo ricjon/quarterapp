@@ -67,10 +67,14 @@ Cheers!
 def send_mail(username, message):
     try:
         server = smtplib.SMTP(options.mail_host)
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(options.mail_user, options.mail_password)
+
+        if len(options.mail_user) > 0:
+            logging.info("Using email authentication ")
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(options.mail_user, options.mail_password)
+            
         server.sendmail(options.mail_sender, username, message)
         return True
     except:

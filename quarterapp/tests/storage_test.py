@@ -214,6 +214,19 @@ class TestStorage(unittest.TestCase):
         result = quarterapp.storage.get_signup_count(self.db)
         self.assertEqual(4, result)
 
+    def test_update_signup(self):
+        result = quarterapp.storage.signup_user(self.db, "one@example.com", "dopey", "127.0.0.1")
+        self.assertTrue(result)
+
+        result = quarterapp.storage.signup_user(self.db, "one@example.com", "grumpy", "127.0.0.1")
+        self.assertTrue(result)
+
+        result = quarterapp.storage.activate_user(self.db, "dopey", "mybloodyvalentine", "salt")
+        self.assertFalse(result)
+
+        result = quarterapp.storage.activate_user(self.db, "grumpy", "mybloodyvalentine", "salt")
+        self.assertTrue(result)
+
 
     ## User test
 
