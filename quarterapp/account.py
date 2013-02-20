@@ -63,7 +63,7 @@ class SignupHandler(BaseHandler):
                 code = os.urandom(16).encode("base64")[:20]
                 if send_signup_email(username, code):
                     signup_user(self.application.db, username, code, self.request.remote_ip)
-                    self.render(u"public/signup_instructions.html")
+                    self.render(u"public/signup_instructions.html", options = options)
                 else:
                     self.render(u"public/signup.html", options = options, error = error, username = username)    
             except Exception, e:

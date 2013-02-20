@@ -1,0 +1,18 @@
+#!/bin/sh
+# Generate one file with compressed and concatenated JavaScript
+uglifyjs quarterapp/resources/static/libraries/jquery.palette.js \
+    quarterapp/resources/static/libraries/jquery.validator.js \
+    quarterapp/resources/static/libraries/pikaday.min.js \
+    quarterapp/resources/static/scripts/quarterapp.js \
+    quarterapp/resources/static/scripts/quarterapp.admin.js \
+    --compress --output quarterapp/resources/static/scripts/quarterapp.min.js
+
+# And for CSS
+cat quarterapp/resources/static/styles/reset.css \
+    quarterapp/resources/static/libraries/jquery.palette.css \
+    quarterapp/resources/static/libraries/pikaday.css \
+    quarterapp/resources/static/styles/quarterapp.css \
+    | cleancss -o quarterapp/resources/static/styles/quarterapp.min.css
+
+# Make the python distribution
+python setup.py sdist

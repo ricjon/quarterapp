@@ -10,8 +10,12 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
 
         <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="stylesheet" media="all" href="/static/styles/reset.css" />
-        <link rel="stylesheet" media="all" href="/static/styles/quarterapp.css" />
+        {% if options.compressed_resources %}
+            <link rel="stylesheet" media="all" href="/static/styles/quarterapp.min.css" />
+        {% else %}
+            <link rel="stylesheet" media="all" href="/static/styles/reset.css" />
+            <link rel="stylesheet" media="all" href="/static/styles/quarterapp.css" />
+        {% end %}
     </head>
     <body>
         <header id="header-region">
@@ -37,9 +41,15 @@
                 <p class="note">Copyright &copy; 2013 <a href="mailto:markus.eliasson@gmail.com">Markus Eliasson</a> - All rights reserved.</p>
             </div>
         </footer>
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-        <script src="/static/libraries/jquery.validator.js"></script>
-        <script src="/static/scripts/quarterapp.js"></script>
+        {% if options.compressed_resources %}
+            <script src="/static/scripts/quarterapp.min.js"></script>
+        {% else %}
+            <script src="/static/libraries/jquery.validator.js"></script>
+            <script src="/static/scripts/quarterapp.js"></script>
+        {% end %}
+
         {% if options.google_analytics %}
         <script type="text/javascript">
             var _gaq = _gaq || [];

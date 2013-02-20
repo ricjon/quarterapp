@@ -58,6 +58,7 @@ def read_configuration():
     define("mail_password", help="SMTP Authentication password")
     define("mail_sender", help="Email sender address")
     define("google_analytics", help="Google Analytics account to use")
+    define("compressed_resources", type=bool, help="Use compress JavaScript and CSS")
 
     try:
         tornado.options.parse_command_line()
