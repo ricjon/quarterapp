@@ -237,6 +237,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
 
                     var new_activity = self.activity_markup.format(data.activity.id, data.activity.title, data.activity.color);
                     $("[data-activity-list]").append(new_activity);
+                    $(".note#no-activities").remove();
                 },
                 error : function(jqXHR, status, errorThrown) {
                     if($form.find("div.error-message").length === 0) {
