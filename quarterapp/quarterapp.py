@@ -139,7 +139,7 @@ def quarterapp_main():
     else:
         import MySQLdb
         application.db = MySQLdb.connect(host=options.mysql_host, port=options.mysql_port, db=options.mysql_database,
-            user=options.mysql_user, passwd=options.mysql_password)
+            user=options.mysql_user, passwd=options.mysql_password, charset="utf8")
         application.db.autocommit(True)
         logging.info("Using MySQL as database")
 
