@@ -49,7 +49,7 @@ class QuarterSettings(object):
         Update the settings from the database, if cannot read from database the
         old settings remain active
         """
-        logging.info("Updating settings...")
+        logging.info("Updating settings")
         settings = storage.get_settings(self.db)
         if settings:
             for row in settings:
