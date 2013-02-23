@@ -62,3 +62,11 @@ class TestUnit(unittest.TestCase):
         self.assertEqual("#bd832f", luminance_color("#fcaf3e", -0.25))
         self.assertEqual("#ffdb4e", luminance_color("#fcaf3e", 0.25))
         self.assertEqual("#56a8ff", luminance_color("#3465a4", 0.66))
+
+    def test_activation_code(self):
+        for i in range(20):
+            code = activation_code()
+            self.assertFalse("/" in code)
+            self.assertFalse(" " in code)
+            self.assertFalse("%" in code)
+            self.assertFalse("#" in code)

@@ -25,6 +25,7 @@ import hashlib
 import base64
 import re
 import math
+import os
 
 color_hex_match_re = re.compile(r"^(#)([0-9a-fA-F]{3})([0-9a-fA-F]{3})?$")
 
@@ -98,3 +99,13 @@ def luminance_color(color_code, lum):
         color += str("00" + c)[len(c):]
 
     return color
+
+def activation_code():
+    """
+    Generate and return a URL friendly activation code
+
+    @return The activation code
+    """
+    code = os.urandom(16).encode("base64")
+    code = re.sub("[\W\d]", "", code.strip())
+    return code

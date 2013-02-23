@@ -60,7 +60,7 @@ class SignupHandler(BaseHandler):
 
         if not error:
             try:
-                code = os.urandom(16).encode("base64")[:20]
+                code = activation_code()
                 if send_signup_email(username, code):
                     signup_user(self.application.db, username, code, self.request.remote_ip)
                     self.render(u"public/signup_instructions.html", options = options)
@@ -119,7 +119,7 @@ class ForgotPasswordHandler(BaseHandler):
         if len(username) == 0:
             self.render(u"public/forgot.html", options = options, error = "empty", username = username)
         else:
-            reset_code = os.urandom(16).encode("base64")[:20]
+            reset_code = activation_code()
             if set_user_reset_code(self.application.db, username, reset_code):
                 send_reset_email(username, reset_code)
                 self.redirect(u"/reset")
