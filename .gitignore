@@ -12,3 +12,7 @@ MANIFEST
 
 # quarterapp configuration files
 quarterapp.conf
+
+# Minified resource used by binary
+quarterapp.min.js
+quarterapp.min.css
