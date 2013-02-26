@@ -889,8 +889,6 @@ span.activity-cell.pending {
     }
 }
 
-
-
 /** Profile view *************************************************************/
 section.profile button.delete {
     margin-top: 20px;
@@ -909,4 +907,24 @@ form#delete-account-form p {
 form#delete-account-form button.delete {
     margin: 0px;
     float: left;
+}
+
+/** Report view **************************************************************/
+
+section.report .setting-group {
+    margin: 0px auto;
+}
+
+section.report fieldset {
+    width: 250px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+section.report fieldset.wide {
+    width: 100%;
+}
+
+section.report input {
+    width: 200px;
 }

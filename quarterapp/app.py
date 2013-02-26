@@ -33,6 +33,7 @@ from api import BaseSheetHandler
 from storage import *
 from quarter_errors import *
 from quarter_utils import *
+from domain import Timesheet, Week
 
 class ActivityHandler(AuthenticatedHandler):
     @authenticated_user
@@ -42,23 +43,15 @@ class ActivityHandler(AuthenticatedHandler):
         self.render(u"app/activities.html", options = options, activities = activities)
 
 class SheetHandler(BaseSheetHandler):
-
     @authenticated_user
-    def get(self, date = None):
+    def get(self, sheet_date = None):
         user_id  = self.get_current_user_id()
         date_obj = None
         today = datetime.date.today()
 
-        if date:
-            try:
-                parts = date.split("-")
-                if len(parts) != 3:
-                    raise ValueErrror("Date should be in YYYY-MM-DD")
-                else:
-                    date_obj = datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-            except:
-                logging.warning("Could not verify date")
-                raise HTTPError(500)
+        if sheet_date:
+            if valid_date(sheet_date):
+                date_obj = extract_date(sheet_date)
         else:
             date_obj = today
 
@@ -73,7 +66,7 @@ class SheetHandler(BaseSheetHandler):
         activity_dict = get_dict_from_sequence(activities, "id")
 
         sheet = get_sheet(self.application.db, user_id, date_obj)
-        
+
         quarters = []
         summary = []
         summary_total = "%.2f" %  0
@@ -126,3 +119,48 @@ class DeleteAccountHandler(AuthenticatedHandler):
             delete_user(self.application.db, username)
             self.set_current_user(None)
             self.redirect(u"/")
+
+class ReportHandler(AuthenticatedHandler):
+    @authenticated_user
+    def get(self):
+        self.render(u"app/report.html", options = options, start = None, end = None, error = None, weeks = None)
+
+    def post(self):
+        start = self.get_argument("start-date", "")
+        end = self.get_argument("end-date", "")
+        user_id  = self.get_current_user_id()
+
+        start_date = extract_date(start)
+        end_date = extract_date(end)
+
+        error = None
+        if not start_date:
+            error = "start_date_not_valid"
+        elif not end_date:
+            error = "end_date_not_valid"
+        elif start_date >= end_date:
+            error = "end_date_not_later"
+
+        # Report algorithm
+        weeks = []
+        start_week = start_date.isocalendar()[1]
+        end_week = end_date.isocalendar()[1]
+        for i in range(start_week, end_week+1):
+            year = start_date.year
+
+            if end_week < start_week: # Report from dec -> jan
+                year = end_date.year
+
+            week = Week(year, i)
+            for blank_sheet in week:
+                # TODO Make get_sheet return instance of Sheet
+                quarters = get_sheet(self.application.db, user_id, blank_sheet.date_as_string())
+                sheet = Timesheet(blank_sheet.date, quarters.split(",") if quarters else [])
+                week.update_sheet(sheet)
+            
+            weeks.append(week)
+
+        #for week in weeks:
+        #    print week
+
+        self.render(u"app/report.html", options = options, start = start, end = end, error = error, weeks = weeks)

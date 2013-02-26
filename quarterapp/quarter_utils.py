@@ -56,25 +56,34 @@ def valid_date(date):
     Check if the given string is a valid date format YYYY-MM-DD
 
     @param date The date in string format
-    @return True if the date string is correctly formatted
+    @return True if the date string is correctly formatted, else False
+    """
+    return extract_date(date) != None
+
+def extract_date(date):
+    """
+    Extrac a date object based on the given date string, the string must be formatted
+    YYYY-MM-DD else None will be returned.
+
+    @param date The date in string format
+    @return The date object with the given date, or None
     """
     try:
         parts = date.split("-")
         if len(parts) != 3:
-            raise ValueErrror("Date should be in YYYY-MM-DD")
+            return None
         else:
             if len(parts[0]) == 4 and len(parts[1]) == 2 and len(parts[2]) == 2:
                 date_obj = datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-                return True
+                return date_obj
             else:
-                raise ValueErrror("Date should be in YYYY-MM-DD")
+                return None
     except:
-        return False
+        return None
 
 def get_dict_from_sequence(seq, key):
     # from http://stackoverflow.com/a/4391722
     return dict((d[key], dict(d, index=index)) for (index, d) in enumerate(seq))
-
 
 def luminance_color(color_code, lum):
     """

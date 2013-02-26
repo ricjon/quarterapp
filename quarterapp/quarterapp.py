@@ -100,6 +100,7 @@ def quarterapp_main():
             (r"/sheet", SheetHandler),
             (r"/sheet/([^\/]+)", SheetHandler),
             (r"/profile", ProfileHandler),
+            (r"/report", ReportHandler),
 
             # Application API
             (r"/api/activities", ActivityApiHandler),

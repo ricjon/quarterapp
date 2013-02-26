@@ -2,6 +2,7 @@
 # Generate one file with compressed and concatenated JavaScript
 uglifyjs quarterapp/resources/static/libraries/jquery.palette.js \
     quarterapp/resources/static/libraries/jquery.validator.js \
+    quarterapp/resources/static/libraries/moment.min.js \
     quarterapp/resources/static/libraries/pikaday.min.js \
     quarterapp/resources/static/scripts/quarterapp.js \
     quarterapp/resources/static/scripts/quarterapp.admin.js \

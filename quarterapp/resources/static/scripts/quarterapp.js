@@ -43,7 +43,22 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                     defaultDate : this.current_date,
                     setDefaultDate : true,
                     onSelect: $.proxy(this.on_select_date, this)
-                });   
+                });
+            }
+
+            if($("input.datepicker").length > 0 ) {
+                var self = this;
+                $("input.datepicker").each(function(index, element) {
+                    var picker = new Pikaday({
+                        field: element,
+                        firstDay : 1,
+                        setDefaultDate : true,
+                        format : "YYYY-MM-DD" /*,
+                        onSelect : function(date) {
+                            $(element).val(self.to_date_string(date));
+                        }*/
+                    });
+                });
             }
 
             // Sheet activity selector
