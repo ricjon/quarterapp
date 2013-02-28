@@ -665,13 +665,15 @@ div.activity-module.edit div.activity-color {
     padding: 0px;
 }
 
-#current-activity input.palette,
-#available-activities input.palette,
-.activity-module input.palette {
+#current-activity label.palette,
+#available-activities label.palette,
+.activity-module label.palette {
     padding: 6px;
     min-width: 15px;
     max-width: 15px;
     width: 15px;
+    height: 15px;
+    border-radius: 3px;
     border: none;
     clear: none;
     display: block;
@@ -680,7 +682,7 @@ div.activity-module.edit div.activity-color {
     color: transparent;
 }
 
-div.activity-module.edit input.palette {
+div.activity-module.edit label.palette {
     cursor: pointer;
 }
 
@@ -822,7 +824,7 @@ div.activity {
     font-weight: normal;
 }
 
-div.activity input.palette {
+div.activity label.palette {
     cursor: pointer;
 }
 
@@ -834,7 +836,7 @@ div.activity input.palette {
     padding-top: 10px;
 }
 
-#available-activities div.activity:hover input.palette {
+#available-activities div.activity:hover label.palette {
     border-color: #000;
 }
 

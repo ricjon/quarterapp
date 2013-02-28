@@ -22,7 +22,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
 
     Quarterapp.prototype = {
         constructor : Quarterapp,
-        activity_markup : '<div class="activity-module" data-activity-id="{0}"><div class="activity-color" data-palette-value="{2}"><input class="palette" type="text" value="" style="background-color: {2};" disabled /></div><div class="activity-title">{1}</div><div class="activity-edit-title"><input type="text" value="{1}" /></div><div class="activity-control activity-edit-control"><a href="#" title="Edit"><span>&nbsp;</span></a></div><div class="activity-control activity-save-control"><a href="#" title="Save"><span>&nbsp;</span></a></div><div class="activity-control activity-cancel-control"><a  href="#" title="Cancel"><span>&nbsp;</span></a></div><div class="activity-control activity-delete-control"><a href="#" title="Delete"><span>&nbsp;</span></a></div></div>',
+        activity_markup : '<div class="activity-module" data-activity-id="{0}"><div class="activity-color" data-palette-value="{2}"><label class="palette" type="text" value="" style="background-color: {2};" data-disabled="true" /></div><div class="activity-title">{1}</div><div class="activity-edit-title"><input type="text" value="{1}" /></div><div class="activity-control activity-edit-control"><a href="#" title="Edit"><span>&nbsp;</span></a></div><div class="activity-control activity-save-control"><a href="#" title="Save"><span>&nbsp;</span></a></div><div class="activity-control activity-cancel-control"><a  href="#" title="Cancel"><span>&nbsp;</span></a></div><div class="activity-control activity-delete-control"><a href="#" title="Delete"><span>&nbsp;</span></a></div></div>',
         summary_markup : '<tr data-activity-id="{0}" style="color: {1};"><td class="value">{2}</td><td class="activity">{3}</td></tr>',
 
         init : function() {
@@ -32,7 +32,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             $("div.activity-cancel-control > a").click($.proxy(this.on_cancel_activity, this));
             $("div.activity-save-control > a").click($.proxy(this.on_save_activity, this));
             $("div.activity-delete-control > a").click($.proxy(this.on_delete_activity, this));
-
+            
             // Sheet date control
             if($("#datepicker").length > 0) {
                 var current_date = $("#sheet").attr("data-sheet-date");
@@ -59,6 +59,10 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                         }*/
                     });
                 });
+            }
+            // Bind palette
+            if($().palette) {
+                $(".palette").palette();
             }
 
             // Sheet activity selector
@@ -267,7 +271,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             if($module.length > 0) {
                 var id = $module.attr("data-activity-id");
                 $("[data-activity-id='" + id + "']").addClass("edit");
-                $module.find("input.palette").prop('disabled', false);
+                $module.find("label.palette").data('disabled', false);
             }
             return false;
         },
@@ -280,11 +284,11 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
                 var title = $module.find("div.activity-title").text(),
                     color = $module.find("div.activity-color[data-palette-value]").attr("data-palette-value");
                 $module.find("div.activity-edit-title > input").val(title);
-                $module.find("input.palette").css("background-color", color);
-
+                $module.find("label.palette").css("background-color", color);
+                $module.find("label.palette").data('disabled', true);
 
                 $("[data-activity-id='" + id + "']").removeClass("edit");
-                $module.find("input.palette").prop('disabled', true);
+                
             }
             return false;
         },
@@ -294,8 +298,8 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             if($module.length > 0) {
                 var id = $module.attr("data-activity-id"),
                     title = $module.find("div.activity-edit-title > input").val(),
-                    color = $module.find("input.palette").css("background-color");
-
+                    color = $module.find("label.palette").css("background-color");
+                    $module.find("label.palette").data('disabled', true);
                 $.ajax({
                     url : "/api/activity/" + id,
                     type : "PUT",
@@ -380,7 +384,7 @@ Copyright (c) 2013 - markus.eliasson@gmail.com
             if($('div.activity[data-activity-id="' + activity.id + '"]').length > 0) {
                 this.current_activity = activity;
                 var $current_activity = $("#current-activity");
-                $current_activity.find("input.palette").css("background-color", activity.color);
+                $current_activity.find("label.palette").css("background-color", activity.color);
                 $current_activity.find("div.activity-title").text(activity.title)
 
                 this.set_preferred_activity(activity);

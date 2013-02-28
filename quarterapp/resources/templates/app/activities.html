@@ -11,7 +11,7 @@
                     {% for activity in activities %}
                     <div class="activity-module" data-activity-id="{{ activity['id'] }}">
                         <div class="activity-color" data-palette-value="{{ activity['color'] }}">
-                            <input class="palette" type="text" value="" style="background-color: {{ activity['color'] }};" disabled />
+                            <label class="palette" style="background-color: {{ activity['color'] }};" data-disabled="true"></label>
                         </div>
                         <div class="activity-title">
                             {{ activity['title'] }}

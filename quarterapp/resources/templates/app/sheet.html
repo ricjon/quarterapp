@@ -74,7 +74,7 @@
                         <h2>Activity</h2>
                             <div id="current-activity" class="activity">
                                 <div class="activity-color">
-                                    <input class="palette" type="text" value="" style="background-color: #fff;" disabled />
+                                    <label class="palette" style="background-color: #fff;" data-disabled="true"></label>
                                 </div>
                                 <div class="activity-title">No work</div>
                             </div>
@@ -83,14 +83,14 @@
                         <div id="available-activities">
                             <div class="activity" data-activity-id="-1" data-activity-color="#fff" data-activity-title="No work">
                                 <div class="activity-color">
-                                    <input class="palette" type="text" value="" style="background-color: #fff;" disabled />
+                                    <label class="palette" style="background-color: #fff;" data-disabled="true"></label>
                                 </div>
                                 <div class="activity-title">No work</div>
                             </div>
                         {% for activity in activities %}
                             <div class="activity" data-activity-id="{{ activity['id'] }}" data-activity-color="{{ activity['color'] }}" data-activity-title="{{ activity['title'] }}">
                                 <div class="activity-color">
-                                    <input class="palette" type="text" value="" style="background-color: {{ activity['color'] }};" disabled />
+                                    <label class="palette" style="background-color: {{ activity['color'] }};" data-disabled="true"></label>
                                 </div>
                                 <div class="activity-title">{{ activity['title'] }}</div>
                             </div>
