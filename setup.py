@@ -16,7 +16,7 @@ setup(
     author_email='markus.eliasson@gmail.com',
     packages=['quarterapp', 'quarterapp.tests'],
     url='https://github.com/eliasson/quarterapp',
-    license="BSD license",
+    license="GPLv3 license",
     description='Personal time management',
     install_requires=[
         "tornado >= 2.4.0"

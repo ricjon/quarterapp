@@ -146,4 +146,4 @@ Olof Fredriksson (OlofFredriksson)
 
 Copyright © 2012-2013 Markus Eliasson
 
-Distributed under the BSD License
+Distributed under the GPLv3 license
