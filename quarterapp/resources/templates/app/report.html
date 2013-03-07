@@ -54,6 +54,37 @@
             {% if weeks %}
             {% for week in weeks %}
                 <h3>Week {{ week.week_of_year() }}</h3>
+
+                <table class="week">
+                    <thead>
+                        <th class="activity"></th>
+                        <th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th><th>Su</th><th>Total</th>
+                    </thead>
+                    <tbody>
+                        {% for activity in week.get_weeks_activities() %}
+                        <tr>
+                            <th>{{ activities[int(activity.id)]["title"] }}</th>
+
+                            {% for timesheet in week %}
+                                <td>{{ timesheet.time(activity.id) }}</td>
+                            {% end %}
+                            
+                            <td class="summary">{{ activity.amount }}</td>
+                        </tr>
+                        {% end %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            {% for timesheet in week %}
+                            <td>{{ timesheet.total() }}</td>
+                            {% end %}
+                            <td class="summary">{{ week.total() }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+
             {% end %}
             {% end %}
         </section>

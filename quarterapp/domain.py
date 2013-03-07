@@ -17,6 +17,7 @@
 from datetime import date, timedelta, datetime
 from exceptions import Exception, OverflowError
 from collections import Counter
+import operator
 
 class BaseError(Exception):
     def __init__(self, message):
@@ -76,6 +77,34 @@ class Week(object):
         """
         return self.week
 
+    def get_weeks_activities(self):
+        """
+        Get a sorted unique list of all the weeks activities where the
+        activities amount is sumed up
+        """
+        all_activities = []
+        unique_activities = []
+        for sheet in self.sheets:
+            all_activities += sheet.activities
+
+        # Filter out any duplicates and merge the amount of time spent
+        for aa in all_activities:
+            matches = list((ua for ua in unique_activities if ua.id == aa.id))
+            if len(matches) > 0:
+                # Item already exist in list of unique activities
+                # Mutable data, yay!
+                updated_activity = Activity(aa.id, aa.amount + matches[0].amount)
+                
+                unique_activities.remove(matches[0])
+                unique_activities.append(updated_activity)
+            else:
+                unique_activities.append(aa)
+
+        # Sort on id
+        unique_activities.sort(key = lambda x: int(x.id))
+        return unique_activities
+
+
     # Built in python support
     def __iter__(self):
         return self.sheets.__iter__()
@@ -89,7 +118,7 @@ class Week(object):
         for sheet in self.sheets:
             desc += "\t%s\n" % sheet.date_as_string()
             for act in sheet:
-                desc += "\t\t %s: %s" % (act.id, act.amount)
+                desc += "\t\t %s: %s\n" % (act.id, act.amount)
         return desc
 
 class Timesheet(object):
@@ -98,6 +127,8 @@ class Timesheet(object):
     utility functions for getting summarized info of activities spent on that day.
 
     If no quarters is given a default list of "No work" activities will be created
+
+    The activities are always sorted ascending on id.
 
     Activities can be accessed by id using sheet[id]
 
@@ -136,6 +167,7 @@ class Timesheet(object):
             if aid == "-1":
                 continue
             self.activities.append(Activity(aid, float(summary[aid] / 4.0)))
+        self.activities.sort(key = lambda x: int(x.id))
 
     def total(self):
         """
@@ -152,6 +184,12 @@ class Timesheet(object):
         Get this days date as a YYYY-MM-DD formatted string
         """
         return self.date.strftime("%Y-%m-%d")
+
+    def time(self, activity_id):
+        for activity in self.activities:
+            if activity.id == activity_id:
+                return activity.amount
+        return 0
 
     # Iterator protocol
     def __iter__(self):

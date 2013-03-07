@@ -49,6 +49,19 @@ a3_075h_a7_5h_a39_15h = ["-1","-1","-1","3","3","3","-1","-1","-1","-1",
 
 a3_075h_a7_5h_a39_15h_str = "-1,-1,-1,3,3,3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,39,39,39,39,39,39,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1"
 
+# Activity 6 : 0.75 h
+# Activity 14:  5 h
+a6_075h_a14_5h = ["-1","-1","-1","6","6","6","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "14","14","14","14","14","14","14","14","14","14",
+    "14","14","14","14","14","14","14","14","14","14",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1"]
+
 class TestActivity(unittest.TestCase):
     def test_empty_activity(self):
         activity = Activity(1)
@@ -90,7 +103,6 @@ class TestTimesheet(unittest.TestCase):
         self.assertEquals(5, sheet["7"].amount)
 
     def test_sheet_quarter_str(self):
-
         sheet = Timesheet(datetime.today(), a3_075h_a7_5h_a39_15h_str.split(","))
         self.assertEquals(1.5, sheet["39"].amount)
         self.assertEquals(5, sheet["7"].amount)
@@ -98,6 +110,18 @@ class TestTimesheet(unittest.TestCase):
     def test_date_format(self):
         monday = Timesheet(date(2013, 02, 18))
         self.assertEquals("2013-02-18", monday.date_as_string())
+
+    def test_activities_are_sorted(self):
+        sheet = Timesheet(datetime.today(), a3_075h_a7_5h_a39_15h)
+        idx = 0
+        for activity in sheet.activities:
+            if idx == 0:
+                self.assertEquals("3", activity.id)
+            elif idx == 1:
+                self.assertEquals("7", activity.id)
+            elif idx == 2:
+                self.assertEquals("39", activity.id)
+            idx += 1
 
 class TestWeek(unittest.TestCase):
     def test_week(self):
@@ -115,3 +139,16 @@ class TestWeek(unittest.TestCase):
 
         # A week should always contain 7 sheets, even if they are empty
         self.assertEquals(7, counter)
+
+    def test_get_all_activities(self):
+        week10 = Week(2013, 10)
+        monday = Timesheet(date(2013, 03, 4), a3_075h_a7_5h_a39_15h)
+        wednesday  = Timesheet(date(2013, 03, 6), a6_075h_a14_5h)
+
+        week10.update_sheet(monday)
+        week10.update_sheet(wednesday)
+        
+        unique_activities = week10.get_weeks_activities()
+        self.assertEquals(5, len(unique_activities))
+
+

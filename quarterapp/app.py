@@ -154,7 +154,10 @@ class ReportHandler(AuthenticatedHandler):
             
             weeks.append(week)
 
-        #for week in weeks:
-        #    print week
+        # Get the activities so we can get correct name in view
+        activities = get_activities(self.application.db, user_id)
+        activity_dict = get_dict_from_sequence(activities, "id")
 
-        self.render(u"app/report.html", options = options, start = start, end = end, error = error, weeks = weeks)
+        self.render(u"app/report.html",
+            options = options, start = start, end = end, error = error, weeks = weeks,
+            activities = activity_dict)

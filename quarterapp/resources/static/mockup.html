@@ -10,8 +10,8 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
 
         <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="stylesheet" media="all" href="/resources/styles/reset.css" />
-        <link rel="stylesheet" media="all" href="/resources/styles/quarterapp.css" />
+        <link rel="stylesheet" media="all" href="/static/styles/reset.css" />
+        <link rel="stylesheet" media="all" href="/static/styles/quarterapp.css" />
     </head>
     <body>
         <header id="header-region">
@@ -440,6 +440,87 @@
 
                     <p>Some text, with a <a href="link">link</a></p>
                 </section>
+            </section>
+
+            <section class="container box wide report">
+                <header class="report">
+                    <h1>Report</h1>
+                </header>
+                <section class="content">
+                     <h3>Week 10</h3>
+
+                <table class="week">
+                    <thead>
+                        <th class="activity"></th>
+                        <th>Mo</th>
+                        <th>Tu</th>
+                        <th>We</th>
+                        <th>Th</th>
+                        <th>Fr</th>
+                        <th>Sa</th>
+                        <th>Su</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>{{ activities}} {0}</th>
+                            <td>{1}</td>
+                            <td>{2}</td>
+                            <td>{3}</td>
+                            <td>{4}</td>
+                            <td>{5}</td>
+                            <td>{6}</td>
+                            <td>{7}</td>
+                            <td class="summary">00</td>
+                        </tr>
+                        <tr>
+                            <th>{0}</th>
+                            <td>{1}</td>
+                            <td>{2}</td>
+                            <td>{3}</td>
+                            <td>{4}</td>
+                            <td>{5}</td>
+                            <td>{6}</td>
+                            <td>{7}</td>
+                            <td class="summary">00</td>
+                        </tr>
+                        <tr>
+                            <th>{0}</th>
+                            <td>{1}</td>
+                            <td>{2}</td>
+                            <td>{3}</td>
+                            <td>{4}</td>
+                            <td>{5}</td>
+                            <td>{6}</td>
+                            <td>{7}</td>
+                            <td class="summary">00</td>
+                        </tr>
+                        <tr>
+                            <th>{0}</th>
+                            <td>{1}</td>
+                            <td>{2}</td>
+                            <td>{3}</td>
+                            <td>{4}</td>
+                            <td>{5}</td>
+                            <td>{6}</td>
+                            <td>{7}</td>
+                            <td class="summary">00</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <td>{0}</td>
+                            <td>{1}</td>
+                            <td>{2}</td>
+                            <td>{3}</td>
+                            <td>{4}</td>
+                            <td>{5}</td>
+                            <td>{6}</td>
+                            <td class="summary">00</td>
+                        </tr>
+                    </tfoot>
+                </table>
             </section>
         </div>
 
