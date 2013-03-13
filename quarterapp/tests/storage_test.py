@@ -47,7 +47,7 @@ def setup_sqlite(filename):
     `user` INT(11) NOT NULL,
     `title` VARCHAR(32) NOT NULL DEFAULT '',
     `color` VARCHAR(32) NOT NULL DEFAULT '',
-    `disabled` VARCHAR(32) NOT NULL DEFAULT '0'
+    `disabled` TINYINT(1) NOT NULL DEFAULT '0'
 );
 
 CREATE TABLE `sheets` (
@@ -181,7 +181,7 @@ class TestStorage(unittest.TestCase):
 
         quarterapp.storage.update_activity(self.db, BOB_THE_USER, activity_id, "Activity 4", activity.color, "1")
         activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
-        self.assertEqual(activity.disabled, "1")
+        self.assertEqual(activity.disabled, 1)
 
 
     ## Sheet test

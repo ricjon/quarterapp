@@ -354,7 +354,7 @@
                 var id = $module.attr("data-activity-id"),
                     title = $module.find("div.activity-edit-title > input").val(),
                     color = $module.find("label.palette").css("background-color");
-                    $module.find("label.palette").data('disabled', true);
+                $module.find("label.palette").data('disabled', true);
                 $.ajax({
                     url : "/api/activity/" + id,
                     type : "PUT",
@@ -380,7 +380,7 @@
                 var id = $module.attr("data-activity-id"),
                     title = $module.find("div.activity-edit-title > input").val(),
                     color = $module.find("label.palette").css("background-color");
-                    $module.find("label.palette").data('disabled', true);
+                $module.find("label.palette").data('disabled', true);
                 $.ajax({
                     url : "/api/activity/" + id,
                     type : "PUT",
