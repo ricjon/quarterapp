@@ -149,7 +149,7 @@ def get_users(db, start = 0, count = 50):
     @return The list of users
     """
     users = _query(db, "SELECT id, username, type, state, last_login FROM users ORDER BY id LIMIT %(start)s, %(count)s;",
-        { "start" : start, "count" : count })
+        { "start" : int(start), "count" : int(count) })
     if not users:
         users = []
     return users
@@ -169,7 +169,7 @@ def get_filtered_users(db, query_filter, start = 0, count = 50):
     """
     query_filter = "%{0}%".format(query_filter) # MySQL formatting using % as wildcard
     users = _query(db, "SELECT id, username, type, state, last_login FROM users WHERE username LIKE %(filter)s ORDER BY id LIMIT %(start)s, %(count)s;",
-        { "filter" : query_filter, "start" : start, "count" : count })
+        { "filter" : query_filter, "start" : int(start), "count" : (count) })
     if not users:
         users = []
     return users
