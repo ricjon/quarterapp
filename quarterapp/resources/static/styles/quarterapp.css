@@ -734,11 +734,11 @@ div.activity-title {
 }
 
 div.activity-edit-control {
-    background: url("/static/images/edit-small.png") no-repeat 4px 8px;
+    background: url("/static/images/atk-icons-nobg.png") no-repeat 0px -2712px;
 }
 
 div.activity-enable-control {
-    background: url("/static/images/edit-small.png") no-repeat 4px 8px;
+    background: url("/static/images/atk-icons-nobg.png") no-repeat 0px -185px;
 }
 
 .activity-module.edit div.activity-edit-control {
@@ -759,17 +759,17 @@ div.activity-cancel-control {
 
 .activity-module.edit div.activity-disable-control {
     display: block;
-    background: url("/static/images/trash-small.png") no-repeat 4px 8px;
+    background: url("/static/images/atk-icons-nobg.png") no-repeat 0px -2808px;
 }
 
 .activity-module.edit div.activity-save-control {
     display: block;
-    background: url("/static/images/edit-small.png") no-repeat 4px 8px;
+    background: url("/static/images/atk-icons-nobg.png") no-repeat 0px -185px;
 }
 
 .activity-module.edit div.activity-cancel-control {
     display: block;
-    background: url("/static/images/edit-small.png") no-repeat 4px 8px;
+    background: url("/static/images/atk-icons-nobg.png") no-repeat 0px -56px;
 }
 
 #create-activity input.palette {
