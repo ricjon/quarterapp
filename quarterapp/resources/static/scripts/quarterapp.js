@@ -37,7 +37,8 @@
             $("div.activity-edit-control > a").click($.proxy(this.on_edit_activity, this));
             $("div.activity-cancel-control > a").click($.proxy(this.on_cancel_activity, this));
             $("div.activity-save-control > a").click($.proxy(this.on_save_activity, this));
-            $("div.activity-delete-control > a").click($.proxy(this.on_delete_activity, this));
+            $("div.activity-disable-control > a").click($.proxy(this.on_disable_activity, this));
+            $("div.activity-enable-control > a").click($.proxy(this.on_enable_activity, this));
             
             // Sheet date control
             if($("#datepicker").length > 0) {
@@ -311,7 +312,8 @@
                     type : "PUT",
                     data : {
                         "title" : title,
-                        "color" : color
+                        "color" : color,
+                        "disabled" : 0
                     },
                     success : function(data, status, jqXHR) {
                         
@@ -340,6 +342,58 @@
                     },
                     error : function(jqXHR, status, errorThrown) {
                         quarterapp.show_error("Oops", "Could not delete activity!");
+                    }
+                });
+            }
+            return false;
+        },
+
+        on_disable_activity : function(event) {
+            var $module = $(event.target).parents("[data-activity-id]");
+            if($module.length > 0) {
+                var id = $module.attr("data-activity-id"),
+                    title = $module.find("div.activity-edit-title > input").val(),
+                    color = $module.find("label.palette").css("background-color");
+                    $module.find("label.palette").data('disabled', true);
+                $.ajax({
+                    url : "/api/activity/" + id,
+                    type : "PUT",
+                    data : {
+                        "title" : title,
+                        "color" : color,
+                        "disabled" : 1
+                    },
+                    success : function(data, status, jqXHR) {
+                        location.reload();
+                    },
+                    error : function(jqXHR, status, errorThrown) {
+                        quarterapp.show_error("Oops", "Could not disable activity!");
+                    }
+                });
+            }
+            return false;
+        },
+
+        on_enable_activity : function(event) {
+            var $module = $(event.target).parents("[data-activity-id]");
+            if($module.length > 0) {
+                var id = $module.attr("data-activity-id"),
+                    title = $module.find("div.activity-edit-title > input").val(),
+                    color = $module.find("label.palette").css("background-color");
+                    $module.find("label.palette").data('disabled', true);
+                $.ajax({
+                    url : "/api/activity/" + id,
+                    type : "PUT",
+                    data : {
+                        "title" : title,
+                        "color" : color,
+                        "disabled" : 0
+                    },
+                    success : function(data, status, jqXHR) {
+                        location.reload();
+                    },
+                    error : function(jqXHR, status, errorThrown) {
+                        quarterapp.show_error("Oops", "Could not enable activity!");
                     }
                 });
             }

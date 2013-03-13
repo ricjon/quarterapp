@@ -412,10 +412,35 @@ def get_activities(db, user_id):
     @param db The database connection to use
     @param user_id The id of the authenticated username to retrieve activities for
     """
-    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=%(user)s;", { "user" : user_id })
+    activities = _query(db, "SELECT id, title, color, disabled FROM activities WHERE user=%(user)s;", { "user" : user_id })
     if not activities:
         activities = []
     return activities    
+
+def get_enabled_activities(db, user_id):
+    """
+    Get enabled activities for the given user
+
+    @param db The database connection to use
+    @param user_id The id of the authenticated username to retrieve activities for
+    """
+    activities = _query(db, "SELECT id, title, color, disabled FROM activities WHERE user=%(user)s AND disabled = 0;", { "user" : user_id })
+    if not activities:
+        activities = []
+    return activities    
+
+def get_disabled_activities(db, user_id):
+    """
+    Get disabled activities for the given user
+
+    @param db The database connection to use
+    @param user_id The id of the authenticated username to retrieve activities for
+    """
+    activities = _query(db, "SELECT id, title, color, disabled FROM activities WHERE user=%(user)s AND disabled = 1;", { "user" : user_id })
+    if not activities:
+        activities = []
+    return activities    
+
 
 def add_activity(db, user_id, title, color):
     """
@@ -436,14 +461,14 @@ def get_activity(db, user_id, activity_id):
     @param user_id The id of the authenticated user to associate the activity with
     @param activity_id The id of the activity to retrieve
     """
-    activities = _query(db, "SELECT id, title, color FROM activities WHERE user=%(user)s AND id=%(activity_id)s;",
+    activities = _query(db, "SELECT id, title, color, disabled FROM activities WHERE user=%(user)s AND id=%(activity_id)s;",
         { "user" : user_id, "activity_id" : activity_id })
     if activities and len(activities) == 1:
         return activities[0]
     else:
         return None
 
-def update_activity(db, user_id, activity_id, title, color):
+def update_activity(db, user_id, activity_id, title, color, disabled):
     """Update an existing activity with new values
 
     @param db The database connection to use
@@ -452,8 +477,8 @@ def update_activity(db, user_id, activity_id, title, color):
     @param title The activity's title
     @param color The activity's color value (hex)
     """
-    return _exec(db, "UPDATE activities SET title=%(title)s, color=%(color)s WHERE user=%(user)s AND id=%(activity_id)s;",
-        { "title" : title, "color" : color, "user" : user_id, "activity_id" : activity_id})
+    return _exec(db, "UPDATE activities SET title=%(title)s, color=%(color)s, disabled = %(disabled)s WHERE user=%(user)s AND id=%(activity_id)s;",
+        { "title" : title, "color" : color, "disabled" : disabled, "user" : user_id, "activity_id" : activity_id})
 
 def delete_activity(db, user_id, activity_id):
     """Deletes a given activity

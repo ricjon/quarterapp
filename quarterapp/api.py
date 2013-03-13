@@ -81,20 +81,22 @@ class ActivityApiHandler(AuthenticatedHandler):
         user_id  = self.get_current_user_id()
         title = self.get_argument("title", "")
         color = self.get_argument("color", "")
-
+        disabled = self.get_argument("disabled", "")
         errors = []
 
         if not title or len(title) == 0:
             errors.append( ERROR_NO_ACTIVITY_TITLE )
         if not color or len(color) == 0:
             errors.append( ERROR_NO_ACTIVITY_COLOR )
+        if not disabled or len(disabled) == 0:
+            errors.append( ERROR_NO_ACTIVITY_DISABLED )
         if not valid_color_hex(color):
             errors.append( ERROR_NOT_VALID_COLOR_HEX )
         
         if len(errors) > 0:
             self.respond_with_errors(errors)
         else:
-            update_activity(self.application.db, user_id, activity_id, title, color)
+            update_activity(self.application.db, user_id, activity_id, title, color, disabled)
             activity = get_activity(self.application.db, user_id, activity_id)
             self.write( { "activity" : activity } )
             self.finish()

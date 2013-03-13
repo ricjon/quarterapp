@@ -6,39 +6,62 @@
                 <header class="general">
                     <h1>Activities</h1>
                 </header>
-                <section class="content" data-activity-list>
-                    {% if activities %}
-                    {% for activity in activities %}
-                    <div class="activity-module" data-activity-id="{{ activity['id'] }}">
-                        <div class="activity-color" data-palette-value="{{ activity['color'] }}">
-                            <label class="palette" style="background-color: {{ activity['color'] }};" data-disabled="true"></label>
-                        </div>
-                        <div class="activity-title">
-                            {{ activity['title'] }}
-                        </div>
-                        <div class="activity-edit-title">
-                            <input type="text" value="{{ activity['title'] }}" />
-                        </div>
-                        <div class="activity-control activity-edit-control">
-                            <a href="#" title="Edit"><span>&nbsp;</span></a>
-                        </div>
-                        <div class="activity-control activity-save-control">
-                            <a href="#" title="Save"><span>&nbsp;</span></a>
-                        </div>
-                        <div class="activity-control activity-cancel-control">
-                            <a  href="#" title="Cancel"><span>&nbsp;</span></a>
-                        </div>
-                        <div class="activity-control activity-delete-control">
-                            <a href="#" title="Delete"><span>&nbsp;</span></a>
-                        </div>
-                    </div>
-                    {% end %}
-                    {% else %}
+                <section class="content">
+                    {% if not activities %}
                     <p class="note" id="no-activities">You have no activities, create one using the form to the right.</p>
                     {% end %}
-                </section>
+                    <div data-activity-list>
+                        {% for activity in enabled_activities %}
+                        {% if not activity['disabled'] %}
+                        <div class="activity-module" data-activity-id="{{ activity['id'] }}">
+                            <div class="activity-color" data-palette-value="{{ activity['color'] }}">
+                                <label class="palette" style="background-color: {{ activity['color'] }};" data-disabled="true"></label>
+                            </div>
+                            <div class="activity-title">
+                                {{ activity['title'] }}
+                            </div>
+                            <div class="activity-edit-title">
+                                <input type="text" value="{{ activity['title'] }}" />
+                            </div>
+                            <div class="activity-control activity-edit-control">
+                                <a href="#" title="Edit"><span>&nbsp;</span></a>
+                            </div>
+                            <div class="activity-control activity-save-control">
+                                <a href="#" title="Save"><span>&nbsp;</span></a>
+                            </div>
+                            <div class="activity-control activity-cancel-control">
+                                <a  href="#" title="Cancel"><span>&nbsp;</span></a>
+                            </div>
+                            <div class="activity-control activity-disable-control">
+                                <a href="#" title="Disable"><span>&nbsp;</span></a>
+                            </div>
+                        </div>
+                        {% end %}
+                        {% end %}
+                    </div>
+                    {% if disabled_activities %}
+                    <div data-disabled-activity-list>
+                        <h3>Disabled activities</h3>
+                        {% for activity in disabled_activities %}
+                        <div class="activity-module disabled-activities" data-activity-id="{{ activity['id'] }}">
+                            <div class="activity-color" data-palette-value="{{ activity['color'] }}">
+                                <label class="palette" style="background-color: {{ activity['color'] }};" data-disabled="true"></label>
+                            </div>
+                            <div class="activity-title">
+                                {{ activity['title'] }}
+                            </div>
+                            <div class="activity-edit-title">
+                                <input type="text" value="{{ activity['title'] }}" />
+                            </div>
+                            <div class="activity-control activity-enable-control">
+                                <a href="#" title="Enable"><span>&nbsp;</span></a>
+                            </div>
+                        </div>
+                        {% end %}
+                    </div>
+                    {% end %}
             </section>
-
+        </section>
             <section class="container widgets">
                 <section class="container box small widget">
                     <section class="content">

@@ -34,7 +34,10 @@ class ActivityHandler(AuthenticatedHandler):
     def get(self):
         user_id  = self.get_current_user_id()
         activities = get_activities(self.application.db, user_id)
-        self.render(u"app/activities.html", options = options, activities = activities)
+        enabled_activities = get_enabled_activities(self.application.db, user_id)
+        disabled_activities = get_disabled_activities(self.application.db, user_id)
+        self.render(u"app/activities.html", options = options, activities = activities, enabled_activities = enabled_activities,
+            disabled_activities = disabled_activities)
 
 class SheetHandler(BaseSheetHandler):
     @authenticated_user
@@ -54,7 +57,7 @@ class SheetHandler(BaseSheetHandler):
         weekday = date_obj.strftime("%A")
 
         activities = get_activities(self.application.db, user_id)
-
+        enabled_activities = get_enabled_activities(self.application.db, user_id)
         # Create a dict representation of the list of activities, to quicker resolve colors
         # for cells.
         activity_dict = get_dict_from_sequence(activities, "id")
@@ -80,7 +83,7 @@ class SheetHandler(BaseSheetHandler):
         
         self.render(u"app/sheet.html", options = options, date = date_obj, weekday = weekday,
             today = today, yesterday = yesterday, tomorrow = tomorrow,
-            activities = activities, quarters = quarters, summary = summary, summary_total = summary_total)
+            activities = activities, enabled_activities = enabled_activities, quarters = quarters, summary = summary, summary_total = summary_total)
 
 class ProfileHandler(AuthenticatedHandler):
     @authenticated_user

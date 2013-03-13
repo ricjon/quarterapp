@@ -78,7 +78,7 @@
                                 </div>
                                 <div class="activity-title">No work</div>
                             </div>
-                        
+
                         {% if activities %}
                         <div id="available-activities">
                             <div class="activity" data-activity-id="-1" data-activity-color="#fff" data-activity-title="No work">
@@ -87,13 +87,13 @@
                                 </div>
                                 <div class="activity-title">No work</div>
                             </div>
-                        {% for activity in activities %}
-                            <div class="activity" data-activity-id="{{ activity['id'] }}" data-activity-color="{{ activity['color'] }}" data-activity-title="{{ activity['title'] }}">
-                                <div class="activity-color">
-                                    <label class="palette" style="background-color: {{ activity['color'] }};" data-disabled="true"></label>
-                                </div>
-                                <div class="activity-title">{{ activity['title'] }}</div>
+                        {% for activity in enabled_activities %}
+                        <div class="activity" data-activity-id="{{ activity['id'] }}" data-activity-color="{{ activity['color'] }}" data-activity-title="{{ activity['title'] }}">
+                            <div class="activity-color">
+                                <label class="palette" style="background-color: {{ activity['color'] }};" data-disabled="true"></label>
                             </div>
+                            <div class="activity-title">{{ activity['title'] }}</div>
+                        </div>
                         {% end %}
 
                         </div>

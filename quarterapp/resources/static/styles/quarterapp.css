@@ -201,6 +201,10 @@ li {
     width: 480px;
 }
 
+.disabled-activities {
+    opacity:0.5;
+}
+
 a.dismiss {
     float: right;
     color: #b94a48;
@@ -733,11 +737,15 @@ div.activity-edit-control {
     background: url("/static/images/edit-small.png") no-repeat 4px 8px;
 }
 
+div.activity-enable-control {
+    background: url("/static/images/edit-small.png") no-repeat 4px 8px;
+}
+
 .activity-module.edit div.activity-edit-control {
     display: none;
 }
 
-div.activity-delete-control {
+div.activity-disable-control {
     display: none;
 }
 
@@ -749,7 +757,7 @@ div.activity-cancel-control {
     display: none;
 }
 
-.activity-module.edit div.activity-delete-control {
+.activity-module.edit div.activity-disable-control {
     display: block;
     background: url("/static/images/trash-small.png") no-repeat 4px 8px;
 }
