@@ -30,12 +30,17 @@ from quarter_errors import *
 from settings import *
 
 class QuarterEncoder(json.JSONEncoder):
+    """
+    JSON encoder for error objects
+    """
     def default(self, obj):
         if isinstance(obj, ApiError):
             return { "code" : obj.code, "message" : obj.message }
 
 def authenticated_user(method):
-    """Decorate methods with this to require that the user be logged in."""
+    """
+    Decorate methods with this to require that the user be logged in.
+    """
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         if not self.current_user:
@@ -48,7 +53,9 @@ def authenticated_user(method):
     return wrapper
 
 def authenticated_admin(method):
-    """Check if user is admin, if not, render 404 (to avoid exposing admin part) """
+    """
+    Decorate methods with this to require that user is admin, if not, render 404 (to avoid exposing admin part)
+    """
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         if not self.current_user:
@@ -58,21 +65,10 @@ def authenticated_admin(method):
         return method(self, *args, **kwargs)
     return wrapper
 
-
-class IndexHandler(tornado.web.RequestHandler):
-    def get(self):
-        allow_signups = self.application.quarter_settings.get_value("allow-signups")
-        self.render(u"public/index.html", options = options, allow_signups = allow_signups)
-
-class TermsHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render(u"public/terms.html", options = options)
-
-class Http404Handler(tornado.web.RequestHandler):
-    def get(self):
-        self.render(u"public/404.html", options = options)
-
 class BaseHandler(tornado.web.RequestHandler):
+    """
+    Base handler for any handler in quarterapp, contains some utility functions
+    """
     def write_success(self):
         """
         Respond with a successful code and HTTP 200
@@ -120,7 +116,30 @@ class BaseHandler(tornado.web.RequestHandler):
         """
         return self.application.quarter_settings.get_value(setting) == "1"
 
+    def logged_in(self):
+        """
+        Check if the user of the current requests is logged in or not.
+
+        @return True if logged in, else False
+        """
+        user = self.get_secure_cookie("user")
+        if user:
+            return True
+        else:
+            return False
+
+    def setting_value(self, key):
+        """
+        Get the given value from the quarter settings
+
+        @return The value for the given setting key
+        """
+        return self.application.quarter_settings.get_value(key)
+
 class AuthenticatedHandler(BaseHandler):
+    """
+    Base class for any handler that needs user to be authenticated
+    """
     def get_current_user(self):
         user_json = self.get_secure_cookie("user")
         if not user_json:
@@ -139,3 +158,21 @@ class AuthenticatedHandler(BaseHandler):
             return user["id"]
         return None
 
+class IndexHandler(BaseHandler):
+    def get(self):
+        self.render(u"public/index.html",
+            options = options,
+            allow_signups = self.setting_value("allow-signups"),
+            logged_in = self.logged_in())
+
+class TermsHandler(BaseHandler):
+    def get(self):
+        self.render(u"public/terms.html",
+            options = options,
+            logged_in = self.logged_in())
+
+class Http404Handler(BaseHandler):
+    def get(self):
+        self.render(u"public/404.html",
+            options = options,
+            logged_in = self.logged_in())
