@@ -16,14 +16,9 @@
 
 from functools import wraps
 import sqlite3, re
+from domain import User, Color, Activity
+
 _SQLITE_RE = re.compile(r'%\((\w+)\)s')
-
-class User(object):
-    Normal=0
-    Administrator=1
-    Enabled = 1
-    Disabled = 0
-
 
 class Data(dict):
     def __getattr__(self, name):
@@ -255,7 +250,7 @@ def delete_user(db, username):
     Delete a user from the system. All activities and quarters owned by this user will
     also be deleted.
 
-    @param db The database connection to use
+    @param db The database connection to username
     @param username The user to delete
     """
     # TODO Make a transaction and also delete all activities and quarters!
@@ -405,17 +400,35 @@ def authenticate_user(db, username, password):
     except:
         return None
 
+#
+# Activities
+#
+def _create_list_of_activities(raw_list):
+    """
+    Create a list of Activity objects based on the raw database rows
+    """
+    if not raw_list:
+        return []
+
+    activities = []
+    for activity in raw_list:
+        a = Activity(
+            id = activity["id"],
+            color = Color(activity["color"]),
+            title = activity["title"],
+            state = activity["state"])
+        activities.append(a)
+    return activities
+
 def get_activities(db, user_id):
     """
-    Get all activities for the given user
+    Get all activities for the given uer.
 
     @param db The database connection to use
     @param user_id The id of the authenticated username to retrieve activities for
     """
-    activities = _query(db, "SELECT id, title, color, disabled FROM activities WHERE user=%(user)s;", { "user" : user_id })
-    if not activities:
-        activities = []
-    return activities    
+    activities = _query(db, "SELECT id, title, color, state FROM activities WHERE user=%(user)s;", { "user" : user_id })
+    return _create_list_of_activities(activities)
 
 def get_enabled_activities(db, user_id):
     """
@@ -424,10 +437,8 @@ def get_enabled_activities(db, user_id):
     @param db The database connection to use
     @param user_id The id of the authenticated username to retrieve activities for
     """
-    activities = _query(db, "SELECT id, title, color, disabled FROM activities WHERE user=%(user)s AND disabled = 0;", { "user" : user_id })
-    if not activities:
-        activities = []
-    return activities    
+    activities = _query(db, "SELECT id, title, color, state FROM activities WHERE user=%(user)s AND state = 1;", { "user" : user_id })
+    return _create_list_of_activities(activities)
 
 def get_disabled_activities(db, user_id):
     """
@@ -436,59 +447,60 @@ def get_disabled_activities(db, user_id):
     @param db The database connection to use
     @param user_id The id of the authenticated username to retrieve activities for
     """
-    activities = _query(db, "SELECT id, title, color, disabled FROM activities WHERE user=%(user)s AND disabled = 1;", { "user" : user_id })
-    if not activities:
-        activities = []
-    return activities    
+    activities = _query(db, "SELECT id, title, color, state FROM activities WHERE user=%(user)s AND state = 0;", { "user" : user_id })
+    return _create_list_of_activities(activities)
 
-
-def add_activity(db, user_id, title, color):
+def add_activity(db, user_id, activity):
     """
-    Adds a new activity
+    Stores a new activity in the database
 
     @param db The database connection to use
     @param user_id The id of the authenticated user to associate the activity with
-    @param title The activity's title
-    @param color The activity's color value (hex)
+    @param activity The Activity to add
     """
-    return _exec(db, "INSERT INTO activities (user, title, color) VALUES(%(id)s, %(title)s, %(color)s);",
-        { "id" : user_id, "title" : title, "color" : color })
+    activity_id = _exec(db, "INSERT INTO activities (user, title, color) VALUES(%(id)s, %(title)s, %(color)s);",
+        { "id" : user_id, "title" : activity.title, "color" : activity.color.hex() })
+    activity.id = activity_id
+    return activity
 
 def get_activity(db, user_id, activity_id):
     """
-    Get the given activity_id
+    Get the Activity for the given id
+
     @param db The database connection to use
     @param user_id The id of the authenticated user to associate the activity with
     @param activity_id The id of the activity to retrieve
+    @return The Activity or None if activity was not found
     """
-    activities = _query(db, "SELECT id, title, color, disabled FROM activities WHERE user=%(user)s AND id=%(activity_id)s;",
+    activities = _query(db, "SELECT id, title, color, state FROM activities WHERE user=%(user)s AND id=%(activity_id)s;",
         { "user" : user_id, "activity_id" : activity_id })
     if activities and len(activities) == 1:
-        return activities[0]
+        return _create_list_of_activities(activities)[0]
     else:
         return None
 
-def update_activity(db, user_id, activity_id, title, color, disabled):
+def update_activity(db, user_id, activity):
     """Update an existing activity with new values
 
     @param db The database connection to use
     @param user_id The id of the authenticated user to associate the activity with
-    @oaram activity_id The id of the activity to update
-    @param title The activity's title
-    @param color The activity's color value (hex)
+    @param activity The activity to update
     """
-    return _exec(db, "UPDATE activities SET title=%(title)s, color=%(color)s, disabled = %(disabled)s WHERE user=%(user)s AND id=%(activity_id)s;",
-        { "title" : title, "color" : color, "disabled" : disabled, "user" : user_id, "activity_id" : activity_id})
+    return _exec(db, "UPDATE activities SET title=%(title)s, color=%(color)s, state = %(state)s WHERE user=%(user)s AND id=%(activity_id)s;",
+        { "title" : activity.title, "color" : activity.color.hex(), "state" : activity.state, "user" : user_id, "activity_id" : activity.id})
 
-def delete_activity(db, user_id, activity_id):
+def delete_activity(db, user_id, activity):
     """Deletes a given activity
 
     @param db The database connection to use
     @param user_id The id of the authenticated user the activity is associated with
-    @param activity_id The id of the activity to delete
+    @param activity The of the activity to delete
     """
-    return _exec(db, "DELETE FROM activities WHERE user=%(user)s AND id=%(activity)s;", {'user': user_id, 'activity': activity_id})
+    return _exec(db, "DELETE FROM activities WHERE user=%(user)s AND id=%(activity)s;", {'user': user_id, 'activity': activity.id})
 
+#
+# Sheet functions
+# 
 def update_sheet(db, user_id, date, quarters):
     """
     Inserts the given time sheet for the given date. If a record exist for this

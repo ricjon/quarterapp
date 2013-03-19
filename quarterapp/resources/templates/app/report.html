@@ -63,7 +63,7 @@
                     <tbody>
                         {% for activity in week.get_weeks_activities() %}
                         <tr>
-                            <th>{{ activities[int(activity.id)]["title"] }}</th>
+                            <th>{{ activities[int(activity.id)].title }}</th>
 
                             {% for timesheet in week %}
                                 <td>{{ timesheet.time(activity.id) }}</td>

@@ -22,12 +22,14 @@ import json
 import functools
 
 import tornado.web
-import tornado.escape
+from tornado import escape
 from tornado.options import options
+from tornado.escape import utf8
 
 from storage import *
 from quarter_errors import *
 from settings import *
+from domain import *
 
 class QuarterEncoder(json.JSONEncoder):
     """
@@ -36,6 +38,8 @@ class QuarterEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, ApiError):
             return { "code" : obj.code, "message" : obj.message }
+        elif isinstance(obj, Activity):
+            return { 'id' : obj.id, 'title' : obj.title, 'color' : obj.color.hex() }
 
 def authenticated_user(method):
     """
@@ -69,6 +73,12 @@ class BaseHandler(tornado.web.RequestHandler):
     """
     Base handler for any handler in quarterapp, contains some utility functions
     """
+    def json(self, chunk):
+        chunk = QuarterEncoder().encode(chunk).replace("'", "\"")
+        chunk = utf8(chunk)
+        self._write_buffer.append(chunk)
+        self.set_header("Content-Type", "application/json; charset=UTF-8")
+
     def write_success(self):
         """
         Respond with a successful code and HTTP 200

@@ -23,6 +23,7 @@ import tempfile
 import quarterapp.storage
 from quarterapp.settings import *
 from quarterapp.quarter_utils import *
+from quarterapp.domain import Activity, Color
 
 #
 # Test can be run using either SQLite or MySQL as database. By default
@@ -47,7 +48,7 @@ def setup_sqlite(filename):
     `user` INT(11) NOT NULL,
     `title` VARCHAR(32) NOT NULL DEFAULT '',
     `color` VARCHAR(32) NOT NULL DEFAULT '',
-    `disabled` TINYINT(1) NOT NULL DEFAULT '0'
+    `state` TINYINT(1) NOT NULL DEFAULT '1'
 );
 
 CREATE TABLE `sheets` (
@@ -61,7 +62,6 @@ CREATE TABLE `settings` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `name` VARCHAR(64) NOT NULL UNIQUE,
     `value` TEXT NOT NULL
-    
 );
 
 CREATE TABLE `users` (
@@ -135,54 +135,72 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(0, len(activities))
 
     def test_add_activity(self):
-        quarterapp.storage.add_activity(self.db, BOB_THE_USER, "activity 1", "#ffffff")
+        a1 = Activity(title="activity 1", color=Color("#ffffff"))
+        quarterapp.storage.add_activity(self.db, BOB_THE_USER, a1)
+
         activities = quarterapp.storage.get_activities(self.db, BOB_THE_USER)
         self.assertEqual(1, len(activities))
 
     def test_get_enabled_activity(self):
-        quarterapp.storage.add_activity(self.db, BOB_THE_USER, "activity 1", "#ffffff")
+        a1 = Activity(title="activity 1", color=Color("#ffffff"))
+        quarterapp.storage.add_activity(self.db, BOB_THE_USER, a1)
+
         activities = quarterapp.storage.get_enabled_activities(self.db, BOB_THE_USER)
         self.assertEqual(1, len(activities))
 
     def test_get_disabled_activity(self):
-        activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "activity 1", "#ffffff")
-        quarterapp.storage.update_activity(self.db, BOB_THE_USER, activity_id, "Activity 4", "#ffffff", "1")
+        a1 = Activity(title="activity 1", color=Color("#ffffff"))
+        quarterapp.storage.add_activity(self.db, BOB_THE_USER, a1)
+        
+        a1.disable()
+        quarterapp.storage.update_activity(self.db, BOB_THE_USER, a1)
+        
         activities = quarterapp.storage.get_disabled_activities(self.db, BOB_THE_USER)
         self.assertEqual(1, len(activities))
 
     def test_get_activity(self):
-        activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 2", "#ccc")
-        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        a2 = Activity(title="Activity 2", color=Color("#ccc"))
+        quarterapp.storage.add_activity(self.db, BOB_THE_USER, a2)
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, a2.id)
         self.assertEqual(activity.title, "Activity 2")
 
     def test_delete_activity(self):
-        activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 3", "#123123")
-        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        a1 = Activity(title="Activity 3", color=Color("#123123"))
+        quarterapp.storage.add_activity(self.db, BOB_THE_USER, a1)
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, a1.id)
         self.assertIsNotNone(activity)
 
-        quarterapp.storage.delete_activity(self.db, BOB_THE_USER, activity_id)
-        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        quarterapp.storage.delete_activity(self.db, BOB_THE_USER, Activity(a1.id))
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, a1.id)
         self.assertIsNone(activity)
 
     def test_get_activity(self):
-        activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 444", "#ccc")
-        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        a1 = Activity(title="Activity 444", color=Color("#ccc"))
+
+        quarterapp.storage.add_activity(self.db, BOB_THE_USER, a1)
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, a1.id)
         self.assertEqual(activity.title, "Activity 444")
 
-        quarterapp.storage.update_activity(self.db, BOB_THE_USER, activity_id, "Activity 4", activity.color, "0")
-        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        a1.title = "Activity 4"
+        quarterapp.storage.update_activity(self.db, BOB_THE_USER, a1)
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, a1.id)
+
         self.assertEqual(activity.title, "Activity 4")
-        self.assertEqual(activity.color, "#ccc")
+        self.assertEqual(activity.color.hex(), "#ccc")
 
     def test_disable_activity(self):
-        activity_id = quarterapp.storage.add_activity(self.db, BOB_THE_USER, "Activity 444", "#ccc")
-        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
+        a1 = Activity(title="Activity 444", color=Color("#ccc"))
+
+        activity = quarterapp.storage.add_activity(self.db, BOB_THE_USER, a1)
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity.id)
         self.assertEqual(activity.title, "Activity 444")
 
-        quarterapp.storage.update_activity(self.db, BOB_THE_USER, activity_id, "Activity 4", activity.color, "1")
-        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity_id)
-        self.assertEqual(activity.disabled, 1)
+        a1.title = "Activity 4"
+        a1.disable()
 
+        quarterapp.storage.update_activity(self.db, BOB_THE_USER, a1)
+        activity = quarterapp.storage.get_activity(self.db, BOB_THE_USER, activity.id)
+        self.assertTrue(activity.disabled())
 
     ## Sheet test
 

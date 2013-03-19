@@ -41,9 +41,11 @@ class ActivityApiHandler(AuthenticatedHandler):
         Get the complete list of activities
         """
         user_id  = self.get_current_user_id()
+
         activities = get_activities(self.application.db, user_id)
         if not activities:
             activities = []
+        
         self.write( { "activities" : activities } )
         self.finish()
 
@@ -55,7 +57,6 @@ class ActivityApiHandler(AuthenticatedHandler):
         user_id  = self.get_current_user_id()
         title = self.get_argument("title", "")
         color = self.get_argument("color", "")
-
         errors = []
 
         if not title or len(title) == 0:
@@ -68,9 +69,8 @@ class ActivityApiHandler(AuthenticatedHandler):
         if len(errors) > 0:
             self.respond_with_errors(errors)
         else:
-            activity_id = add_activity(self.application.db, user_id, title, color)
-            activity = get_activity(self.application.db, user_id, activity_id)
-            self.write( { "activity" : activity } )
+            activity = add_activity(self.application.db, user_id, Activity(title=title, color=Color(color)))
+            self.json( { "activity" : activity } )
             self.finish()
 
     @authenticated_user
@@ -93,12 +93,17 @@ class ActivityApiHandler(AuthenticatedHandler):
         if not valid_color_hex(color):
             errors.append( ERROR_NOT_VALID_COLOR_HEX )
         
+        if int(disabled) == 1:
+            state = Activity.Disabled
+        else:
+            state = Activity.Enabled
+
         if len(errors) > 0:
             self.respond_with_errors(errors)
         else:
-            update_activity(self.application.db, user_id, activity_id, title, color, disabled)
-            activity = get_activity(self.application.db, user_id, activity_id)
-            self.write( { "activity" : activity } )
+            activity = Activity(id=activity_id, title=title, color=Color(color), state=state)
+            update_activity(self.application.db, user_id, activity)
+            self.json( { "activity" : activity } )
             self.finish()
 
     @authenticated_user
@@ -116,7 +121,7 @@ class ActivityApiHandler(AuthenticatedHandler):
             if len(errors) > 0:
                 self.respond_with_errors(errors)
             else:
-                delete_activity(self.application.db, user_id, activity_id)
+                delete_activity(self.application.db, user_id, Activity(id=activity_id))
                 self.write_success()
         except:
             logging.warn("Could not delete activity: %s", sys.exc_info())
@@ -141,8 +146,8 @@ class BaseSheetHandler(AuthenticatedHandler):
             activity_title = "Unknown"
 
             if long(activity_id) in activity_dict:
-                activity_color = activity_dict[long(activity_id)]["color"]
-                activity_title = activity_dict[long(activity_id)]["title"]
+                activity_color = activity_dict[long(activity_id)].color.hex()
+                activity_title = activity_dict[long(activity_id)].title
 
             activity_summary = float(summary_dict[activity_id] / 4.0)
             summary_total += activity_summary
@@ -151,7 +156,6 @@ class BaseSheetHandler(AuthenticatedHandler):
         return summary_list, "%.2f" % summary_total
 
 class SheetApiHandler(BaseSheetHandler):
-
     @authenticated_user
     def put(self, date):
         """
@@ -175,7 +179,7 @@ class SheetApiHandler(BaseSheetHandler):
                 update_sheet(self.application.db, user_id, date, quarters)
 
                 activities = get_activities(self.application.db, user_id)
-                activity_dict = get_dict_from_sequence(activities, "id")
+                activity_dict = ActivityDict(activities)
                 summary, total = self._sheet_summary(quarters_array, activity_dict)
                 self.write({ "summary" : summary, "total" : total })
                 self.finish()

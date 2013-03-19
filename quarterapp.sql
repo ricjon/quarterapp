@@ -8,7 +8,7 @@ CREATE TABLE `activities` (
     `user` INT(11) NOT NULL,
     `title` VARCHAR(32) NOT NULL DEFAULT '',
     `color` VARCHAR(32) NOT NULL DEFAULT '',
-    `disabled` TINYINT(1) NOT NULL DEFAULT '0',
+    `state` TINYINT(1) NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

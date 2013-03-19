@@ -62,6 +62,33 @@ a6_075h_a14_5h = ["-1","-1","-1","6","6","6","-1","-1","-1","-1",
     "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
     "-1","-1","-1","-1","-1","-1"]
 
+class TestColor(unittest.TestCase):
+    def test_create_color(self):
+        color= Color("#fff")
+        self.assertEqual("#fff", color.hex())
+
+    @raises(InvalidColorError)
+    def test_cannot_create_invalid_color(self):
+        color= Color("banan")
+
+    @raises(InvalidColorError)
+    def test_cannot_create_empty_color(self):
+        color= Color("")
+
+    @raises(TypeError)
+    def test_cannot_create_none_color(self):
+        color= Color(None)
+    
+    def test_luminance_color(self):
+        c1 = Color("#fff").luminance_color(0)
+        c2 = Color("#fcaf3e").luminance_color(-0.25)
+        c3 = Color("#fcaf3e").luminance_color(0.25)
+        c4 = Color("#3465a4").luminance_color(0.66)
+        self.assertEqual("#ffffff", c1.hex())
+        self.assertEqual("#bd832f", c2.hex())
+        self.assertEqual("#ffdb4e", c3.hex())
+        self.assertEqual("#56a8ff", c4.hex())
+
 class TestActivity(unittest.TestCase):
     def test_empty_activity(self):
         activity = Activity(1)
@@ -70,6 +97,48 @@ class TestActivity(unittest.TestCase):
     def test_activity_quarters(self):
         activity = Activity(1, 4)
         self.assertEqual(4, activity.total())
+
+    def test_activity_color(self):
+        activity = Activity(1, 3, color = Color("#cdcdcd"))
+        self.assertEquals("#cdcdcd", activity.color.hex())
+
+    def test_change_activity_color(self):
+        activity = Activity(1, 3, color = Color("#cdcdcd"))
+        self.assertEquals("#cdcdcd", activity.color.hex())
+        activity.color = Color("#123123")
+        self.assertEquals("#123123", activity.color.hex())
+
+    def test_activity_has_default_title(self):
+        activity = Activity(1)
+        self.assertIsNotNone(activity.title)
+
+    def test_can_change_activity_title(self):
+        activity = Activity(1, title="Comet")
+        self.assertEquals("Comet", activity.title)
+
+        activity.title = "House"
+        self.assertEquals("House", activity.title)        
+
+class TestActivityDict(unittest.TestCase):
+    def test_supports_string_as_key(self):
+        the_list = []
+        the_list.append(Activity(id="two", title="Activity 2"))
+        the_list.append(Activity(id="three", title="Activity 3"))
+        the_list.append(Activity(id="one", title="Activity 1"))
+
+        the_dict = ActivityDict(the_list)
+        self.assertEquals("Activity 1", the_dict["one"].title)
+        self.assertEquals("two", the_dict["two"].id)
+
+    def test_supports_int_as_key(self):
+        the_list = []
+        the_list.append(Activity(id=2, title="Activity 2"))
+        the_list.append(Activity(id=3, title="Activity 3"))
+        the_list.append(Activity(id=1, title="Activity 1"))
+
+        the_dict = ActivityDict(the_list)
+        self.assertEquals("Activity 1", the_dict[1].title)
+        self.assertEquals(2, the_dict[2].id)
 
 class TestTimesheet(unittest.TestCase):
     def test_timesheet(self):

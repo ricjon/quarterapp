@@ -14,7 +14,6 @@
                     <table class="sheet" id="sheet" data-sheet-date="{{ date }}">
                         <tbody>
                             {% for index, quarter in enumerate(quarters) %}
-                                
                                 {% if (index == 0) or (index % 4 == 0) %}
                                     {% if index == 0 %}
                                         </tr>
@@ -28,7 +27,6 @@
                                 {% if index == 98 %}
                                     </tr>
                                 {% end %}
-
                             {% end %}
                         </tbody>
                     </table>
@@ -55,8 +53,7 @@
                         </div>
                         <table id="sheet-summary">
                             <tbody>
-                            {% if summary %}
-                        
+                            {% if summary %}                        
                                 {% for index, activity in enumerate(summary) %}
                                 <tr data-activity-id="{{ activity['id'] }}" style="color: {{ activity['color'] }};">
                                     <td class="value">{{ activity["sum"] }}</td>
@@ -80,25 +77,23 @@
                             </div>
 
                         {% if activities %}
-                        <div id="available-activities">
-                            <div class="activity" data-activity-id="-1" data-activity-color="#fff" data-activity-title="No work">
-                                <div class="activity-color">
-                                    <label class="palette" style="background-color: #fff;" data-disabled="true"></label>
+                            <div id="available-activities">
+                                <div class="activity" data-activity-id="-1" data-activity-color="#fff" data-activity-title="No work">
+                                    <div class="activity-color">
+                                        <label class="palette" style="background-color: #fff;" data-disabled="true"></label>
+                                    </div>
+                                    <div class="activity-title">No work</div>
                                 </div>
-                                <div class="activity-title">No work</div>
+                                {% for activity in enabled_activities %}
+                                    <div class="activity" data-activity-id="{{ activity.id }}" data-activity-color="{{ activity.color.hex() }}" data-activity-title="{{ activity.title }}">
+                                        <div class="activity-color">
+                                            <label class="palette" style="background-color: {{ activity.color.hex() }};" data-disabled="true"></label>
+                                        </div>
+                                        <div class="activity-title">{{ activity.title }}</div>
+                                    </div>
+                                {% end %}
                             </div>
-                        {% for activity in enabled_activities %}
-                        <div class="activity" data-activity-id="{{ activity['id'] }}" data-activity-color="{{ activity['color'] }}" data-activity-title="{{ activity['title'] }}">
-                            <div class="activity-color">
-                                <label class="palette" style="background-color: {{ activity['color'] }};" data-disabled="true"></label>
-                            </div>
-                            <div class="activity-title">{{ activity['title'] }}</div>
-                        </div>
                         {% end %}
-
-                        </div>
-                        {% end %}
-                        
                     </section>
                 </section>
             </section>

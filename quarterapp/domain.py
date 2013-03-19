@@ -18,6 +18,10 @@ from datetime import date, timedelta, datetime
 from exceptions import Exception, OverflowError
 from collections import Counter
 import operator
+import re
+import math
+
+color_hex_match_re = re.compile(r"^(#)([0-9a-fA-F]{3})([0-9a-fA-F]{3})?$")
 
 class BaseError(Exception):
     def __init__(self, message):
@@ -25,6 +29,76 @@ class BaseError(Exception):
 
 class NotFullDayError(BaseError):
     pass
+
+class InvalidColorError(BaseError):
+    pass
+
+class User(object):
+    """
+    A quarter user
+    """
+    Normal=0
+    Administrator=1
+    Enabled = 1
+    Disabled = 0
+
+class ActivityDict(dict):
+    """
+    Creats a dictionary containing Activity objects using the id as key
+    """
+    def __init__(self, activity_list):
+        for activity in activity_list:
+            self[activity.id] = activity
+
+class Color(object):
+    """
+    Represents a CSS color but only supports HEX format
+    """
+    def __init__(self, hex):
+        """
+        Creates a color object, will raise InvalidColorError if the
+        given hex value is not correct.
+
+        @param hex The hex value of this color
+        @return A Color object
+        """
+        if not color_hex_match_re.match(hex):
+            raise InvalidColorError("Not a valid HEX color code")
+        self.hex_value = hex
+
+    def hex(self):
+        """
+        Get the hex value for this color, will always be 4 or 7 chars (#fff or #cdcdcd)
+
+        @return The colors HEX value
+        """
+        return self.hex_value
+
+    def luminance_color(self, lum):
+        """
+        Create a new Color object with another luminance value. Use positive for lighter and
+        negative to generate a darker color.
+
+        @param lum Percentage luminance to alter. 
+        @return A new Color object
+        """
+        color_code = self.hex_value.replace("#", "")
+        lum = lum or 0;
+        
+        if len(color_code) == 3:
+            color_code = color_code[0]+color_code[0]+color_code[1]+color_code[1]+color_code[2]+color_code[2]
+
+        color = "#"
+        for i in range(3):
+            c = int(color_code[i * 2 : (i * 2) + 2], 16)
+            c = int(round( min( max(0, c + (c * lum)), 255)))
+            c = hex(c)[2:]
+            color += str("00" + c)[len(c):]
+
+        return Color(color)
+
+    def __str__(self):
+        return self.hex_value
 
 class Week(object):
     """
@@ -216,10 +290,16 @@ class Activity(object):
 
     An activity cannot be more than 24 hours (96 quarters)
     """
+    # State value
+    Enabled = 1
+    Disabled = 0
 
-    def __init__(self, id, amount=0.0):
+    def __init__(self, id=id, amount=0.0, color=Color("#fff"), title="", state=0):
         self.id = id
         self.amount = amount
+        self.color = color
+        self.title = title
+        self.state = state
 
     def total(self):
         """
@@ -229,3 +309,30 @@ class Activity(object):
         """
         return self.amount
 
+    def disable(self):
+        """
+        Set the activity as disabled
+        """
+        self.state = Activity.Disabled
+
+    def disabled(self):
+        """
+        Returns True if this activity is disabled
+        
+        @return True if this activity is disabled, else False
+        """
+        return self.state == Activity.Disabled
+
+    def enable(self):
+        """
+        Set the activity as enabled
+        """
+        self.state = Activity.Enabled
+
+    def enabled(self):
+        """
+        Returns True if this activity is enabled
+        
+        @return True if this activity is enabled, else False
+        """
+        return self.state == Activity.Enabled
