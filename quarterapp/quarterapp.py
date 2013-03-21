@@ -124,19 +124,7 @@ def quarterapp_main():
     logging.info("Starting application...")
     main_loop = tornado.ioloop.IOLoop.instance()
 
-    options.sqlite_database
-
-    # Setup database connection
-    if options.backend == 'sqlite':
-        import sqlite3
-        application.db = sqlite3.connect(options.sqlite_database)
-        logging.info("Using SQLite3 as database")
-    else:
-        import MySQLdb
-        application.db = MySQLdb.connect(host=options.mysql_host, port=options.mysql_port, db=options.mysql_database,
-            user=options.mysql_user, passwd=options.mysql_password, charset="utf8")
-        application.db.autocommit(True)
-        logging.info("Using MySQL as database")
+    application.db = DbConnection()
 
     # Setup application settings
     application.quarter_settings = QuarterSettings(application.db)
